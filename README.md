@@ -38,3 +38,8 @@ Using Raleigh as example
 3. In temerminal, `cd /path/to/SPADE/Raleigh`
 4. Run formant analysis script (`python formant.py`)
 5. Run sibilant analysis script (`python sibilant.py`)
+
+Issues
+======
+
+If any issues are encountered, please see the Polyglot-users forum (https://groups.google.com/forum/#!forum/polyglot-users) and post a new question if the issue has not already been addressed.
