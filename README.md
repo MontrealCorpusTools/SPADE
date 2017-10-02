@@ -34,7 +34,8 @@ Running analysis scripts
 Using Raleigh as example
 
 1. Clone this repo (`git clone https://github.com/MontrealCorpusTools/SPADE.git`) or download (https://github.com/MontrealCorpusTools/SPADE/archive/master.zip)
-2. Modify scripts to specify correct directories for corpus (see, e.g., Raleigh scripts)
+2. Modify scripts to specify correct directories for corpus (see, e.g., Raleigh scripts), and for UNISYN files (see https://github.com/mlml/unisyn_spade/tree/master/enrichment_files
+   for the csv files)
 3. In temerminal, `cd /path/to/SPADE/Raleigh`
 4. Run formant analysis script (`python formant.py`)
 5. Run sibilant analysis script (`python sibilant.py`)

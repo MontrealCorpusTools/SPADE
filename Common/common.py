@@ -8,11 +8,19 @@ from polyglotdb import CorpusContext
 from polyglotdb.io.enrichment import enrich_speakers_from_csv, enrich_lexicon_from_csv
 from polyglotdb.acoustics.formants.refined import analyze_formant_points_refinement
 
+# =============== FORMANT CONFIGURATION ===============
+
+duration_threshold = 0.05
+nIterations = 1
+
+
+# =====================================================
 
 def call_back(*args):
     args = [x for x in args if isinstance(x, str)]
     if args:
         print(' '.join(args))
+
 
 def reset(config):
     with CorpusContext(config) as c:
@@ -66,7 +74,7 @@ def basic_enrichment(config, syllabics):
             # g.encode_utterances(min_pause_length = 0.5, call_back = call_back)
             print('Utterance enrichment took: {}'.format(time.time() - begin))
 
-        if not 'syllable' in g.annotation_types:
+        if syllabics and 'syllable' not in g.annotation_types:
             print('encoding syllables')
             begin = time.time()
             g.encode_syllabic_segments(syllabics)
@@ -74,7 +82,7 @@ def basic_enrichment(config, syllabics):
             print('Syllable enrichment took: {}'.format(time.time() - begin))
 
         print('enriching utterances')
-        if not g.hierarchy.has_token_property('utterance', 'speech_rate'):
+        if syllabics and not g.hierarchy.has_token_property('utterance', 'speech_rate'):
             begin = time.time()
             g.encode_rate('utterance', 'syllable', 'speech_rate')
             print('Speech rate encoding took: {}'.format(time.time() - begin))
@@ -84,34 +92,34 @@ def basic_enrichment(config, syllabics):
             g.encode_count('utterance', 'word', 'num_words')
             print('Word count encoding took: {}'.format(time.time() - begin))
 
-        if not g.hierarchy.has_token_property('utterance', 'num_syllables'):
+        if syllabics and not g.hierarchy.has_token_property('utterance', 'num_syllables'):
             begin = time.time()
             g.encode_count('utterance', 'syllable', 'num_syllables')
             print('Syllable count encoding took: {}'.format(time.time() - begin))
 
-        print('enriching syllables')
-        if not g.hierarchy.has_token_property('syllable', 'position_in_word'):
+        if syllabics and not g.hierarchy.has_token_property('syllable', 'position_in_word'):
+            print('enriching syllables')
             begin = time.time()
             g.encode_position('word', 'syllable', 'position_in_word')
             print('Syllable position encoding took: {}'.format(time.time() - begin))
 
-        if not g.hierarchy.has_token_property('syllable', 'num_phones'):
+        if syllabics and not g.hierarchy.has_token_property('syllable', 'num_phones'):
             begin = time.time()
             g.encode_count('syllable', 'phone', 'num_phones')
             print('Phone count encoding took: {}'.format(time.time() - begin))
 
-        #print('enriching words')
-        #if not g.hierarchy.has_token_property('word', 'position_in_utterance'):
+        # print('enriching words')
+        # if not g.hierarchy.has_token_property('word', 'position_in_utterance'):
         #    begin = time.time()
         #    g.encode_position('utterance', 'word', 'position_in_utterance')
         #    print('Utterance position encoding took: {}'.format(time.time() - begin))
 
-        if not g.hierarchy.has_token_property('word', 'num_syllables'):
+        if syllabics and not g.hierarchy.has_token_property('word', 'num_syllables'):
             begin = time.time()
             g.encode_count('word', 'syllable', 'num_syllables')
             print('Syllable count encoding took: {}'.format(time.time() - begin))
 
-        if re.search(r"\d", syllabics[0]):  # If stress is included in the vowels
+        if syllabics and re.search(r"\d", syllabics[0]):  # If stress is included in the vowels
             g.encode_stress_to_syllables("[0-9]", clean_phone_label=False)
             print("encoded stress")
 
@@ -126,7 +134,8 @@ def lexicon_enrichment(config, lexicon_files, dialect_code):
             if dialect_code not in lf and g.hierarchy.has_type_property('word', 'UnisynPrimStressedVowel1'.lower()):
                 print('Dialect independent enrichment already loaded, skipping.')
                 continue
-            if dialect_code in lf and g.hierarchy.has_type_property('word', 'UnisynPrimStressedVowel2_{}'.format(dialect_code).lower()):
+            if dialect_code in lf and g.hierarchy.has_type_property('word', 'UnisynPrimStressedVowel2_{}'.format(
+                    dialect_code).lower()):
                 print('Dialect specific enrichment already loaded, skipping.')
                 continue
             begin = time.time()
@@ -165,8 +174,6 @@ def sibilant_acoustic_analysis(config, sibilant_segments, script_path):
 
 
 def formant_acoustic_analysis(config, stressed_vowels):
-    duration_threshold = 0.05
-    nIterations = 1
     with CorpusContext(config) as c:
         if c.hierarchy.has_token_property('phone', 'F1'):
             print('Formant acoustics already analyzed, skipping.')
@@ -181,7 +188,7 @@ def formant_acoustic_analysis(config, stressed_vowels):
 
 def formant_export(config, stressed_vowels, csv_path, dialect_code):  # Gets information into a csv
 
-    #Unisyn columns
+    # Unisyn columns
     other_vowel_codes = ['unisynPrimStressedVowel2_{}'.format(dialect_code),
                          'UnisynPrimStressedVowel3_{}'.format(dialect_code),
                          'UnisynPrimStressedVowel3_XSAMPA',
@@ -211,7 +218,6 @@ def formant_export(config, stressed_vowels, csv_path, dialect_code):  # Gets inf
         print("Results for query written to " + csv_path)
 
 
-
 def sibilant_export(config, csv_path, dialect_code):
     with CorpusContext(config) as c:
         # export to CSV all the measures taken by the script, along with a variety of data about each phone
@@ -234,3 +240,20 @@ def sibilant_export(config, csv_path, dialect_code):
         end = time.time()
         print('Query took: {}'.format(end - beg))
         print("Results for query written to " + csv_path)
+
+
+def basic_queries(config):
+    from polyglotdb.query.base.func import Sum
+    with CorpusContext(config) as c:
+        print('beginning basic queries')
+        q = c.query_lexicon(c.lexicon_phone).columns(c.lexicon_phone.label.column_name('label'))
+        results = q.all()
+        print('The phone inventory is:', ', '.join(sorted(x['label'] for x in results)))
+
+        q = c.query_speakers().columns(c.speaker.name.column_name('name'))
+        results = q.all()
+        print('The speakers in the corpus are:', ', '.join(sorted(x['name'] for x in results)))
+
+        q = c.query_graph(c.utterance).columns(Sum(c.utterance.duration).column_name('result'))
+        results = q.all()
+        print('The total length of speech in the corpus is: {} seconds'.format(results[0]['result']))

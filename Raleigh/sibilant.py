@@ -37,7 +37,7 @@ from polyglotdb.config import CorpusConfig
 
 if __name__ == '__main__':
     print('Processing...')
-    with ensure_local_database_running('database') as params:
+    with ensure_local_database_running(corpus_name) as params:
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
         # Common set up
