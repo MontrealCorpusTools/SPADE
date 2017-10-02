@@ -33,11 +33,19 @@ Running analysis scripts
 
 Using Raleigh as example
 
-1. Clone this repo (`git clone https://github.com/MontrealCorpusTools/SPADE.git`)
+1. Clone this repo (`git clone https://github.com/MontrealCorpusTools/SPADE.git`) or download (https://github.com/MontrealCorpusTools/SPADE/archive/master.zip)
 2. Modify scripts to specify correct directories for corpus (see, e.g., Raleigh scripts)
 3. In temerminal, `cd /path/to/SPADE/Raleigh`
 4. Run formant analysis script (`python formant.py`)
 5. Run sibilant analysis script (`python sibilant.py`)
+
+Running analysis scripts on a new corpus
+========================================
+
+1. Make a new directory for the new corpus
+2. Copy over the python scripts (formant.py and sibilant.py)
+3. Edit the configuration to point to the new corpus
+5. Run as above
 
 Issues
 ======
