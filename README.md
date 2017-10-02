@@ -42,4 +42,7 @@ Using Raleigh as example
 Issues
 ======
 
-If any issues are encountered, please see the Polyglot-users forum (https://groups.google.com/forum/#!forum/polyglot-users) and post a new question if the issue has not already been addressed.
+If any issues are encountered, first try upgrading the PolyglotDB package (`pip install -U polyglotdb`).
+
+If this does not solve the problem, or if no update is available, please see the Polyglot-users forum (https://groups.google.com/forum/#!forum/polyglot-users)
+and post a new question if the issue has not already been addressed.
