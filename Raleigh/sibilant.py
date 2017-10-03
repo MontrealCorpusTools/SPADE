@@ -24,7 +24,7 @@ speaker_enrichment_file = '/mnt/e/temp/raleigh/speaker_information.txt'
 sibilant_segments = ['S', 'Z', 'SH', 'ZH']
 
 # Paths to scripts and praat
-script_path = os.path.join(script_dir, 'sibilant_jane.praat')
+script_path = os.path.join(script_dir, 'sibilant_jane_optimized.praat')
 csv_path = os.path.join(base_dir, corpus_name + "_sibilants.csv")
 # ==================================================
 

@@ -168,7 +168,10 @@ def sibilant_acoustic_analysis(config, sibilant_segments, script_path):
 
         # analyze all sibilants using the script found at script_path
         beg = time.time()
-        c.analyze_script('sibilant', script_path)
+        if 'optimized' in script_path:
+            c.analyze_script('sibilant', script_path, use_long=True)
+        else:
+            c.analyze_script('sibilant', script_path)
         end = time.time()
         print('Sibilant analysis took: {}'.format(end - beg))
 
@@ -224,6 +227,7 @@ def sibilant_export(config, csv_path, dialect_code):
         print("Beginning sibilant export")
         beg = time.time()
         qr = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
+        qr = qr.filter(c.phone.begin == c.phone.syllable.word.begin)
         # qr = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
         # this exports data for all sibilants
         qr = qr.columns(c.phone.speaker.name.column_name('speaker'),
@@ -233,7 +237,9 @@ def sibilant_export(config, csv_path, dialect_code):
                         c.phone.duration.column_name('duration'),
                         c.phone.following.label.column_name('following_phone'),
                         c.phone.previous.label.column_name('previous_phone'),
-                        c.phone.word.label.column_name('word'),
+                        c.phone.syllable.word.label.column_name('word'),
+                        c.phone.syllable.phone.filter_by_subset('onset').label.column_name('onset'),
+                        c.phone.syllable.phone.filter_by_subset('nucleus').label.column_name('nucleus'),
                         c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
                         c.phone.slope.column_name('slope'), c.phone.spread.column_name('spread'))
         qr.to_csv(csv_path)
