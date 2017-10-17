@@ -168,10 +168,7 @@ def sibilant_acoustic_analysis(config, sibilant_segments, script_path):
 
         # analyze all sibilants using the script found at script_path
         beg = time.time()
-        if 'optimized' in script_path:
-            c.analyze_script('sibilant', script_path, use_long=True)
-        else:
-            c.analyze_script('sibilant', script_path)
+        c.analyze_script('sibilant', script_path)
         end = time.time()
         print('Sibilant analysis took: {}'.format(end - beg))
 
