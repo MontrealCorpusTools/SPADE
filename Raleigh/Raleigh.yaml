@@ -1,0 +1,20 @@
+corpus_directory: "/media/share/corpora/Raleigh"
+input_format: "MFA"
+dialect_code: "sca"
+unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
+speaker_enrichment_file: "/media/share/corpora/Raleigh/speaker_data.csv"
+speakers: [ral117, ral341, ral132, ral216, ral145, ral352, ral144, ral136, ral166, ral199, ral141, ral113, ral372, ral326,
+            ral170, ral111, ral347, ral143, ral405, ral390, ral140, ral153, ral128, ral333, ral321, ral314, ral154, ral195, ral139,
+            ral359, ral324, ral371, ral152, ral337, ral215, ral107, ral382, ral387, ral173, ral151, ral308, ral304, ral407, ral325,
+            ral403, ral174, ral375, ral394, ral301, ral305, ral392, ral338, ral130, ral185, ral120, ral323, ral383, ral363, ral110,
+            ral147, ral328, ral391, ral157, ral318, ral377, ral395, ral344, ral410, ral413, ral366, ral193, ral356, ral155, ral121,
+            ral365, ral369, ral108, ral122, ral183, ral329, ral112, ral148, ral146, ral135, ral388, ral221, ral303, ral150, ral116,
+            ral351, ral311, ral137, ral127, ral404, ral408, ral186, ral106, ral313, ral191, ral327, ral367, ral353, ral160, ral182,
+            ral340, ral142, ral357, ral373, ral115, ral198, ral380, ral389, ral361, ral134, ral374, ral378, ral342, ral124, ral370,
+            ral177, ral343, ral346, ral149, ral189, ral358, ral355, ral409, ral368, ral350, ral172, ral345, ral331, ral402, ral315, ral376]
+vowel_inventory: ["ER0", "IH2", "EH1", "AE0", "UH1", "AY2", "AW2", "UW1", "OY2", "OY1", "AO0", "AH2", "ER1", "AW1",
+                   "OW0", "IY1", "IY2", "UW0", "AA1", "EY0", "AE1", "AA0", "OW1", "AW0", "AO1", "AO2", "IH0", "ER2",
+                   "UW2", "IY0", "AE2", "AH0", "AH1", "UH2", "EH2", "UH0", "EY1", "AY0", "AY1", "EH0", "EY2", "AA2",
+                   "OW2", "IH1"]
+stressed_vowels: ["EH1", "UH1", "UW1", "OY1", "ER1", "AW1", "IY1", "AA1", "AE1", "OW1",  "AO1", "AH1", "EY1", "AY1", "IH1"]
+sibilant_segments: ["S", "Z", "SH", "ZH"]

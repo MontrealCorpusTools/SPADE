@@ -11,7 +11,7 @@ Setting up Python
 1. Install Miniconda (https://conda.io/miniconda.html)
 2. Create polyglot environment (`conda create -n polyglot python=3.6 numpy scipy`)
 3. Activate polyglot environment (Mac/Linux: `source activate polyglot`, Windows: `activate polyglot`)
-4. Install PolyglotDB (`pip install polyglotdb`)
+4. Install PolyglotDB (`pip install polyglotdb pyyaml`)
 
 Ensure Praat is on the path
 
