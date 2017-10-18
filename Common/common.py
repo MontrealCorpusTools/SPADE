@@ -43,8 +43,8 @@ def load_config(corpus_name):
     if not os.path.exists(path):
         print('The config file for the specified corpus does not exist ({}).'.format(path))
         sys.exit(1)
-    expected_keys = ['corpus_directory', 'textgrid_format', 'input_format', 'dialect_code', 'unisyn_spade_directory',
-                     'speaker_enrichment_file'
+    expected_keys = ['corpus_directory', 'input_format', 'dialect_code', 'unisyn_spade_directory',
+                     'speaker_enrichment_file',
                      'speakers', 'vowel_inventory', 'stressed_vowels', 'sibilant_segments']
     with open(path, 'r', encoding='utf8') as f:
         conf = yaml.load(f)
