@@ -296,8 +296,6 @@ def formant_export(config, stressed_vowels, corpus_name, dialect_code, speakers)
         for v in other_vowel_codes:
             if c.hierarchy.has_type_property('word', v.lower()):
                 q = q.columns(getattr(c.phone.word, v.lower()).column_name(v))
-        print(q.cypher(), q.cypher_params())
-        print(repr(q))
         q.to_csv(csv_path)
         end = time.time()
         time_taken = time.time() - beg
