@@ -27,8 +27,8 @@ if __name__ == '__main__':
             'The corpus {0} does not have a directory (available: {1}).  Please make it with a {0}.yaml file inside.'.format(
                 args.corpus_name, ', '.join(directories)))
         sys.exit(1)
-    print('Processing...')
     corpus_conf = common.load_config(corpus_name)
+    print('Processing...')
     with ensure_local_database_running(corpus_name) as params:
         print(params)
         config = CorpusConfig(corpus_name, **params)
