@@ -1,4 +1,4 @@
-corpus_directory: "/mnt/e/temp/raleigh/smallest_raleigh"
+corpus_directory: "/mnt/e/temp/raleigh/small_raleigh"
 input_format: "MFA"
 dialect_code: "sca"
 unisyn_spade_directory: "/mnt/d/Dev/GitHub/unisyn_spade"
