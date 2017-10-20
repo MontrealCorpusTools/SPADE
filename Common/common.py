@@ -230,7 +230,7 @@ def speaker_enrichment(config, speaker_file):
             print('Speaker enrichment already done, skipping.')
 
 
-def sibilant_acoustic_analysis(config, sibilant_segments, script_path):
+def sibilant_acoustic_analysis(config, sibilant_segments):
     # Encode sibilant class and analyze sibilants using the praat script
     with CorpusContext(config) as c:
         if c.hierarchy.has_token_property('phone', 'cog'):
@@ -245,7 +245,7 @@ def sibilant_acoustic_analysis(config, sibilant_segments, script_path):
 
         # analyze all sibilants using the script found at script_path
         beg = time.time()
-        c.analyze_script('sibilant', script_path)
+        c.analyze_script('sibilant', sibilant_script_path)
         end = time.time()
         time_taken = time.time() - beg
         print('Sibilant analysis took: {}'.format(end - beg))
