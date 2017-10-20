@@ -36,17 +36,17 @@ Using Raleigh as example
 1. Clone this repo (`git clone https://github.com/MontrealCorpusTools/SPADE.git`) or download (https://github.com/MontrealCorpusTools/SPADE/archive/master.zip)
 2. Modify scripts to specify correct directories for corpus (see, e.g., Raleigh scripts), and for UNISYN files (see https://github.com/mlml/unisyn_spade/tree/master/enrichment_files
    for the csv files)
-3. In temerminal, `cd /path/to/SPADE/Raleigh`
-4. Run formant analysis script (`python formant.py`)
-5. Run sibilant analysis script (`python sibilant.py`)
+3. In temerminal, `cd /path/to/SPADE`
+4. Run formant analysis script (`python formant.py Raleigh`)
+5. Run sibilant analysis script (`python sibilant.py Raleigh`)
 
 Running analysis scripts on a new corpus
 ========================================
 
 1. Make a new directory for the new corpus
-2. Copy over the python scripts (formant.py and sibilant.py)
-3. Edit the configuration to point to the new corpus
-5. Run as above
+2. Create a new yaml file with the same name
+3. Populate the fields (corpus_directory, input_format, dialect_code, unisyn_spade_directory, speaker_enrichment_file, speakers, vowel_inventory, stressed_vowels, sibilant_segments)
+4. Run as above
 
 Issues
 ======
