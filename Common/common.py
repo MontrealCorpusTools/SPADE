@@ -280,7 +280,7 @@ def formant_export(config, stressed_vowels, corpus_name, dialect_code, speakers)
         print('Beginning formant export')
         beg = time.time()
         q = c.query_graph(c.phone).filter(c.phone.label.in_(stressed_vowels))
-        q = q.filter(c.phone.F1 != None)
+        #q = q.filter(c.phone.F1 != None)
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
 

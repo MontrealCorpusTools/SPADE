@@ -104,3 +104,8 @@ ENV/
 
 *.csv
 *.txt
+.Rproj.user
+
+SPADE-analysis/\.RData
+
+SPADE-analysis/\.Rhistory
