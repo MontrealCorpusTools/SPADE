@@ -9,7 +9,7 @@ from statistics import mean
 from textgrid import TextGrid, IntervalTier
 
 orig_dir = r'/media/share/corpora/ICE-Can'
-output_dir = r'/media/share/corpora/ICE-Can/to_align'
+output_dir = r'/media/share/corpora/ICE-Can/to-align'
 
 os.makedirs(output_dir, exist_ok=True)
 
@@ -138,6 +138,10 @@ def parse_time(timestamp):
         timestamp = '7:03.9332'
     if timestamp == '0:04.2748':
         timestamp = '0:18.1925'
+    if timestamp == '0:21.8347':
+        timestamp = '0:25.4580'
+    if timestamp == '3:50.2819':
+        timestamp = '3:51.0021'
 
     m = re.match(r'(\d{1,2})[:;.>]{0,2}(\d+)[.:]{1,2}(\d+)>?', timestamp)
     if m is None:
@@ -188,7 +192,7 @@ def parse_text(text):
         else:
             text = re.sub(r"<&>.*", r"", text)  # Notes
     text = re.sub(r"<@>.*</@>?", "<beep_sound>", text)  # Excised words
-    text = re.sub(r"< ?O>.*</O>", "", text)  # Comments
+    text = re.sub(r"< ?O>.*</?O>", "", text)  # Comments
     text = re.sub(r"<unclear>.*</unclear>", r"<unk> ", text)  # Unclear
     text = re.sub(r"<\?> ([-a-zA-Z'_ ]+) </?\?>", r"\1", text)  # Uncertain transcription
     text = re.sub(r"<quote> | </quote>", "", text)
@@ -219,6 +223,8 @@ def parse_text(text):
                 continue
             if t.lower() == "lemme" and text[i + 1].lower() == 'let':
                 continue
+            if t.lower() == "'ouse" and text[i + 1].lower() == 'house':
+                continue
             if t.endswith("'") and t[:-1] == text[i + 1].lower()[:-1]:
                 continue
         new_text.append(t)
@@ -240,8 +246,6 @@ def parse_transcript(path):
             if not line:
                 continue
             if line in ['<I>', '</I>']:
-                continue
-            if '<O>' in line:
                 continue
             if line.startswith('&'):
                 continue
@@ -269,6 +273,8 @@ def parse_transcript(path):
                 if text == "Again he's quoting":
                     continue
                 if not text:
+                    continue
+                if end is None:
                     continue
                 if start is None:
                     if prev_speaker != speaker:
