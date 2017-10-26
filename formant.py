@@ -37,10 +37,12 @@ if __name__ == '__main__':
         if reset:
             common.reset(config)
         common.loading(config, corpus_conf['corpus_directory'], corpus_conf['input_format'])
-        common.basic_enrichment(config, corpus_conf['vowel_inventory'])
 
         common.lexicon_enrichment(config, corpus_conf['unisyn_spade_directory'], corpus_conf['dialect_code'])
         common.speaker_enrichment(config, corpus_conf['speaker_enrichment_file'])
+
+        common.basic_enrichment(config, corpus_conf['vowel_inventory'])
+
 
         # Formant specific analysis
         common.formant_acoustic_analysis(config, corpus_conf['stressed_vowels'])

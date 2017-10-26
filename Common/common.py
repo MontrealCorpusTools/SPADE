@@ -185,6 +185,13 @@ def basic_enrichment(config, syllabics):
             time_taken = time.time() - begin
             print("encoded stress")
             save_performance_benchmark(config, 'stress_encoding', time_taken)
+        elif g.hierarchy.has_type_property('word', 'stress_pattern'):
+            begin = time.time()
+            g.encode_stress_from_word_property('stress_pattern')
+            time_taken = time.time() - begin
+            print("encoded stress")
+            save_performance_benchmark(config, 'stress_encoding', time_taken)
+
 
 
 def lexicon_enrichment(config, unisyn_spade_directory, dialect_code):
