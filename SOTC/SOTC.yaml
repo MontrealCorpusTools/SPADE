@@ -1,0 +1,9 @@
+corpus_directory: "/media/share/corpora/SOTC/corpus"
+input_format: "labbcat"
+dialect_code: "edi"
+unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
+speaker_enrichment_file: "/media/share/corpora/SOTC/speaker_data.csv"
+speakers: []
+vowel_inventory: []
+stressed_vowels: []
+sibilant_segments: []
