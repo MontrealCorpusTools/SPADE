@@ -1,8 +1,8 @@
-corpus_directory: "/mnt/e/temp/raleigh/small_raleigh"
+corpus_directory: "/mnt/d/Data/temp/raleigh/smallest_raleigh"
 input_format: "MFA"
-dialect_code: "sca"
+dialect_code: "edi"
 unisyn_spade_directory: "/mnt/d/Dev/GitHub/unisyn_spade"
-speaker_enrichment_file: "/mnt/e/temp/raleigh/small_raleigh/speaker_data.csv"
+speaker_enrichment_file: "/mnt/d/Data/temp/raleigh/small_raleigh/speaker_data.csv"
 speakers: [ral117, ral341, ral132, ral216, ral145, ral352, ral144, ral136, ral166, ral199, ral141, ral113, ral372, ral326,
             ral170, ral111, ral347, ral143, ral405, ral390, ral140, ral153, ral128, ral333, ral321, ral314, ral154, ral195, ral139,
             ral359, ral324, ral371, ral152, ral337, ral215, ral107, ral382, ral387, ral173, ral151, ral308, ral304, ral407, ral325,

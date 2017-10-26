@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 import os
 import sys
+sys.path.insert(0, '/mnt/d/Dev/GitHub/PolyglotDB')
 import re
 import yaml
 import csv
@@ -179,15 +180,15 @@ def basic_enrichment(config, syllabics):
             print('Syllable count encoding took: {}'.format(time.time() - begin))
             save_performance_benchmark(config, 'num_syllables_encoding', time_taken)
 
-        if syllabics and re.search(r"\d", syllabics[0]) and not g.hierarchy.has_type_property('syllable', 'stress'):  # If stress is included in the vowels
+        if g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_type_property('syllable', 'stress'):
             begin = time.time()
-            g.encode_stress_to_syllables("[0-9]", clean_phone_label=False)
+            g.encode_stress_from_word_property('stresspattern')
             time_taken = time.time() - begin
             print("encoded stress")
             save_performance_benchmark(config, 'stress_encoding', time_taken)
-        elif g.hierarchy.has_type_property('word', 'stress_pattern'):
+        elif syllabics and re.search(r"\d", syllabics[0]) and not g.hierarchy.has_type_property('syllable', 'stress'):  # If stress is included in the vowels
             begin = time.time()
-            g.encode_stress_from_word_property('stress_pattern')
+            g.encode_stress_to_syllables("[0-9]", clean_phone_label=False)
             time_taken = time.time() - begin
             print("encoded stress")
             save_performance_benchmark(config, 'stress_encoding', time_taken)
@@ -286,8 +287,11 @@ def formant_export(config, stressed_vowels, corpus_name, dialect_code, speakers)
     with CorpusContext(config) as c:
         print('Beginning formant export')
         beg = time.time()
-        q = c.query_graph(c.phone).filter(c.phone.label.in_(stressed_vowels))
-        #q = q.filter(c.phone.F1 != None)
+        q = c.query_graph(c.phone)
+        if stressed_vowels:
+            q = q.filter(c.phone.label.in_(stressed_vowels))
+        else:
+            q = q.filter(c.phone.syllable.stress == '1')
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
 
