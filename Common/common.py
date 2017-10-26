@@ -340,7 +340,7 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
 def get_size_of_corpus(config):
     from polyglotdb.query.base.func import Sum
     with CorpusContext(config) as c:
-        if not 'utterance' in c.annotation_types:
+        if 'utterance' not in c.annotation_types:
             q = c.query_graph(c.word).columns(Sum(c.word.duration).column_name('result'))
         else:
             q = c.query_graph(c.utterance).columns(Sum(c.utterance.duration).column_name('result'))
