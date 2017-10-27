@@ -373,15 +373,14 @@ def basic_queries(config):
         for r in results:
             qr = c.query_graph(c.phone).filter(c.phone.label == r['label']).limit(1)
             qr = qr.columns(c.phone.word.label.column_name('word'),
-                            c.phone.word.phone.column_name('transcription'))
+                            c.phone.word.transcription.column_name('transcription'))
             res = qr.all()
             if len(res) == 0:
                 print('An example for {} was not found.'.format(r['label']))
             else:
                 res = res[0]
                 print('An example for {} is the word "{}" with the transcription [{}]'.format(r['label'], res['word'],
-                                                                                              '.'.join(res[
-                                                                                                           'transcription'])))
+                                                                                              'transcription'))
 
         q = c.query_speakers().columns(c.speaker.name.column_name('name'))
         results = q.all()
