@@ -372,16 +372,17 @@ def basic_queries(config):
         results = q.all()
         print('The phone inventory is:', ', '.join(sorted(x['label'] for x in results)))
         for r in results:
-            count = c.query_graph(c.phone).filter(c.phone.label==r['label']).count()
+            total_count = c.query_graph(c.phone).filter(c.phone.label==r['label']).count()
+            duration_threshold_count = c.query_graph(c.phone).filter(c.phone.label==r['label']).filter(c.phone.duration >= duration_threshold).count()
             qr = c.query_graph(c.phone).filter(c.phone.label == r['label']).limit(1)
             qr = qr.columns(c.phone.word.label.column_name('word'),
                             c.phone.word.transcription.column_name('transcription'))
             res = qr.all()
-            if count == 0:
+            if total_count == 0:
                 print('An example for {} was not found.'.format(r['label']))
             else:
                 res = res[0]
-                print('An example for {} (of {}) is the word "{}" with the transcription [{}]'.format(r['label'], count, res['word'],
+                print('An example for {} (of {}, {} above {}) is the word "{}" with the transcription [{}]'.format(r['label'], total_count, duration_threshold_count, duration_threshold, res['word'],
                                                                                               res['transcription']))
 
         q = c.query_speakers().columns(c.speaker.name.column_name('name'))
@@ -390,6 +391,8 @@ def basic_queries(config):
 
         q = c.query_graph(c.utterance).columns(Sum(c.utterance.duration).column_name('result'))
         results = q.all()
-        print('The total length of speech in the corpus is: {} seconds'.format(results[0]['result']))
+        q = c.query_graph(c.word).columns(Sum(c.word.duration).column_name('result'))
+        word_results = q.all()
+        print('The total length of speech in the corpus is: {} seconds (utterances) {} seconds (words'.format(results[0]['result'], word_results[0]['result']))
         time_taken = time.time() - beg
         save_performance_benchmark(config, 'basic_query', time_taken)
