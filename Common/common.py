@@ -372,15 +372,16 @@ def basic_queries(config):
         results = q.all()
         print('The phone inventory is:', ', '.join(sorted(x['label'] for x in results)))
         for r in results:
+            count = c.query_graph(c.phone).filter(c.phone.label==r['label']).count()
             qr = c.query_graph(c.phone).filter(c.phone.label == r['label']).limit(1)
             qr = qr.columns(c.phone.word.label.column_name('word'),
                             c.phone.word.transcription.column_name('transcription'))
             res = qr.all()
-            if len(res) == 0:
+            if count == 0:
                 print('An example for {} was not found.'.format(r['label']))
             else:
                 res = res[0]
-                print('An example for {} is the word "{}" with the transcription [{}]'.format(r['label'], res['word'],
+                print('An example for {} (of {}) is the word "{}" with the transcription [{}]'.format(r['label'], count, res['word'],
                                                                                               res['transcription']))
 
         q = c.query_speakers().columns(c.speaker.name.column_name('name'))
