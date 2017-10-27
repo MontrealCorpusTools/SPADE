@@ -182,7 +182,7 @@ def basic_enrichment(config, syllabics):
             save_performance_benchmark(config, 'num_syllables_encoding', time_taken)
 
         print('enriching syllables')
-        if g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_type_property('syllable',
+        if g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_token_property('syllable',
                                                                                                         'stress'):
             begin = time.time()
             g.encode_stress_from_word_property('stresspattern')
