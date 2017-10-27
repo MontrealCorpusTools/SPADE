@@ -46,7 +46,7 @@ if __name__ == '__main__':
         common.lexicon_enrichment(config, corpus_conf['unisyn_spade_directory'], corpus_conf['dialect_code'])
         common.speaker_enrichment(config, corpus_conf['speaker_enrichment_file'])
 
-        common.basic_enrichment(config, corpus_conf['vowel_inventory'])
+        common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
         common.basic_queries(config)
 

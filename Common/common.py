@@ -109,12 +109,12 @@ def loading(config, corpus_dir, textgrid_format):
     save_performance_benchmark(config, 'import', time_taken)
 
 
-def basic_enrichment(config, syllabics):
+def basic_enrichment(config, syllabics, pauses):
     with CorpusContext(config) as g:
         if not 'utterance' in g.annotation_types:
             print('encoding utterances')
             begin = time.time()
-            g.encode_pauses('^<SIL>$')
+            g.encode_pauses(pauses)
             # g.encode_pauses('^[<{].*$', call_back = call_back)
             g.encode_utterances(min_pause_length=0.15)  # , call_back = call_back)
             # g.encode_utterances(min_pause_length = 0.5, call_back = call_back)
