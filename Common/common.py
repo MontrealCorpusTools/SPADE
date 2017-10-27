@@ -181,6 +181,7 @@ def basic_enrichment(config, syllabics):
             print('Syllable count encoding took: {}'.format(time.time() - begin))
             save_performance_benchmark(config, 'num_syllables_encoding', time_taken)
 
+        print('enriching syllables')
         if g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_type_property('syllable',
                                                                                                         'stress'):
             begin = time.time()
@@ -380,7 +381,7 @@ def basic_queries(config):
             else:
                 res = res[0]
                 print('An example for {} is the word "{}" with the transcription [{}]'.format(r['label'], res['word'],
-                                                                                              'transcription'))
+                                                                                              res['transcription']))
 
         q = c.query_speakers().columns(c.speaker.name.column_name('name'))
         results = q.all()
