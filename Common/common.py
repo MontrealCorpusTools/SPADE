@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 import os
 import sys
+
 sys.path.insert(0, '/mnt/d/Dev/GitHub/PolyglotDB')
 import re
 import yaml
@@ -180,19 +181,20 @@ def basic_enrichment(config, syllabics):
             print('Syllable count encoding took: {}'.format(time.time() - begin))
             save_performance_benchmark(config, 'num_syllables_encoding', time_taken)
 
-        if g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_type_property('syllable', 'stress'):
+        if g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_type_property('syllable',
+                                                                                                        'stress'):
             begin = time.time()
             g.encode_stress_from_word_property('stresspattern')
             time_taken = time.time() - begin
             print("encoded stress")
-            save_performance_benchmark(config, 'stress_encoding', time_taken)
-        elif syllabics and re.search(r"\d", syllabics[0]) and not g.hierarchy.has_type_property('syllable', 'stress'):  # If stress is included in the vowels
+            save_performance_benchmark(config, 'stress_encoding_from_pattern', time_taken)
+        elif syllabics and re.search(r"\d", syllabics[0]) and not g.hierarchy.has_type_property('syllable',
+                                                                                                'stress'):  # If stress is included in the vowels
             begin = time.time()
             g.encode_stress_to_syllables("[0-9]", clean_phone_label=False)
             time_taken = time.time() - begin
             print("encoded stress")
             save_performance_benchmark(config, 'stress_encoding', time_taken)
-
 
 
 def lexicon_enrichment(config, unisyn_spade_directory, dialect_code):
@@ -362,6 +364,7 @@ def get_size_of_corpus(config):
 def basic_queries(config):
     from polyglotdb.query.base.func import Sum
     with CorpusContext(config) as c:
+        print(c.hierarchy)
         print('beginning basic queries')
         beg = time.time()
         q = c.query_lexicon(c.lexicon_phone).columns(c.lexicon_phone.label.column_name('label'))
@@ -370,9 +373,15 @@ def basic_queries(config):
         for r in results:
             qr = c.query_graph(c.phone).filter(c.phone.label == r['label']).limit(1)
             qr = qr.columns(c.phone.word.label.column_name('word'),
-                            c.phone.word.phones.column_name('transcription'))
-            res = qr.all()[0]
-            print('An example for {} is the word "{}" with the transcription [{}]'.format(r['label'], res['word'], '.'.join(res['transcription'])))
+                            c.phone.word.phone.column_name('transcription'))
+            res = qr.all()
+            if len(res) == 0:
+                print('An example for {} was not found.'.format(r['label']))
+            else:
+                res = res[0]
+                print('An example for {} is the word "{}" with the transcription [{}]'.format(r['label'], res['word'],
+                                                                                              '.'.join(res[
+                                                                                                           'transcription'])))
 
         q = c.query_speakers().columns(c.speaker.name.column_name('name'))
         results = q.all()
