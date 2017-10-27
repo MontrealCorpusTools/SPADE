@@ -367,6 +367,12 @@ def basic_queries(config):
         q = c.query_lexicon(c.lexicon_phone).columns(c.lexicon_phone.label.column_name('label'))
         results = q.all()
         print('The phone inventory is:', ', '.join(sorted(x['label'] for x in results)))
+        for r in results:
+            qr = c.query_graph(c.phone).filter(c.phone.label == r['label']).limit(1)
+            qr = qr.columns(c.phone.word.label.column_name('word'),
+                            c.phone.word.phones.column_name('transcription'))
+            res = qr.all()[0]
+            print('An example for {} is the word "{}" with the transcription [{}]'.format(r['label'], res['word'], '.'.join(res['transcription'])))
 
         q = c.query_speakers().columns(c.speaker.name.column_name('name'))
         results = q.all()

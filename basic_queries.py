@@ -13,7 +13,7 @@ import re
 import time
 
 from polyglotdb.utils import ensure_local_database_running
-from polyglotdb import CorpusConfig
+from polyglotdb import CorpusConfig, CorpusContext
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -36,6 +36,8 @@ if __name__ == '__main__':
         print(params)
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
+        with CorpusContext(config) as c:
+            print(c.hierarchy)
         # Common set up
         if reset:
             common.reset(config)
