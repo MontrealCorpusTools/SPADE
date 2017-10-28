@@ -326,13 +326,13 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
         # export to CSV all the measures taken by the script, along with a variety of data about each phone
         print("Beginning sibilant export")
         beg = time.time()
-        qr = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
-        qr = qr.filter(c.phone.begin == c.phone.syllable.word.begin)
+        q = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
+        q = q.filter(c.phone.begin == c.phone.syllable.word.begin)
         if speakers:
-            qr = qr.filter(c.phone.speaker.name.in_(speakers))
+            q = q.filter(c.phone.speaker.name.in_(speakers))
         # qr = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
         # this exports data for all sibilants
-        qr = qr.columns(c.phone.speaker.name.column_name('speaker'),
+        qr = q.columns(c.phone.speaker.name.column_name('speaker'),
                         c.phone.discourse.name.column_name('discourse'),
                         c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
                         c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
