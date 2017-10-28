@@ -299,7 +299,7 @@ def formant_export(config, corpus_name, dialect_code, speakers):  # Gets informa
                       c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
                       c.phone.syllable.stress.column_name('syllable_stress'),
                       c.phone.syllable.word.stresspattern.column_name('word_stress_pattern'),
-                      c.phone.syllable.position_in_word('syllable_position_in_word'),
+                      c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
                       c.phone.duration.column_name('duration'),
                       c.phone.following.label.column_name('following_phone'),
                       c.phone.previous.label.column_name('previous_phone'), c.phone.word.label.column_name('word'),
