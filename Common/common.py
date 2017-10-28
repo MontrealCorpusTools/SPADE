@@ -183,7 +183,7 @@ def basic_enrichment(config, syllabics, pauses):
 
         print('enriching syllables')
         if g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_token_property('syllable',
-                                                                                                        'stress'):
+                                                                                                         'stress'):
             begin = time.time()
             g.encode_stress_from_word_property('stresspattern')
             time_taken = time.time() - begin
@@ -263,14 +263,14 @@ def sibilant_acoustic_analysis(config, sibilant_segments):
         save_performance_benchmark(config, 'sibilant_acoustic_analysis', time_taken)
 
 
-def formant_acoustic_analysis(config, stressed_vowels):
+def formant_acoustic_analysis(config, vowels):
     with CorpusContext(config) as c:
         if c.hierarchy.has_token_property('phone', 'F1'):
             print('Formant acoustics already analyzed, skipping.')
             return
         print('Beginning formant analysis')
         beg = time.time()
-        metadata = analyze_formant_points_refinement(c, stressed_vowels, duration_threshold=duration_threshold,
+        metadata = analyze_formant_points_refinement(c, vowels, duration_threshold=duration_threshold,
                                                      num_iterations=nIterations)
         end = time.time()
         time_taken = time.time() - beg
@@ -278,7 +278,7 @@ def formant_acoustic_analysis(config, stressed_vowels):
         save_performance_benchmark(config, 'formant_acoustic_analysis', time_taken)
 
 
-def formant_export(config, stressed_vowels, corpus_name, dialect_code, speakers):  # Gets information into a csv
+def formant_export(config, corpus_name, dialect_code, speakers):  # Gets information into a csv
 
     csv_path = os.path.join(base_dir, corpus_name, '{}_formants.csv'.format(corpus_name))
     # Unisyn columns
@@ -291,16 +291,15 @@ def formant_export(config, stressed_vowels, corpus_name, dialect_code, speakers)
         print('Beginning formant export')
         beg = time.time()
         q = c.query_graph(c.phone)
-        if stressed_vowels:
-            q = q.filter(c.phone.label.in_(stressed_vowels))
-        else:
-            q = q.filter(c.phone.syllable.stress == '1')
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
 
         q = q.columns(c.phone.speaker.name.column_name('speaker'), c.phone.discourse.name.column_name('discourse'),
                       c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
                       c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
+                      c.phone.syllable.stress.column_name('syllable_stress'),
+                      c.phone.syllable.word.stresspattern.column_name('word_stress_pattern'),
+                      c.phone.syllable.position_in_word('syllable_position_in_word'),
                       c.phone.duration.column_name('duration'),
                       c.phone.following.label.column_name('following_phone'),
                       c.phone.previous.label.column_name('previous_phone'), c.phone.word.label.column_name('word'),
@@ -311,6 +310,8 @@ def formant_export(config, stressed_vowels, corpus_name, dialect_code, speakers)
         for v in other_vowel_codes:
             if c.hierarchy.has_type_property('word', v.lower()):
                 q = q.columns(getattr(c.phone.word, v.lower()).column_name(v))
+        for sp, _ in c.hierarchy.speaker_properties:
+            q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
         q.to_csv(csv_path)
         end = time.time()
         time_taken = time.time() - beg
@@ -339,10 +340,13 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
                         c.phone.following.label.column_name('following_phone'),
                         c.phone.previous.label.column_name('previous_phone'),
                         c.phone.syllable.word.label.column_name('word'),
+                        c.phone.syllable.stress.column_name('syllable_stress'),
                         c.phone.syllable.phone.filter_by_subset('onset').label.column_name('onset'),
                         c.phone.syllable.phone.filter_by_subset('nucleus').label.column_name('nucleus'),
                         c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
                         c.phone.slope.column_name('slope'), c.phone.spread.column_name('spread'))
+        for sp, _ in c.hierarchy.speaker_properties:
+            q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
         qr.to_csv(csv_path)
         end = time.time()
         time_taken = time.time() - beg
@@ -372,8 +376,9 @@ def basic_queries(config):
         results = q.all()
         print('The phone inventory is:', ', '.join(sorted(x['label'] for x in results)))
         for r in results:
-            total_count = c.query_graph(c.phone).filter(c.phone.label==r['label']).count()
-            duration_threshold_count = c.query_graph(c.phone).filter(c.phone.label==r['label']).filter(c.phone.duration >= duration_threshold).count()
+            total_count = c.query_graph(c.phone).filter(c.phone.label == r['label']).count()
+            duration_threshold_count = c.query_graph(c.phone).filter(c.phone.label == r['label']).filter(
+                c.phone.duration >= duration_threshold).count()
             qr = c.query_graph(c.phone).filter(c.phone.label == r['label']).limit(1)
             qr = qr.columns(c.phone.word.label.column_name('word'),
                             c.phone.word.transcription.column_name('transcription'))
@@ -382,8 +387,9 @@ def basic_queries(config):
                 print('An example for {} was not found.'.format(r['label']))
             else:
                 res = res[0]
-                print('An example for {} (of {}, {} above {}) is the word "{}" with the transcription [{}]'.format(r['label'], total_count, duration_threshold_count, duration_threshold, res['word'],
-                                                                                              res['transcription']))
+                print('An example for {} (of {}, {} above {}) is the word "{}" with the transcription [{}]'.format(
+                    r['label'], total_count, duration_threshold_count, duration_threshold, res['word'],
+                    res['transcription']))
 
         q = c.query_speakers().columns(c.speaker.name.column_name('name'))
         results = q.all()
@@ -393,6 +399,7 @@ def basic_queries(config):
         results = q.all()
         q = c.query_graph(c.word).columns(Sum(c.word.duration).column_name('result'))
         word_results = q.all()
-        print('The total length of speech in the corpus is: {} seconds (utterances) {} seconds (words'.format(results[0]['result'], word_results[0]['result']))
+        print('The total length of speech in the corpus is: {} seconds (utterances) {} seconds (words'.format(
+            results[0]['result'], word_results[0]['result']))
         time_taken = time.time() - beg
         save_performance_benchmark(config, 'basic_query', time_taken)
