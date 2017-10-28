@@ -378,7 +378,7 @@ def basic_queries(config):
             qr = qr.columns(c.phone.word.label.column_name('word'),
                             c.phone.word.transcription.column_name('transcription'))
             res = qr.all()
-            if total_count == 0:
+            if len(res) == 0:
                 print('An example for {} was not found.'.format(r['label']))
             else:
                 res = res[0]
