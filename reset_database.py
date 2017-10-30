@@ -12,7 +12,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     corpus_name = args.corpus_name
-    reset = args.reset
     directories = [x for x in os.listdir(base_dir) if os.path.isdir(x) and x != 'Common']
 
     if args.corpus_name not in directories:
