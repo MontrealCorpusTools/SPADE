@@ -311,6 +311,8 @@ def formant_export(config, corpus_name, dialect_code, speakers):  # Gets informa
             if c.hierarchy.has_type_property('word', v.lower()):
                 q = q.columns(getattr(c.phone.word, v.lower()).column_name(v))
         for sp, _ in c.hierarchy.speaker_properties:
+            if sp == 'name':
+                continue
             q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
         q.to_csv(csv_path)
         end = time.time()
@@ -346,6 +348,8 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
                         c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
                         c.phone.slope.column_name('slope'), c.phone.spread.column_name('spread'))
         for sp, _ in c.hierarchy.speaker_properties:
+            if sp == 'name':
+                continue
             q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
         qr.to_csv(csv_path)
         end = time.time()
