@@ -278,7 +278,7 @@ def formant_acoustic_analysis(config, vowels):
         save_performance_benchmark(config, 'formant_acoustic_analysis', time_taken)
 
 
-def formant_export(config, corpus_name, dialect_code, speakers):  # Gets information into a csv
+def formant_export(config, corpus_name, dialect_code, speakers, vowels):  # Gets information into a csv
 
     csv_path = os.path.join(base_dir, corpus_name, '{}_formants.csv'.format(corpus_name))
     # Unisyn columns
@@ -293,6 +293,7 @@ def formant_export(config, corpus_name, dialect_code, speakers):  # Gets informa
         q = c.query_graph(c.phone)
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
+        q = q.filter(c.phone.label.in_(vowels))
 
         q = q.columns(c.phone.speaker.name.column_name('speaker'), c.phone.discourse.name.column_name('discourse'),
                       c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
