@@ -72,7 +72,7 @@ def load_bnc_code(code):
                 if w['c5'] == 'PUN':
                     continue
                 w = w.get_text().upper().strip()
-                if w.startswith("'"):
+                if new_words and (w.startswith("'") or w == "N'T"):
                     new_words[-1] = (new_words[-1][0] +w, u['who'])
                 else:
                     new_words.append((w, u['who']))
