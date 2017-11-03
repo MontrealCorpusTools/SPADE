@@ -121,7 +121,7 @@ for f in wavs:
             speakers.update(bnc_cache[bnc_code][0])
         _, recording_data, transcripts = bnc_cache[bnc_code]
         transcript = transcripts[r_code]
-        tg = TextGrid()
+        tg = TextGrid(strict=False)
         tg.read(tg_path)
         word_tier = tg.getFirst('word')
         #print([x.mark for x in word_tier])
@@ -199,7 +199,7 @@ for f in wavs:
                 mid_point = p.minTime + (p.maxTime - p.minTime) / 2
                 if mid_point > w.minTime and mid_point < w.maxTime:
                     speaker_phone_tiers[speaker].append(p)
-    new_tg = TextGrid()
+    new_tg = TextGrid(strict=False)
     if not speaker_word_tiers:
         print('could not find tiers for {}'.format(out_path))
         continue
