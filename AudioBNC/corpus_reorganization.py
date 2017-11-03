@@ -212,6 +212,8 @@ for f in wavs:
             #print(w)
             w_tier.addInterval(w)
         for p in sorted(speaker_phone_tiers[s]):
+            if len(p_tier) and p_tier[-1].mark == 'sil' and p_tier[-1].maxTime > w.minTime:
+                p_tier[-1].maxTime = w.minTime
             #print(p)
             try:
                 p_tier.addInterval(p)
