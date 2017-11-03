@@ -1,6 +1,6 @@
 import os
 import sys
-
+import csv
 sys.setrecursionlimit(100000000)
 import wave
 import xml.etree.ElementTree as ET
@@ -10,21 +10,24 @@ from alignment.sequence import Sequence
 from alignment.vocabulary import Vocabulary
 from alignment.sequencealigner import SimpleScoring, GlobalSequenceAligner, StrictGlobalSequenceAligner
 
-textgrid_dir = r'/media/share/corpora/AudioBNC/textgrids'
+base_dir = '/media/share/corpora/AudioBNC'
+
+textgrid_dir = os.path.join(base_dir, 'textgrids')
 
 textgrids = os.listdir(textgrid_dir)
 
-wav_dir = r'/media/share/corpora/AudioBNC/wavs'
+wav_dir = os.path.join(base_dir, 'wavs')
 wavs = os.listdir(wav_dir)
 
 bnc_xml_dir = r'/media/share/corpora/BNC/Texts'
 
+speaker_header = ['id', 'sex', 'agegroup', 'dialect_group', 'age', 'dialect']
 
 def load_bnc_code(code):
     path = os.path.join(bnc_xml_dir, code[0], code[:2], code + '.xml')
     with open(path, 'r', encoding='utf8') as f:
         soup = BeautifulSoup(f, 'html.parser')
-    recording_data = {x['n']: {h: x[h] for h in ['date', 'dur', 'time', 'type', 'xml:id']} for x in
+    recording_data = {x['n']: {h: x[h] for h in ['date', 'dur', 'time', 'type', 'xml:id'] if h in x} for x in
                       soup.find_all('recording')}
     # print(recording_data)
     # print(soup)
@@ -75,6 +78,7 @@ def load_bnc_code(code):
     # for k, v in transcripts.items():
     #    print(k)
     #    print(v)
+
     return speakers, recording_data, transcripts
 
 
@@ -97,6 +101,7 @@ for f in wavs:
     speaker_word_tiers = {}
     speaker_phone_tiers = {}
     out_path = path.replace('.wav', '.TextGrid')
+    speakers = {}
     for tg_path in relevant_tgs:
         print(tg_path)
         r_code, bnc_code = tg_path.split('_')[-3:-1]
@@ -104,7 +109,8 @@ for f in wavs:
             continue
         if bnc_code not in bnc_cache:
             bnc_cache[bnc_code] = load_bnc_code(bnc_code)
-        speakers, recording_data, transcripts = bnc_cache[bnc_code]
+            speakers.update(bnc_cache[bnc_code][0])
+        _, recording_data, transcripts = bnc_cache[bnc_code]
         transcript = transcripts[r_code]
         tg = TextGrid()
         tg.read(tg_path)
@@ -204,3 +210,4 @@ for f in wavs:
     new_tg.write(out_path)
 
     # print(tg)
+
