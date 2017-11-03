@@ -218,7 +218,7 @@ for f in wavs:
         for p in sorted(speaker_phone_tiers[s]):
             if len(p_tier) and p_tier[-1].mark == 'sil' and p_tier[-1].maxTime > p.minTime:
                 p_tier[-1].maxTime = p.minTime
-            if len(p_tier) and p.mark == 'sp' and p_tier[-1].maxTime > p.minTime:
+            if len(p_tier) and p.mark == 'sil' and p_tier[-1].maxTime > p.minTime:
                 p.minTime = p_tier[-1].maxTime
             #print(p)
             if p.maxTime > duration:
