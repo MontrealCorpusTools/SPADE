@@ -32,28 +32,31 @@ def load_bnc_code(code):
     # print(recording_data)
     # print(soup)
     partcipant_description = soup.find('particdesc')
-    n_participants = partcipant_description['n']
-    people = partcipant_description.find_all('person')
-    speakers = {}
-    for p in people:
-        # print(p)
-        d = {}
-        d['sex'] = p['sex']
-        d['agegroup'] = p['agegroup']
-        d['dialect_group'] = p['dialect']
-        try:
-            d['name'] = p.find('persname').get_text()
-        except AttributeError:
-            d['name'] = None
-        try:
-            d['age'] = p.find('age').get_text()
-        except AttributeError:
-            d['age'] = None
-        try:
-            d['dialect'] = p.find('dialect').get_text()
-        except AttributeError:
-            d['dialect'] = None
-        speakers[p['xml:id']] = d
+    if partcipant_description is None:
+        speakers = {}
+    else:
+        n_participants = partcipant_description['n']
+        people = partcipant_description.find_all('person')
+        speakers = {}
+        for p in people:
+            # print(p)
+            d = {}
+            d['sex'] = p['sex']
+            d['agegroup'] = p['agegroup']
+            d['dialect_group'] = p['dialect']
+            try:
+                d['name'] = p.find('persname').get_text()
+            except AttributeError:
+                d['name'] = None
+            try:
+                d['age'] = p.find('age').get_text()
+            except AttributeError:
+                d['age'] = None
+            try:
+                d['dialect'] = p.find('dialect').get_text()
+            except AttributeError:
+                d['dialect'] = None
+            speakers[p['xml:id']] = d
     # print(partcipant_description)
     # print(speakers)
     # print(soup)
@@ -105,6 +108,7 @@ for f in wavs:
     speaker_phone_tiers = {}
     out_path = path.replace('.wav', '.TextGrid')
     if os.path.exists(out_path):
+        print ('{} already exists, skipping.'.format(out_path))
         continue
     speakers = {}
     for tg_path in relevant_tgs:
