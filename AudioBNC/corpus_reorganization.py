@@ -60,7 +60,10 @@ def load_bnc_code(code):
     transcripts = {}
     for r in recording_data.keys():
         d = soup.find('div', n=r)
-        utts = d.find_all('u')
+        if d is not None:
+            utts = d.find_all('u')
+        else:
+            utts = soup.find_all('u')
         data = []
         for u in utts:
             words = u.find_all('w')
