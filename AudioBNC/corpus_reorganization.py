@@ -207,9 +207,9 @@ for f in wavs:
         w_tier = IntervalTier('{} - word'.format(s), 0, duration)
         p_tier = IntervalTier('{} - phone'.format(s), 0, duration)
         for w in sorted(speaker_word_tiers[s]):
-            if len(w_tier) and w_tier[-1].mark == 'sp' and w_tier[-1].maxTime > w.minTime:
+            if len(w_tier) and w_tier[-1].mark in ['sp','{OOV}'] and w_tier[-1].maxTime > w.minTime:
                 w_tier[-1].maxTime = w.minTime
-            if len(w_tier) and w.mark == 'sp' and w_tier[-1].maxTime > w.minTime:
+            if len(w_tier) and w.mark in ['sp','{OOV}'] and w_tier[-1].maxTime > w.minTime:
                 w.minTime = w_tier[-1].maxTime
             #print(w)
             if w.maxTime > duration:
