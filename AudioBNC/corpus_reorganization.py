@@ -209,13 +209,17 @@ for f in wavs:
         for w in sorted(speaker_word_tiers[s]):
             if len(w_tier) and w_tier[-1].mark == 'sp' and w_tier[-1].maxTime > w.minTime:
                 w_tier[-1].maxTime = w.minTime
+            if len(w_tier) and w.mark == 'sp' and w_tier[-1].maxTime > w.minTime:
+                w.minTime = w_tier[-1].maxTime
             #print(w)
             if w.maxTime > duration:
                 w.maxTime = duration
             w_tier.addInterval(w)
         for p in sorted(speaker_phone_tiers[s]):
-            if len(p_tier) and p_tier[-1].mark == 'sil' and p_tier[-1].maxTime > w.minTime:
-                p_tier[-1].maxTime = w.minTime
+            if len(p_tier) and p_tier[-1].mark == 'sil' and p_tier[-1].maxTime > p.minTime:
+                p_tier[-1].maxTime = p.minTime
+            if len(p_tier) and p.mark == 'sp' and p_tier[-1].maxTime > p.minTime:
+                p.minTime = p_tier[-1].maxTime
             #print(p)
             if p.maxTime > duration:
                 p.maxTime = duration
