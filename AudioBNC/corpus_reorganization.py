@@ -104,6 +104,8 @@ for f in wavs:
     speaker_word_tiers = {}
     speaker_phone_tiers = {}
     out_path = path.replace('.wav', '.TextGrid')
+    if os.path.exists(out_path):
+        continue
     speakers = {}
     for tg_path in relevant_tgs:
         print(tg_path)
@@ -194,6 +196,8 @@ for f in wavs:
                 if mid_point > w.minTime and mid_point < w.maxTime:
                     speaker_phone_tiers[speaker].append(p)
     new_tg = TextGrid()
+    if not speaker_word_tiers:
+        print('could not find tiers for {}'.format(out_path))
     for s in sorted(speaker_word_tiers.keys()):
         w_tier = IntervalTier('{} - word'.format(s), 0, duration)
         p_tier = IntervalTier('{} - phone'.format(s), 0, duration)
@@ -210,6 +214,7 @@ for f in wavs:
                 pass
         new_tg.append(w_tier)
         new_tg.append(p_tier)
+
     new_tg.write(out_path)
 
     # print(tg)
