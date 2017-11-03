@@ -10,14 +10,14 @@ from alignment.sequence import Sequence
 from alignment.vocabulary import Vocabulary
 from alignment.sequencealigner import SimpleScoring, GlobalSequenceAligner, StrictGlobalSequenceAligner
 
-textgrid_dir = r'E:\Data\AudioBNC_test\textgrids'
+textgrid_dir = r'/media/share/corpora/AudioBNC/textgrids'
 
 textgrids = os.listdir(textgrid_dir)
 
-wav_dir = r'E:\Data\AudioBNC_test\wavs'
+wav_dir = r'/media/share/corpora/AudioBNC/wavs'
 wavs = os.listdir(wav_dir)
 
-bnc_xml_dir = r'E:\Data\BNC\Texts'
+bnc_xml_dir = r'/media/share/corpora/BNC/Texts'
 
 
 def load_bnc_code(code):
