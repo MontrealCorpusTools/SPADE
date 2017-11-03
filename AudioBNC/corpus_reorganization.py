@@ -202,6 +202,7 @@ for f in wavs:
     new_tg = TextGrid()
     if not speaker_word_tiers:
         print('could not find tiers for {}'.format(out_path))
+        continue
     for s in sorted(speaker_word_tiers.keys()):
         w_tier = IntervalTier('{} - word'.format(s), 0, duration)
         p_tier = IntervalTier('{} - phone'.format(s), 0, duration)
