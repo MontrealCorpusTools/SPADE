@@ -108,6 +108,7 @@ for f in wavs:
     relevant_tgs = [os.path.join(textgrid_dir, x) for x in textgrids if x.startswith(name)]
     for tg_path in relevant_tgs:
         print(tg_path)
+        r_code, bnc_code = tg_path.split('_')[-3:-1]
         if bnc_code not in bnc_cache:
             bnc_cache[bnc_code] = load_bnc_code(bnc_code)
             speakers.update(bnc_cache[bnc_code][0])
