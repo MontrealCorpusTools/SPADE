@@ -95,6 +95,8 @@ def calc_duration(path):
         duration = frames / float(rate)
     return duration
 
+bnc_cache = {}
+speakers = {}
 for f in wavs:
     if not f.endswith('.wav'):
         continue
@@ -106,6 +108,9 @@ for f in wavs:
     relevant_tgs = [os.path.join(textgrid_dir, x) for x in textgrids if x.startswith(name)]
     for tg_path in relevant_tgs:
         print(tg_path)
+        if bnc_code not in bnc_cache:
+            bnc_cache[bnc_code] = load_bnc_code(bnc_code)
+            speakers.update(bnc_cache[bnc_code][0])
         _, recording_data, transcripts = bnc_cache[bnc_code]
         transcript = transcripts[r_code]
         tg = TextGrid(strict=False)
@@ -123,14 +128,12 @@ for f in wavs:
     duration = calc_duration(path)
     name, _ = os.path.splitext(f)
     relevant_tgs = [os.path.join(textgrid_dir, x) for x in textgrids if x.startswith(name)]
-    bnc_cache = {}
     speaker_word_tiers = {}
     speaker_phone_tiers = {}
     out_path = path.replace('.wav', '.TextGrid')
     if os.path.exists(out_path):
         print ('{} already exists, skipping.'.format(out_path))
         continue
-    speakers = {}
     for tg_path in relevant_tgs:
         print(tg_path)
         r_code, bnc_code = tg_path.split('_')[-3:-1]
