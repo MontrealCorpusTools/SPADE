@@ -105,10 +105,10 @@ for f in wavs:
     duration = calc_duration(path)
     name, _ = os.path.splitext(f)
     print(f)
-    print(duration)
+    #print(duration)
     relevant_tgs = sorted([os.path.join(textgrid_dir, x) for x in textgrids if x.startswith(name)])
     for tg_path in relevant_tgs:
-        print(tg_path)
+        #print(tg_path)
         r_code, bnc_code = tg_path.split('_')[-3:-1]
         if bnc_code not in bnc_cache:
             bnc_cache[bnc_code] = load_bnc_code(bnc_code)
@@ -116,8 +116,11 @@ for f in wavs:
         _, recording_data, transcripts = bnc_cache[bnc_code]
         transcript = transcripts[r_code]
         tg = TextGrid(strict=False)
-        tg.read(tg_path)
-        print(tg.minTime, tg.maxTime, tg.maxTime - tg.minTime)
+        try:
+            tg.read(tg_path)
+        except:
+            print('Error reading {}'.format(tg_path))
+        #print(tg.minTime, tg.maxTime, tg.maxTime - tg.minTime)
         analysis.append([f, duration, tg.minTime, tg.maxTime, tg.maxTime - tg.minTime])
         word_tier = tg.getFirst('word')
         #print([x.mark for x in word_tier])
