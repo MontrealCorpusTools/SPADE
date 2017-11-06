@@ -95,6 +95,26 @@ def calc_duration(path):
         duration = frames / float(rate)
     return duration
 
+for f in wavs:
+    if not f.endswith('.wav'):
+        continue
+    path = os.path.join(wav_dir, f)
+    duration = calc_duration(path)
+    name, _ = os.path.splitext(f)
+    print(f)
+    print(duration)
+    relevant_tgs = [os.path.join(textgrid_dir, x) for x in textgrids if x.startswith(name)]
+    for tg_path in relevant_tgs:
+        print(tg_path)
+        _, recording_data, transcripts = bnc_cache[bnc_code]
+        transcript = transcripts[r_code]
+        tg = TextGrid(strict=False)
+        tg.read(tg_path)
+        print(tg.minTime, tg.maxTime, tg.maxTime - tg.minTime)
+        word_tier = tg.getFirst('word')
+        #print([x.mark for x in word_tier])
+        phone_tier = tg.getFirst('phone')
+    error
 
 for f in wavs:
     if not f.endswith('.wav'):
