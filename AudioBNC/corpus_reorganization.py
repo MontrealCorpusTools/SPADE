@@ -105,7 +105,7 @@ for f in wavs:
     name, _ = os.path.splitext(f)
     print(f)
     print(duration)
-    relevant_tgs = [os.path.join(textgrid_dir, x) for x in textgrids if x.startswith(name)]
+    relevant_tgs = sorted([os.path.join(textgrid_dir, x) for x in textgrids if x.startswith(name)])
     for tg_path in relevant_tgs:
         print(tg_path)
         r_code, bnc_code = tg_path.split('_')[-3:-1]
