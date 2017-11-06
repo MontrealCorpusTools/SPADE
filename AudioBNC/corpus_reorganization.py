@@ -97,6 +97,7 @@ def calc_duration(path):
 
 bnc_cache = {}
 speakers = {}
+analysis = []
 for f in wavs:
     if not f.endswith('.wav'):
         continue
@@ -117,10 +118,18 @@ for f in wavs:
         tg = TextGrid(strict=False)
         tg.read(tg_path)
         print(tg.minTime, tg.maxTime, tg.maxTime - tg.minTime)
+        analysis.append([f, duration, tg.minTime, tg.maxTime, tg.maxTime - tg.minTime])
         word_tier = tg.getFirst('word')
         #print([x.mark for x in word_tier])
         phone_tier = tg.getFirst('phone')
-    error
+
+with open(os.path.join(base_dir, 'analysis.txt'), 'w') as f:
+    writer = csv.writer(f)
+    writer.writerow(['wav', 'duration', 'tg_min', 'tg_max', 'tg_dur'])
+    for line in analysis:
+        writer.writerow(line)
+
+error
 
 for f in wavs:
     if not f.endswith('.wav'):
