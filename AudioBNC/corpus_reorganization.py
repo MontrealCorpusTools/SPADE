@@ -121,14 +121,14 @@ for f in wavs:
         except:
             print('Error reading {}'.format(tg_path))
         #print(tg.minTime, tg.maxTime, tg.maxTime - tg.minTime)
-        analysis.append([f, duration, tg.minTime, tg.maxTime, tg.maxTime - tg.minTime])
+        analysis.append([f, duration, tg.minTime, tg.maxTime])
         word_tier = tg.getFirst('word')
         #print([x.mark for x in word_tier])
         phone_tier = tg.getFirst('phone')
 
 with open(os.path.join(base_dir, 'analysis.txt'), 'w') as f:
     writer = csv.writer(f)
-    writer.writerow(['wav', 'duration', 'tg_min', 'tg_max', 'tg_dur'])
+    writer.writerow(['wav', 'duration', 'tg_min', 'tg_max'])
     for line in analysis:
         writer.writerow(line)
 
