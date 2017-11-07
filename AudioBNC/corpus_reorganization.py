@@ -113,9 +113,10 @@ for f in wavs:
             t.read(relevant_tgs[i])
         except:
             print('Error reading {}'.format(relevant_tgs[i]))
+            tgs[i] = None
             continue
-    mins = [x.minTime for x in tgs]
-    maxs = [x.maxTime for x in tgs]
+    mins = [x.minTime for x in tgs if x]
+    maxs = [x.maxTime for x in tgs if x]
     for i, m in enumerate(mins):
         if not m:
             w = tgs[i].getFirst('word')
