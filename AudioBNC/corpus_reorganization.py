@@ -128,7 +128,7 @@ for f in wavs:
 
 with open(os.path.join(base_dir, 'analysis.txt'), 'w') as f:
     writer = csv.writer(f)
-    writer.writerow(['wav', 'duration', 'tg_min', 'tg_max'])
+    writer.writerow(['wav', 'duration', 'tg', 'tg_min', 'tg_max'])
     for line in analysis:
         writer.writerow(line)
 
