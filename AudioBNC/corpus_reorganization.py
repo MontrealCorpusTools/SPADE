@@ -104,10 +104,47 @@ for f in wavs:
     path = os.path.join(wav_dir, f)
     duration = calc_duration(path)
     name, _ = os.path.splitext(f)
-    continue
     print(f)
     #print(duration)
     relevant_tgs = sorted([os.path.join(textgrid_dir, x) for x in textgrids if x.startswith(name)])
+    try:
+        tgs = [TextGrid().read(x) for x in relevant_tgs]
+    except:
+        continue
+    mins = [x.minTime for x in tgs]
+    maxs = [x.maxTime for x in tgs]
+    for i, m in mins:
+        if not m:
+            w = tgs[i].getFirst('word')
+            p = tgs[i].getFirst('phone')
+            if w.minTime is not None:
+                mins[i] = w.minTime
+            elif p.minTime is not None:
+                mins[i] = p.minTime
+        if not maxs[i]:
+            w = tgs[i].getFirst('word')
+            p = tgs[i].getFirst('phone')
+            if w.minTime is not None:
+                maxs[i] = w.minTime
+            elif p.minTime is not None:
+                maxs[i] = p.minTime
+    error = False
+    if len(set(mins)) != len(mins):
+        error = True
+        print('Duplicate mins!')
+    if len(set(maxs)) != len(maxs):
+        error = True
+        print('Duplicate maxs!')
+    intervals = zip(mins, maxs)
+    for i, iterval in enumerate(intervals):
+        if i != len(mins):
+            if interval[1] > intervals[i+1][0]:
+                error = True
+                print('overlapping intervals!')
+    if error:
+        print(intervals)
+        print(relevant_tgs)
+    continue
     for tg_path in relevant_tgs:
         #print(tg_path)
         r_code, bnc_code = tg_path.split('_')[-3:-1]
@@ -133,7 +170,7 @@ with open(os.path.join(base_dir, 'analysis.txt'), 'w') as f:
     for line in analysis:
         writer.writerow(line)
 
-#error
+error
 
 for f in wavs:
     if not f.endswith('.wav'):
