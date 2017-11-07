@@ -104,6 +104,7 @@ for f in wavs:
     path = os.path.join(wav_dir, f)
     duration = calc_duration(path)
     name, _ = os.path.splitext(f)
+    continue
     print(f)
     #print(duration)
     relevant_tgs = sorted([os.path.join(textgrid_dir, x) for x in textgrids if x.startswith(name)])
@@ -132,7 +133,7 @@ with open(os.path.join(base_dir, 'analysis.txt'), 'w') as f:
     for line in analysis:
         writer.writerow(line)
 
-error
+#error
 
 for f in wavs:
     if not f.endswith('.wav'):
