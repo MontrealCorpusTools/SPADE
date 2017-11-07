@@ -204,6 +204,8 @@ for f in wavs:
         r_code, bnc_code = tg_path.split('_')[-3:-1]
         if bnc_code == 'KDP' and r_code == '000419':
             continue
+        if bnc_code == 'KPM' and r_code == '075702':
+            continue
         if bnc_code not in bnc_cache:
             bnc_cache[bnc_code] = load_bnc_code(bnc_code)
             speakers.update(bnc_cache[bnc_code][0])
@@ -291,34 +293,38 @@ for f in wavs:
     if not speaker_word_tiers:
         print('could not find tiers for {}'.format(out_path))
         continue
-    for s in sorted(speaker_word_tiers.keys()):
-        w_tier = IntervalTier('{} - word'.format(s), 0, duration)
-        p_tier = IntervalTier('{} - phone'.format(s), 0, duration)
-        for w in sorted(speaker_word_tiers[s]):
-            if len(w_tier) and w_tier[-1].mark in ['sp','{OOV}'] and w_tier[-1].maxTime > w.minTime:
-                w_tier[-1].maxTime = w.minTime
-            if len(w_tier) and w.mark in ['sp','{OOV}'] and w_tier[-1].maxTime > w.minTime:
-                w.minTime = w_tier[-1].maxTime
-            #print(w)
-            if w.maxTime > duration:
-                w.maxTime = duration
-            w_tier.addInterval(w)
-        for p in sorted(speaker_phone_tiers[s]):
-            if len(p_tier) and p_tier[-1].mark == 'sil' and p_tier[-1].maxTime > p.minTime:
-                p_tier[-1].maxTime = p.minTime
-            if len(p_tier) and p.mark == 'sil' and p_tier[-1].maxTime > p.minTime:
-                p.minTime = p_tier[-1].maxTime
-            #print(p)
-            if p.maxTime > duration:
-                p.maxTime = duration
-            try:
-                p_tier.addInterval(p)
-            except ValueError:
-                pass
-        new_tg.append(w_tier)
-        new_tg.append(p_tier)
+    try:
+        for s in sorted(speaker_word_tiers.keys()):
+            w_tier = IntervalTier('{} - word'.format(s), 0, duration)
+            p_tier = IntervalTier('{} - phone'.format(s), 0, duration)
+            for w in sorted(speaker_word_tiers[s]):
+                if len(w_tier) and w_tier[-1].mark in ['sp','{OOV}'] and w_tier[-1].maxTime > w.minTime:
+                    w_tier[-1].maxTime = w.minTime
+                if len(w_tier) and w.mark in ['sp','{OOV}'] and w_tier[-1].maxTime > w.minTime:
+                    w.minTime = w_tier[-1].maxTime
+                #print(w)
+                if w.maxTime > duration:
+                    w.maxTime = duration
+                w_tier.addInterval(w)
+            for p in sorted(speaker_phone_tiers[s]):
+                if len(p_tier) and p_tier[-1].mark == 'sil' and p_tier[-1].maxTime > p.minTime:
+                    p_tier[-1].maxTime = p.minTime
+                if len(p_tier) and p.mark == 'sil' and p_tier[-1].maxTime > p.minTime:
+                    p.minTime = p_tier[-1].maxTime
+                #print(p)
+                if p.maxTime > duration:
+                    p.maxTime = duration
+                try:
+                    p_tier.addInterval(p)
+                except ValueError:
+                    pass
+            new_tg.append(w_tier)
+            new_tg.append(p_tier)
 
-    new_tg.write(out_path)
+        new_tg.write(out_path)
+    except Exception as e:
+        print(out_path)
+        print(e)
 
     # print(tg)
 
