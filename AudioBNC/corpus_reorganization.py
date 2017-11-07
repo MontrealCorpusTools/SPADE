@@ -98,6 +98,10 @@ def calc_duration(path):
 bnc_cache = {}
 speakers = {}
 analysis = []
+read_errors = 0
+dup_min_errors = 0
+dup_max_errors = 0
+overlap_errors = 0
 for f in wavs:
     if not f.endswith('.wav'):
         continue
@@ -113,6 +117,7 @@ for f in wavs:
             t.read(relevant_tgs[i])
         except:
             print('Error reading {}'.format(relevant_tgs[i]))
+            read_errors += 1
             tgs[i] = None
             continue
     mins = [x.minTime for x in tgs if x]
@@ -136,15 +141,18 @@ for f in wavs:
     if len(set(mins)) != len(mins):
         error = True
         print('Duplicate mins!')
+        dup_min_errors += 1
     if len(set(maxs)) != len(maxs):
         error = True
         print('Duplicate maxs!')
+        dup_max_errors += 1
     intervals = list(zip(mins, maxs))
     for i, interval in enumerate(intervals):
         if i != len(intervals) - 1:
             if interval[1] > intervals[i+1][0]:
                 error = True
                 print('overlapping intervals!')
+                overlap_errors += 1
     if error:
         print(intervals)
         print(relevant_tgs)
@@ -168,6 +176,8 @@ for f in wavs:
         #print([x.mark for x in word_tier])
         phone_tier = tg.getFirst('phone')
 
+print ('There were {} read errors, {} duplicated mins, {} duplicated maxs, and {} overlaps.'.format(read_errors, dup_min_errors, dup_max_errors, overlap_errors))
+error
 with open(os.path.join(base_dir, 'analysis.txt'), 'w') as f:
     writer = csv.writer(f)
     writer.writerow(['wav', 'duration', 'tg', 'tg_min', 'tg_max'])
