@@ -139,7 +139,7 @@ for f in wavs:
         error = True
         print('Duplicate maxs!')
     intervals = zip(mins, maxs)
-    for i, iterval in enumerate(intervals):
+    for i, interval in enumerate(intervals):
         if i != len(mins):
             if interval[1] > intervals[i+1][0]:
                 error = True
