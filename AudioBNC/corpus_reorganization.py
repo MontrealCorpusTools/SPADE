@@ -116,7 +116,7 @@ for f in wavs:
             continue
     mins = [x.minTime for x in tgs]
     maxs = [x.maxTime for x in tgs]
-    for i, m in mins:
+    for i, m in enumerate(mins):
         if not m:
             w = tgs[i].getFirst('word')
             p = tgs[i].getFirst('phone')
