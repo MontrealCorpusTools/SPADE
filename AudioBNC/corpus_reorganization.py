@@ -107,10 +107,13 @@ for f in wavs:
     print(f)
     #print(duration)
     relevant_tgs = sorted([os.path.join(textgrid_dir, x) for x in textgrids if x.startswith(name)])
-    try:
-        tgs = [TextGrid().read(x) for x in relevant_tgs]
-    except:
-        continue
+    tgs = [TextGrid() for x in relevant_tgs]
+    for i, t in enumerate(tgs):
+        try:
+            t.read(relevant_tgs[i])
+        except:
+            print('Error reading {}'.format(relevant_tgs[i]))
+            continue
     mins = [x.minTime for x in tgs]
     maxs = [x.maxTime for x in tgs]
     for i, m in mins:
