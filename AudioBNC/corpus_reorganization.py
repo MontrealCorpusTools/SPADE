@@ -140,7 +140,7 @@ for f in wavs:
         print('Duplicate maxs!')
     intervals = list(zip(mins, maxs))
     for i, interval in enumerate(intervals):
-        if i != len(mins):
+        if i != len(intervals) - 1:
             if interval[1] > intervals[i+1][0]:
                 error = True
                 print('overlapping intervals!')
