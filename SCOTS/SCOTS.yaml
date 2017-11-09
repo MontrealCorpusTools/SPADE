@@ -1,0 +1,11 @@
+corpus_directory: "/media/share/corpora/SCOTS/to_import"
+input_format: "MFA"
+dialect_code: "edi"
+unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
+speaker_enrichment_file: "/media/share/corpora/SCOTS/speaker_data.csv"
+speakers: []
+vowel_inventory: []
+stressed_vowels: []
+extra_syllabic_segments: []
+sibilant_segments: []
+pauses: '^<SIL>$'
