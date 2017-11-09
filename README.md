@@ -31,10 +31,12 @@ Follow instructions here: http://polyglotdb.readthedocs.io/en/latest/getting_sta
 Running analysis scripts
 ========================
 
+All meta information about a corpus is stored in YAML files.  These YAML files specify where the corpus is located on your computer, where any enrichment information (from unisyn, or speaker CSV files), and necessary sets of segments for particular analyses (i.e., what are vowels, what are any other syllabic segments, what are the sibilant segments to analyze).
+
 Using Raleigh as example
 
 1. Clone this repo (`git clone https://github.com/MontrealCorpusTools/SPADE.git`) or download (https://github.com/MontrealCorpusTools/SPADE/archive/master.zip)
-2. Modify scripts to specify correct directories for corpus (see, e.g., Raleigh scripts), and for UNISYN files (see https://github.com/mlml/unisyn_spade/tree/master/enrichment_files
+2. Modify YAML config files to specify correct directories for corpus (see, e.g., Raleigh.yaml in the Raleigh directory), and for `unisyn_spade` repo (see https://github.com/mlml/unisyn_spade)
    for the csv files)
 3. In temerminal, `cd /path/to/SPADE`
 4. Run formant analysis script (`python formant.py Raleigh`)
