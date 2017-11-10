@@ -182,7 +182,7 @@ def basic_enrichment(config, syllabics, pauses):
             save_performance_benchmark(config, 'num_syllables_encoding', time_taken)
 
         print('enriching syllables')
-        if g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_token_property('syllable',
+        if syllabics and g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_token_property('syllable',
                                                                                                          'stress'):
             begin = time.time()
             g.encode_stress_from_word_property('stresspattern')
@@ -340,12 +340,14 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
                         c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
                         c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
                         c.phone.duration.column_name('duration'),
+                       #c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
                         c.phone.following.label.column_name('following_phone'),
                         c.phone.previous.label.column_name('previous_phone'),
                         c.phone.syllable.word.label.column_name('word'),
                         c.phone.syllable.stress.column_name('syllable_stress'),
                         c.phone.syllable.phone.filter_by_subset('onset').label.column_name('onset'),
                         c.phone.syllable.phone.filter_by_subset('nucleus').label.column_name('nucleus'),
+                        c.phone.syllable.phone.filter_by_subset('coda').label.column_name('coda'),
                         c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
                         c.phone.slope.column_name('slope'), c.phone.spread.column_name('spread'))
         for sp, _ in c.hierarchy.speaker_properties:
