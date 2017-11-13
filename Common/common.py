@@ -330,7 +330,7 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
         print("Beginning sibilant export")
         beg = time.time()
         q = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
-        q = q.filter(c.phone.begin == c.phone.syllable.word.begin)
+        #q = q.filter(c.phone.begin == c.phone.syllable.word.begin)
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
         # qr = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
