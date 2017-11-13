@@ -211,8 +211,13 @@ for f in wavs:
             speakers.update(bnc_cache[bnc_code][0])
         _, recording_data, transcripts = bnc_cache[bnc_code]
         transcript = transcripts[r_code]
-        tg = TextGrid(strict=False)
-        tg.read(tg_path)
+        try:
+            tg = TextGrid(strict=False)
+            tg.read(tg_path)
+        except Exception as e:
+            print(out_path)
+            print(e)
+            continue
         word_tier = tg.getFirst('word')
         #print([x.mark for x in word_tier])
         phone_tier = tg.getFirst('phone')

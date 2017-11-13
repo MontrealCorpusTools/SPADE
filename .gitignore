@@ -109,3 +109,5 @@ ENV/
 SPADE-analysis/\.RData
 
 SPADE-analysis/\.Rhistory
+
+ProdCat/
