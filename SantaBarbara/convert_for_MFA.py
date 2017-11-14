@@ -210,21 +210,26 @@ for p in parts:
     speaker_info.update(s_info)
 
 
-for root, directories, files in os.walk(data_dir):
+for p in parts:
+    part_dir = os.path.join(data_dir, p)
+    if not os.path.isdir(part_dir):
+        continue
+    speech_dir = os.path.join(part_dir, 'speech')
+    files = os.listdir(speech_dir)
     for trn in sorted(files):
         if not trn.endswith('.trn'):
             continue
         print(trn)
         tg_path = os.path.join(output_dir, trn.replace('.trn', '.TextGrid'))
-        wav_path = os.path.join(root, trn.replace('.trn', '.wav'))
-        out_wav_path = wav_path.replace(root, output_dir)
+        wav_path = os.path.join(speech_dir, trn.replace('.trn', '.wav'))
+        out_wav_path = wav_path.replace(speech_dir, output_dir)
         duration = get_duration(wav_path)
         cur_speaker = None
         turns = []
         transcriptions = {}
         cur_turn = []
         speakers = set()
-        with open(os.path.join(root, trn), encoding='utf8') as f:
+        with open(os.path.join(speech_dir, trn), encoding='utf8') as f:
             for line in f:
                 line = line.strip()
                 line = line.split()
