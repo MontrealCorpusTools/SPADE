@@ -180,7 +180,7 @@ def find_speaker(speaker, dialog):
         return speaker
     return output_speaker
 
-parts = os.listdir(data_dir)
+parts = ['Part1', 'Part2', 'Part3', 'Part4']
 
 speaker_mapping = defaultdict(list)
 speaker_info = {}
