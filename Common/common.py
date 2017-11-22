@@ -3,7 +3,7 @@ from datetime import datetime
 import os
 import sys
 
-sys.path.insert(0, '/mnt/d/Dev/GitHub/PolyglotDB')
+sys.path.insert(0, '/mnt/e/Dev/Polyglot/PolyglotDB')
 import re
 import yaml
 import csv
@@ -256,7 +256,7 @@ def sibilant_acoustic_analysis(config, sibilant_segments):
 
         # analyze all sibilants using the script found at script_path
         beg = time.time()
-        c.analyze_script('sibilant', sibilant_script_path)
+        c.analyze_script('sibilant', sibilant_script_path, duration_threshold=0.01)
         end = time.time()
         time_taken = time.time() - beg
         print('Sibilant analysis took: {}'.format(end - beg))
