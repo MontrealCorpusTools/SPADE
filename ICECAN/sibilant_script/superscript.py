@@ -66,10 +66,13 @@ def input_taker(df,locations):
 			wav_path = os.path.join(locations[corpus], outer_dir, filename + ".wav")
 
 		zoom_start, zoom_end = row["begin"], row["end"]
-		print(" ".join([str(x) for x in ["/Applications/Praat.app/Contents/MacOS/Praat","--run", "open_tg", 
-			tg_path, wav_path, zoom_start, zoom_end]]))
-		p = subprocess.Popen([str(x) for x in ["/Applications/Praat.app/Contents/MacOS/Praat","--run", "open_tg", 
-			tg_path, wav_path, zoom_start, zoom_end]], shell=True)
+		
+		path_to_open = os.path.join(os.path.split(os.path.abspath(__file__))[0],  "open_tg.praat")
+		# ./sendpraat praat "execute Users/Elias/SPADE/ICECAN/sibilant_script/open_tg.praat
+		command = ['./sendpraat', 'praat', '"execute', path_to_open, str(tg_path), str(wav_path), str(zoom_start), str(zoom_end)+ '"']
+		print(" ".join(command))
+		sys.exit()
+		p = subprocess.Popen(command, shell=True)
 
 		p.communicate()
 		# open textgrid with wav by subprocess calling praat script with arguments
