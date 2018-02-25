@@ -6,8 +6,9 @@ form Open a tgwav
 endform
 tg = Read from file: tg_path$
 wav = Read from file: wav_path$
-selectObject: tg, wav
+selectObject: wav
+plusObject: tg
 View & Edit
-editor: "checking"
+editor: tg
 	Zoom: start, end
 endeditor
