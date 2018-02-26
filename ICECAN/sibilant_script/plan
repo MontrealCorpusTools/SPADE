@@ -10,8 +10,8 @@ plan:
 - interactive script
 	in batches (to avoid opening 600 praat windows at once and crashing computer)
 	subprocess call to praat script
-	praat script opens corresponding file with path/filename and timing info
-		praat script adds a tier where annotation can happen
-	praat script opens textgrid and wav file, zooms in on time slice
+	praat script opens corresponding file with path/filename and timing info (done)
+		praat script adds a tier where annotation can happen (done)
+	praat script opens textgrid and wav file, zooms in on time slice (done)
 	praat script opens long term spectral slice window
 	praat script opens info window with COG, peak, slope, spread measures

@@ -3,10 +3,15 @@ import pandas as pd
 import re 
 import argparse
 import numpy as np
-import subprocess
+from subprocess import Popen, PIPE
 import sys 
+import shlex
+from pyraat import PraatAnalysisFunction
 
 np.random.seed(1234)
+
+PRAAT = "/Applications/Praat.app/Contents/MacOS/Praat"
+
 def get_sample(path):
 	sib_df = pd.read_csv(path)
 
@@ -29,24 +34,12 @@ def get_sample(path):
 
 	return tot_df, set(all_corpora)
 
-# def write_files(df, path_dict):
-# 	"""
-# 	Parameters
-# 	----------
-# 	df: pd dataframe
-# 		representative sample of original data
-# 	path_dict:
-# 		dict with corpus name as key and path to textgrids for that corpus as value
-# 	"""
-
-# 	desired_info = []
-# 	sub_df = df[]
-
 def input_taker(df,locations):
 	print("Interactive script for sibilant checks:")
 	enter = input("press enter to continue")
 	row_idx = 0
 	print(enter)
+
 	while enter.strip() is "":
 		# get a line from the df
 		row = df.iloc[row_idx]
@@ -67,14 +60,28 @@ def input_taker(df,locations):
 
 		zoom_start, zoom_end = row["begin"], row["end"]
 		
-		path_to_open = os.path.join(os.path.split(os.path.abspath(__file__))[0],  "open_tg.praat")
-		# ./sendpraat praat "execute Users/Elias/SPADE/ICECAN/sibilant_script/open_tg.praat
-		command = ['./sendpraat', 'praat', '"execute', path_to_open, str(tg_path), str(wav_path), str(zoom_start), str(zoom_end)+ '"']
-		print(" ".join(command))
-		sys.exit()
-		p = subprocess.Popen(command, shell=True)
+		path_to_open = os.path.join(os.path.split(os.path.abspath(__file__))[0],  "open_2.praat")
+		# quote_str = '"runScript: \\"{}\\", {} {} {} {}"'.format(path_to_open, tg_path, wav_path, zoom_start, zoom_end)
+		# script_args = [tg_path, wav_path, zoom_start, zoom_end]
+		quote_str = "execute /Users/esteng/SPADE/ICECAN/sibilant_script/open_2.praat {} {} {} {}".format(
+																tg_path, wav_path, zoom_start, zoom_end)
+		cmd = ["./sendpraat", "praat", quote_str]
+		print(quote_str)
+		with Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE) as p:
+			try:
+				text = str(p.stdout.read().decode('latin'))
+				err = str(p.stderr.read().decode('latin'))
+			except UnicodeDecodeError:
+				print(p.stdout.read())
+				print(p.stderr.read())
 
-		p.communicate()
+		print(text, err)
+
+		# ./sendpraat praat "execute Users/Elias/SPADE/ICECAN/sibilant_script/open_tg.praat
+		# run_script("/Applications/Praat.app/Contents/MacOS/Praat", "open_2.praat", *script_args)
+		# par = run_script("open_2.praat", arguments=script_args)
+		# par()
+		enter = input("press enter to continue")
 		# open textgrid with wav by subprocess calling praat script with arguments
 		row_idx+=1
 
@@ -104,7 +111,6 @@ one_perc_df, corpora = get_sample("testsibilants.csv")
 just_Ral = one_perc_df[one_perc_df.corpus == "Raleigh"]
 loc_dict = get_locations(corpora, "locations.txt")
 input_taker(just_Ral, loc_dict)
-sys.exit()
 
 
 print(one_perc_df.shape)

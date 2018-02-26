@@ -8,7 +8,12 @@ tg = Read from file: tg_path$
 wav = Read from file: wav_path$
 selectObject: wav
 plusObject: tg
+
 View & Edit
+Insert interval tier... '5' 'sib_ann'
 editor: tg
+	
+	#Insert boundary... '5' start 
+	#Insert boundary... '5' end 
 	Zoom: start, end
 endeditor
