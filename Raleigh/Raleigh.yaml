@@ -1,8 +1,8 @@
-corpus_directory: "/media/share/corpora/Raleigh"
+corpus_directory: "/mnt/e/Data/Raleigh"
 input_format: "MFA"
 dialect_code: "sca"
-unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
-speaker_enrichment_file: "/media/share/corpora/Raleigh/speaker_data.csv"
+unisyn_spade_directory: "/mnt/e/Dev/Research/SPADE/unisyn_spade"
+speaker_enrichment_file: "/mnt/e/Data/Raleigh/speaker_data.csv"
 speakers: [ral117, ral341, ral132, ral216, ral145, ral352, ral144, ral136, ral166, ral199, ral141, ral113, ral372, ral326,
             ral170, ral111, ral347, ral143, ral405, ral390, ral140, ral153, ral128, ral333, ral321, ral314, ral154, ral195, ral139,
             ral359, ral324, ral371, ral152, ral337, ral215, ral107, ral382, ral387, ral173, ral151, ral308, ral304, ral407, ral325,
@@ -20,3 +20,5 @@ stressed_vowels: ["EH1", "UH1", "UW1", "OY1", "ER1", "AW1", "IY1", "AA1", "AE1",
 extra_syllabic_segments: []
 sibilant_segments: ["S", "Z", "SH", "ZH"]
 pauses: '^<SIL>$'
+token: 'c471ba23822905d4c580e111ae864fd264f9edaf'
+port: 8080
