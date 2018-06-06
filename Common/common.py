@@ -14,6 +14,8 @@ from polyglotdb import CorpusContext
 from polyglotdb.io.enrichment import enrich_speakers_from_csv, enrich_lexicon_from_csv
 from polyglotdb.acoustics.formants.refined import analyze_formant_points_refinement
 
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # =============== CONFIGURATION ===============
 
 duration_threshold = 0.05
@@ -28,6 +30,10 @@ sibilant_script_path = os.path.join(base_dir, 'Common', 'sibilant_jane_optimized
 now = datetime.now()
 date = '{}-{}-{}'.format(now.year, now.month, now.day)
 
+def load_token():
+    with open(os.path.join(base_dir, 'auth_token'), 'r') as f:
+        token = f.read().strip()
+    return token
 
 def save_performance_benchmark(config, task, time_taken):
     benchmark_folder = os.path.join(base_dir, 'benchmarks')

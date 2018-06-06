@@ -29,7 +29,7 @@ if __name__ == '__main__':
         sys.exit(1)
     corpus_conf = common.load_config(corpus_name)
     print('Processing...')
-    with ensure_local_database_running(corpus_name, port=corpus_conf['port'], token=corpus_conf['token']) as params:
+    with ensure_local_database_running(corpus_name, port=8080, token=common.load_token()) as params:
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
         # Common set up

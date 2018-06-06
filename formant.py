@@ -29,7 +29,7 @@ if __name__ == '__main__':
         sys.exit(1)
     corpus_conf = common.load_config(corpus_name)
     print('Processing...')
-    with ensure_local_database_running(corpus_name) as params:
+    with ensure_local_database_running(corpus_name, port=8080, token=common.load_token()) as params:
         print(params)
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
@@ -44,7 +44,9 @@ if __name__ == '__main__':
         common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
         ##### JM #####
-        vowel_prototypes_path = corpus_conf['vowel_prototypes_path']
+        vowel_prototypes_path = corpus_conf.get('vowel_prototypes_path','')
+        if not vowel_prototypes_path:
+            vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_prototypes.csv'.format(corpus_name))
         ##############
 
         # Formant specific analysis
