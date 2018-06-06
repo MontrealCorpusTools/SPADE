@@ -17,8 +17,10 @@ from polyglotdb.acoustics.formants.refined import analyze_formant_points_refinem
 # =============== CONFIGURATION ===============
 
 duration_threshold = 0.05
-nIterations = 1
-
+##### JM #####
+# nIterations = 1
+nIterations = 5
+##############
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sibilant_script_path = os.path.join(base_dir, 'Common', 'sibilant_jane_optimized.praat')
 
@@ -47,13 +49,24 @@ def load_config(corpus_name):
         sys.exit(1)
     expected_keys = ['corpus_directory', 'input_format', 'dialect_code', 'unisyn_spade_directory',
                      'speaker_enrichment_file',
-                     'speakers', 'vowel_inventory', 'stressed_vowels', 'sibilant_segments']
+                     'speakers', 'vowel_inventory', 'stressed_vowels', 'sibilant_segments'
+                     ]
     with open(path, 'r', encoding='utf8') as f:
         conf = yaml.load(f)
     missing_keys = []
     for k in expected_keys:
         if k not in conf:
             missing_keys.append(k)
+
+    ##### JM #####
+    if not 'vowel_prototypes_path' in conf:
+        conf['vowel_prototypes_path'] = '' 
+        print('no vowel prototypes path given, so using no prototypes')
+    elif not os.path.exists(conf['vowel_prototypes_path']):
+        conf['vowel_prototypes_path'] = '' 
+        print('vowel prototypes path not valid, so using no prototypes')
+    ##############
+
     if missing_keys:
         print('The following keys were missing from {}: {}'.format(path, ', '.join(missing_keys)))
         sys.exit(1)
@@ -263,15 +276,21 @@ def sibilant_acoustic_analysis(config, sibilant_segments):
         save_performance_benchmark(config, 'sibilant_acoustic_analysis', time_taken)
 
 
-def formant_acoustic_analysis(config, vowels):
+def formant_acoustic_analysis(config, vowels, vowel_prototypes_path):
     with CorpusContext(config) as c:
-        if c.hierarchy.has_token_property('phone', 'F1'):
-            print('Formant acoustics already analyzed, skipping.')
-            return
+        ##### JM #####
+	# if c.hierarchy.has_token_property('phone', 'F1'):
+            # print('Formant acoustics already analyzed, skipping.')
+            # return
+	    ##############
         print('Beginning formant analysis')
         beg = time.time()
         metadata = analyze_formant_points_refinement(c, vowels, duration_threshold=duration_threshold,
-                                                     num_iterations=nIterations)
+                                                     num_iterations=nIterations,
+                                                     ##### JM #####
+                                                     vowel_prototypes_path=vowel_prototypes_path
+                                                     ##############
+                                                     )
         end = time.time()
         time_taken = time.time() - beg
         print('Analyzing formants took: {}'.format(end - beg))
