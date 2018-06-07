@@ -11,6 +11,8 @@ import common
 
 from polyglotdb.client.client import PGDBClient
 
+token = common.load_token()
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('corpus_name', help='Name of the corpus')
@@ -26,5 +28,5 @@ if __name__ == '__main__':
         sys.exit(1)
     corpus_conf = common.load_config(corpus_name)
     print('Processing...')
-    client = PGDBClient('http://localhost:{}'.format(corpus_conf['port']), token=corpus_conf['token'])
+    client = PGDBClient('http://localhost:{}'.format(8080), token=token)
     client.delete_database(corpus_name)

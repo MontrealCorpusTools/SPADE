@@ -47,6 +47,8 @@ if __name__ == '__main__':
         vowel_prototypes_path = corpus_conf.get('vowel_prototypes_path','')
         if not vowel_prototypes_path:
             vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_prototypes.csv'.format(corpus_name))
+        print(vowel_prototypes_path, os.path.exists(vowel_prototypes_path))
+        error
         ##############
 
         # Formant specific analysis
