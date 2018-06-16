@@ -30,10 +30,12 @@ sibilant_script_path = os.path.join(base_dir, 'Common', 'sibilant_jane_optimized
 now = datetime.now()
 date = '{}-{}-{}'.format(now.year, now.month, now.day)
 
+
 def load_token():
     with open(os.path.join(base_dir, 'auth_token'), 'r') as f:
         token = f.read().strip()
     return token
+
 
 def save_performance_benchmark(config, task, time_taken):
     benchmark_folder = os.path.join(base_dir, 'benchmarks')
@@ -66,10 +68,10 @@ def load_config(corpus_name):
 
     ##### JM #####
     if not 'vowel_prototypes_path' in conf:
-        conf['vowel_prototypes_path'] = '' 
+        conf['vowel_prototypes_path'] = ''
         print('no vowel prototypes path given, so using no prototypes')
     elif not os.path.exists(conf['vowel_prototypes_path']):
-        conf['vowel_prototypes_path'] = '' 
+        conf['vowel_prototypes_path'] = ''
         print('vowel prototypes path not valid, so using no prototypes')
     ##############
 
@@ -201,8 +203,9 @@ def basic_enrichment(config, syllabics, pauses):
             save_performance_benchmark(config, 'num_syllables_encoding', time_taken)
 
         print('enriching syllables')
-        if syllabics and g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_token_property('syllable',
-                                                                                                         'stress'):
+        if syllabics and g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_token_property(
+                'syllable',
+                'stress'):
             begin = time.time()
             g.encode_stress_from_word_property('stresspattern')
             time_taken = time.time() - begin
@@ -284,11 +287,9 @@ def sibilant_acoustic_analysis(config, sibilant_segments):
 
 def formant_acoustic_analysis(config, vowels, vowel_prototypes_path):
     with CorpusContext(config) as c:
-        ##### JM #####
-	# if c.hierarchy.has_token_property('phone', 'F1'):
-            # print('Formant acoustics already analyzed, skipping.')
-            # return
-	    ##############
+        if c.hierarchy.has_token_property('phone', 'F1'):
+            print('Formant acoustics already analyzed, skipping.')
+            return
         print('Beginning formant analysis')
         beg = time.time()
         metadata = analyze_formant_points_refinement(c, vowels, duration_threshold=duration_threshold,
@@ -355,26 +356,26 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
         print("Beginning sibilant export")
         beg = time.time()
         q = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
-        #q = q.filter(c.phone.begin == c.phone.syllable.word.begin)
+        # q = q.filter(c.phone.begin == c.phone.syllable.word.begin)
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
         # qr = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
         # this exports data for all sibilants
         qr = q.columns(c.phone.speaker.name.column_name('speaker'),
-                        c.phone.discourse.name.column_name('discourse'),
-                        c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
-                        c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
-                        c.phone.duration.column_name('duration'),
-                       #c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
-                        c.phone.following.label.column_name('following_phone'),
-                        c.phone.previous.label.column_name('previous_phone'),
-                        c.phone.syllable.word.label.column_name('word'),
-                        c.phone.syllable.stress.column_name('syllable_stress'),
-                        c.phone.syllable.phone.filter_by_subset('onset').label.column_name('onset'),
-                        c.phone.syllable.phone.filter_by_subset('nucleus').label.column_name('nucleus'),
-                        c.phone.syllable.phone.filter_by_subset('coda').label.column_name('coda'),
-                        c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
-                        c.phone.slope.column_name('slope'), c.phone.spread.column_name('spread'))
+                       c.phone.discourse.name.column_name('discourse'),
+                       c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
+                       c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
+                       c.phone.duration.column_name('duration'),
+                       # c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
+                       c.phone.following.label.column_name('following_phone'),
+                       c.phone.previous.label.column_name('previous_phone'),
+                       c.phone.syllable.word.label.column_name('word'),
+                       c.phone.syllable.stress.column_name('syllable_stress'),
+                       c.phone.syllable.phone.filter_by_subset('onset').label.column_name('onset'),
+                       c.phone.syllable.phone.filter_by_subset('nucleus').label.column_name('nucleus'),
+                       c.phone.syllable.phone.filter_by_subset('coda').label.column_name('coda'),
+                       c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
+                       c.phone.slope.column_name('slope'), c.phone.spread.column_name('spread'))
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
                 continue
