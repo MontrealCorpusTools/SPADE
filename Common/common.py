@@ -387,6 +387,35 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
         print("Results for query written to " + csv_path)
         save_performance_benchmark(config, 'sibilant_export', time_taken)
 
+def polysyllabic_export(config, corpus_name, dialect_code, speakers):
+    csv_path = os.path.join(base_dir, corpus_name, '{}_polysyllabic.csv'.format(corpus_name))
+    with CorpusContext(config) as c:
+
+        print("Beginning polysyllabic export")
+        beg = time.time()
+        q = c.query_graph(c.syllable)
+        q = q.filter(c.syllable.word.end == c.syllable.word.utterance.end)
+        q = q.filter(c.syllable.begin == c.syllable.word.begin)
+        if speakers:
+            q = q.filter(c.phone.speaker.name.in_(speakers))
+
+        qr = q.columns(c.syllable.speaker.name.column_name('speaker'),
+                       c.syllable.label.column_name('syllable_label'),
+                       c.syllable.duration.column_name('syllable_duration'),
+                       c.syllable.word.label.column_name('word'),
+                       c.syllable.word.stresspattern.column_name('stress_pattern'),
+                       c.syllable.word.num_syllables.column_name('num_syllables'))
+        for sp, _ in c.hierarchy.speaker_properties:
+            if sp == 'name':
+                continue
+            q = q.columns(getattr(c.syllable.speaker, sp).column_name(sp))
+
+        qr.to_csv(csv_path)
+        end = time.time()
+        time_taken = time.time() - beg
+        print('Query took: {}'.format(end - beg))
+        print("Results for query written to " + csv_path)
+        save_performance_benchmark(config, 'polysyllabic_export', time_taken)
 
 def get_size_of_corpus(config):
     from polyglotdb.query.base.func import Sum
