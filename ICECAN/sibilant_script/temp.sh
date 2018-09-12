@@ -1,0 +1,1 @@
+./sendpraat praat "execute /Users/esteng/SPADE/ICECAN/sibilant_script/open_2.praat /Volumes/data/corpora/Raleigh/ral128/ral1280d.TextGrid /Volumes/data/corpora/Raleigh/ral128/ral1280d.wav 1963.9436 1964.1331699999998"

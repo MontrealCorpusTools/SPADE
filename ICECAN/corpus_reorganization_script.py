@@ -1,3 +1,5 @@
+
+# coding=utf-8
 import os
 import sys
 import csv
@@ -8,8 +10,10 @@ import subprocess
 from statistics import mean
 from textgrid import TextGrid, IntervalTier
 
-orig_dir = r'/media/share/corpora/ICE-Can'
-output_dir = r'/media/share/corpora/ICE-Can/to-align'
+# orig_dir = r'/media/share/corpora/ICE-Can'
+# output_dir = r'/media/share/corpora/ICE-Can/to-align'
+orig_dir = r"/Volumes/data/corpora/ICE-Can"
+output_dir = r"/Volumes/data/corpora/ICE-Can/to-align"
 
 os.makedirs(output_dir, exist_ok=True)
 
@@ -332,5 +336,5 @@ def convert_wavs():
 
 if __name__ == '__main__':
     reorganize_meta_file()
-    convert_wavs()
-    parse_transcripts()
+    # convert_wavs()
+    # parse_transcripts()
