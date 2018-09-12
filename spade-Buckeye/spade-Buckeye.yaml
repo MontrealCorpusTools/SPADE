@@ -1,8 +1,8 @@
-corpus_directory: "/media/share/corpora/Buckeye/mm_version"
+corpus_directory: "/projects/spade/repo/git/spade-Buckeye/"
 input_format: "buckeye"
 dialect_code: "gam"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
-speaker_enrichment_file: "/media/share/corpora/Buckeye/speaker_info.csv"
+speaker_enrichment_file: "/projects/spade/repo/git/spade-Buckeye/corpus-data/enrichment/speaker_info.csv"
 speakers: []
 vowel_inventory: ["aa", "ae", "ay", "aw", "ao", "oy", "ow", "eh", "ey", "er", "ah", "uw", "ih", "iy", "uh",
                     "aan", "aen", "ayn", "awn", "aon", "oyn", "own", "ehn", "eyn", "ern", "ahn", "uwn", "ihn", "iyn", "uhn"]
