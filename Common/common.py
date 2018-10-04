@@ -292,7 +292,12 @@ def formant_acoustic_analysis(config, vowels, vowel_prototypes_path):
             return
         print('Beginning formant analysis')
         beg = time.time()
-        metadata = analyze_formant_points_refinement(c, vowels, duration_threshold=duration_threshold,
+        c.encode_class(vowels, 'vowel')
+        time_taken = time.time() - beg
+        save_performance_benchmark(config, 'vowel_encoding', time_taken)
+        print('vowels encoded')
+        beg = time.time()
+        metadata = analyze_formant_points_refinement(c, 'vowel', duration_threshold=duration_threshold,
                                                      num_iterations=nIterations,
                                                      ##### JM #####
                                                      vowel_prototypes_path=vowel_prototypes_path
