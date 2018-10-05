@@ -32,7 +32,10 @@ date = '{}-{}-{}'.format(now.year, now.month, now.day)
 
 
 def load_token():
-    with open(os.path.join(base_dir, 'auth_token'), 'r') as f:
+    token_path = os.path.join(base_dir, 'auth_token')
+    if not os.path.exists(token_path):
+        return None
+    with open(token_path, 'r') as f:
         token = f.read().strip()
     return token
 
