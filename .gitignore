@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+auth_token
+
 # C extensions
 *.so
 
@@ -103,6 +105,7 @@ ENV/
 \.idea/
 
 *.csv
+!*_prototypes.csv
 *.txt
 .Rproj.user
 

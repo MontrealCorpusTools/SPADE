@@ -29,7 +29,7 @@ if __name__ == '__main__':
         sys.exit(1)
     corpus_conf = common.load_config(corpus_name)
     print('Processing...')
-    with ensure_local_database_running(corpus_name, port=corpus_conf['port'], token=corpus_conf['token']) as params:
+    with ensure_local_database_running(corpus_name, port=8080, token=common.load_token()) as params:
         print(params)
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
@@ -43,14 +43,18 @@ if __name__ == '__main__':
 
         common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
+        vowel_prototypes_path = corpus_conf.get('vowel_prototypes_path','')
+        if not vowel_prototypes_path:
+            vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_prototypes.csv'.format(corpus_name))
+            
 
         # Formant specific analysis
         if corpus_conf['stressed_vowels']:
             vowels_to_analyze = corpus_conf['stressed_vowels']
         else:
             vowels_to_analyze = corpus_conf['vowel_inventory']
-        common.formant_acoustic_analysis(config, vowels_to_analyze)
+        common.formant_acoustic_analysis(config, vowels_to_analyze, vowel_prototypes_path)
 
         common.formant_export(config, corpus_name, corpus_conf['dialect_code'],
-                              corpus_conf['speakers'], vowels_to_analyze)
+                              corpus_conf['speakers'], vowels_to_analyze, )
         print('Finishing up!')

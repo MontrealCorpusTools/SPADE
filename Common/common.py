@@ -14,17 +14,30 @@ from polyglotdb import CorpusContext
 from polyglotdb.io.enrichment import enrich_speakers_from_csv, enrich_lexicon_from_csv
 from polyglotdb.acoustics.formants.refined import analyze_formant_points_refinement
 
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # =============== CONFIGURATION ===============
 
 duration_threshold = 0.05
-nIterations = 1
-
+##### JM #####
+# nIterations = 1
+nIterations = 5
+##############
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sibilant_script_path = os.path.join(base_dir, 'Common', 'sibilant_jane_optimized.praat')
 
 # =============================================
 now = datetime.now()
 date = '{}-{}-{}'.format(now.year, now.month, now.day)
+
+
+def load_token():
+    token_path = os.path.join(base_dir, 'auth_token')
+    if not os.path.exists(token_path):
+        return None
+    with open(token_path, 'r') as f:
+        token = f.read().strip()
+    return token
 
 
 def save_performance_benchmark(config, task, time_taken):
@@ -47,13 +60,24 @@ def load_config(corpus_name):
         sys.exit(1)
     expected_keys = ['corpus_directory', 'input_format', 'dialect_code', 'unisyn_spade_directory',
                      'speaker_enrichment_file',
-                     'speakers', 'vowel_inventory', 'stressed_vowels', 'sibilant_segments']
+                     'speakers', 'vowel_inventory', 'stressed_vowels', 'sibilant_segments'
+                     ]
     with open(path, 'r', encoding='utf8') as f:
         conf = yaml.load(f)
     missing_keys = []
     for k in expected_keys:
         if k not in conf:
             missing_keys.append(k)
+
+    ##### JM #####
+    if not 'vowel_prototypes_path' in conf:
+        conf['vowel_prototypes_path'] = ''
+        print('no vowel prototypes path given, so using no prototypes')
+    elif not os.path.exists(conf['vowel_prototypes_path']):
+        conf['vowel_prototypes_path'] = ''
+        print('vowel prototypes path not valid, so using no prototypes')
+    ##############
+
     if missing_keys:
         print('The following keys were missing from {}: {}'.format(path, ', '.join(missing_keys)))
         sys.exit(1)
@@ -182,8 +206,9 @@ def basic_enrichment(config, syllabics, pauses):
             save_performance_benchmark(config, 'num_syllables_encoding', time_taken)
 
         print('enriching syllables')
-        if syllabics and g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_token_property('syllable',
-                                                                                                         'stress'):
+        if syllabics and g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_token_property(
+                'syllable',
+                'stress'):
             begin = time.time()
             g.encode_stress_from_word_property('stresspattern')
             time_taken = time.time() - begin
@@ -263,15 +288,24 @@ def sibilant_acoustic_analysis(config, sibilant_segments):
         save_performance_benchmark(config, 'sibilant_acoustic_analysis', time_taken)
 
 
-def formant_acoustic_analysis(config, vowels):
+def formant_acoustic_analysis(config, vowels, vowel_prototypes_path):
     with CorpusContext(config) as c:
         if c.hierarchy.has_token_property('phone', 'F1'):
             print('Formant acoustics already analyzed, skipping.')
             return
         print('Beginning formant analysis')
         beg = time.time()
-        metadata = analyze_formant_points_refinement(c, vowels, duration_threshold=duration_threshold,
-                                                     num_iterations=nIterations)
+        c.encode_class(vowels, 'vowel')
+        time_taken = time.time() - beg
+        save_performance_benchmark(config, 'vowel_encoding', time_taken)
+        print('vowels encoded')
+        beg = time.time()
+        metadata = analyze_formant_points_refinement(c, 'vowel', duration_threshold=duration_threshold,
+                                                     num_iterations=nIterations,
+                                                     ##### JM #####
+                                                     vowel_prototypes_path=vowel_prototypes_path
+                                                     ##############
+                                                     )
         end = time.time()
         time_taken = time.time() - beg
         print('Analyzing formants took: {}'.format(end - beg))
@@ -330,26 +364,26 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
         print("Beginning sibilant export")
         beg = time.time()
         q = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
-        #q = q.filter(c.phone.begin == c.phone.syllable.word.begin)
+        # q = q.filter(c.phone.begin == c.phone.syllable.word.begin)
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
         # qr = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
         # this exports data for all sibilants
         qr = q.columns(c.phone.speaker.name.column_name('speaker'),
-                        c.phone.discourse.name.column_name('discourse'),
-                        c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
-                        c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
-                        c.phone.duration.column_name('duration'),
-                       #c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
-                        c.phone.following.label.column_name('following_phone'),
-                        c.phone.previous.label.column_name('previous_phone'),
-                        c.phone.syllable.word.label.column_name('word'),
-                        c.phone.syllable.stress.column_name('syllable_stress'),
-                        c.phone.syllable.phone.filter_by_subset('onset').label.column_name('onset'),
-                        c.phone.syllable.phone.filter_by_subset('nucleus').label.column_name('nucleus'),
-                        c.phone.syllable.phone.filter_by_subset('coda').label.column_name('coda'),
-                        c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
-                        c.phone.slope.column_name('slope'), c.phone.spread.column_name('spread'))
+                       c.phone.discourse.name.column_name('discourse'),
+                       c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
+                       c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
+                       c.phone.duration.column_name('duration'),
+                       # c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
+                       c.phone.following.label.column_name('following_phone'),
+                       c.phone.previous.label.column_name('previous_phone'),
+                       c.phone.syllable.word.label.column_name('word'),
+                       c.phone.syllable.stress.column_name('syllable_stress'),
+                       c.phone.syllable.phone.filter_by_subset('onset').label.column_name('onset'),
+                       c.phone.syllable.phone.filter_by_subset('nucleus').label.column_name('nucleus'),
+                       c.phone.syllable.phone.filter_by_subset('coda').label.column_name('coda'),
+                       c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
+                       c.phone.slope.column_name('slope'), c.phone.spread.column_name('spread'))
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
                 continue
@@ -361,6 +395,35 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
         print("Results for query written to " + csv_path)
         save_performance_benchmark(config, 'sibilant_export', time_taken)
 
+def polysyllabic_export(config, corpus_name, dialect_code, speakers):
+    csv_path = os.path.join(base_dir, corpus_name, '{}_polysyllabic.csv'.format(corpus_name))
+    with CorpusContext(config) as c:
+
+        print("Beginning polysyllabic export")
+        beg = time.time()
+        q = c.query_graph(c.syllable)
+        q = q.filter(c.syllable.word.end == c.syllable.word.utterance.end)
+        q = q.filter(c.syllable.begin == c.syllable.word.begin)
+        if speakers:
+            q = q.filter(c.phone.speaker.name.in_(speakers))
+
+        qr = q.columns(c.syllable.speaker.name.column_name('speaker'),
+                       c.syllable.label.column_name('syllable_label'),
+                       c.syllable.duration.column_name('syllable_duration'),
+                       c.syllable.word.label.column_name('word'),
+                       c.syllable.word.stresspattern.column_name('stress_pattern'),
+                       c.syllable.word.num_syllables.column_name('num_syllables'))
+        for sp, _ in c.hierarchy.speaker_properties:
+            if sp == 'name':
+                continue
+            q = q.columns(getattr(c.syllable.speaker, sp).column_name(sp))
+
+        qr.to_csv(csv_path)
+        end = time.time()
+        time_taken = time.time() - beg
+        print('Query took: {}'.format(end - beg))
+        print("Results for query written to " + csv_path)
+        save_performance_benchmark(config, 'polysyllabic_export', time_taken)
 
 def get_size_of_corpus(config):
     from polyglotdb.query.base.func import Sum

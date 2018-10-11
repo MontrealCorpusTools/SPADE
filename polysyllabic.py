@@ -9,11 +9,8 @@ sys.path.insert(0, script_dir)
 
 import common
 
-import re
-import time
-
 from polyglotdb.utils import ensure_local_database_running
-from polyglotdb import CorpusConfig, CorpusContext
+from polyglotdb.config import CorpusConfig
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -33,11 +30,8 @@ if __name__ == '__main__':
     corpus_conf = common.load_config(corpus_name)
     print('Processing...')
     with ensure_local_database_running(corpus_name, port=8080, token=common.load_token()) as params:
-        print(params)
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
-        with CorpusContext(config) as c:
-            print(c.hierarchy)
         # Common set up
         if reset:
             common.reset(config)
@@ -48,6 +42,5 @@ if __name__ == '__main__':
 
         common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
-        common.basic_queries(config)
-
+        common.polysyllabic_export(config, corpus_name, corpus_conf['dialect_code'], corpus_conf['speakers'])
         print('Finishing up!')
