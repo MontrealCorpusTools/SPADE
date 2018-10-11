@@ -21,7 +21,7 @@ base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 duration_threshold = 0.05
 ##### JM #####
 # nIterations = 1
-nIterations = 5
+nIterations = 20
 ##############
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sibilant_script_path = os.path.join(base_dir, 'Common', 'sibilant_jane_optimized.praat')
@@ -288,11 +288,11 @@ def sibilant_acoustic_analysis(config, sibilant_segments):
         save_performance_benchmark(config, 'sibilant_acoustic_analysis', time_taken)
 
 
-def formant_acoustic_analysis(config, vowels, vowel_prototypes_path):
+def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, drop_formant=False):
     with CorpusContext(config) as c:
-        if c.hierarchy.has_token_property('phone', 'F1'):
-            print('Formant acoustics already analyzed, skipping.')
-            return
+        # if c.hierarchy.has_token_property('phone', 'F1'):  # JM TEMPORARY
+        #     print('Formant acoustics already analyzed, skipping.')
+        #     return
         print('Beginning formant analysis')
         beg = time.time()
         c.encode_class(vowels, 'vowel')
@@ -302,9 +302,8 @@ def formant_acoustic_analysis(config, vowels, vowel_prototypes_path):
         beg = time.time()
         metadata = analyze_formant_points_refinement(c, 'vowel', duration_threshold=duration_threshold,
                                                      num_iterations=nIterations,
-                                                     ##### JM #####
-                                                     vowel_prototypes_path=vowel_prototypes_path
-                                                     ##############
+                                                     vowel_prototypes_path=vowel_prototypes_path,
+                                                     drop_formant=drop_formant
                                                      )
         end = time.time()
         time_taken = time.time() - beg
@@ -339,7 +338,8 @@ def formant_export(config, corpus_name, dialect_code, speakers, vowels):  # Gets
                       c.phone.following.label.column_name('following_phone'),
                       c.phone.previous.label.column_name('previous_phone'), c.phone.word.label.column_name('word'),
                       c.phone.F1.column_name('F1'), c.phone.F2.column_name('F2'), c.phone.F3.column_name('F3'),
-                      c.phone.B1.column_name('B1'), c.phone.B2.column_name('B2'), c.phone.B3.column_name('B3'))
+                      c.phone.B1.column_name('B1'), c.phone.B2.column_name('B2'), c.phone.B3.column_name('B3'),
+                      c.phone.A1.column_name('A1'), c.phone.A2.column_name('A2'), c.phone.A3.column_name('A3'), c.phone.Ax.column_name('Ax'), c.phone.num_formants.column_name('num_formants'), c.phone.drop_formant.column_name('drop_formant'))
         if c.hierarchy.has_type_property('word', 'UnisynPrimStressedVowel1'.lower()):
             q = q.columns(c.phone.word.unisynprimstressedvowel1.column_name('UnisynPrimStressedVowel1'))
         for v in other_vowel_codes:
