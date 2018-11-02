@@ -116,7 +116,7 @@ if __name__ == '__main__':
             stops = ['P', 'T', 'K']
 
             #If there is already a stop subset in the database, delete it
-            if g.hierarchy.has_type_subset('phone', "stops"):
+            if g.hierarchy.has_token_subset('phone', "stops"):
                 g.query_graph(g.phone).remove_subset("stops")
 
             #Encode a subset of word initial stops spoken by a speaker in small_speakers
@@ -129,7 +129,7 @@ if __name__ == '__main__':
                 g.encode_pauses(corpus_conf["pauses"])
                 g.encode_utterances(min_pause_length=0.15)
 
-            g.analyze_vot(stop_label="stops",
+            g.analyze_vot(stop_label='stops',
                         classifier=classifier,
                         vot_min=15,
                         vot_max=250,
