@@ -76,7 +76,6 @@ if __name__ == '__main__':
     parser.add_argument('corpus_name', help='Name of the corpus')
     parser.add_argument('classifier', help='Path to classifier')
     parser.add_argument('-r', '--reset', help="Reset the corpus", action='store_true')
-    parser.add_argument("-a", "--auto_vot_path", help="Path to autovot bin")
     parser.add_argument("-e", "--export_file", help='Path of CSV to export')
 
     args = parser.parse_args()
@@ -108,9 +107,6 @@ if __name__ == '__main__':
 
         with CorpusContext(config) as g:
             g.reset_vot()
-            g.config.autovot_path = os.path.join(base_dir, "..", "autovot", "autovot", "bin", "auto_vot_decode.py")
-            if args.auto_vot_path:
-                g.config.autovot_path = args.auto_vot_path
 
             small_speakers = ['Adam', 'Norman', 'Raymond_Lafleur']
             stops = ['P', 'T', 'K']
@@ -121,7 +117,8 @@ if __name__ == '__main__':
 
             #Encode a subset of word initial stops spoken by a speaker in small_speakers
             q = g.query_graph(g.phone)
-            q = q.filter(g.phone.speaker.name.in_(small_speakers)).filter(g.phone.begin==g.phone.word.begin).filter(g.phone.label.in_(stops))
+            #q = q.filter(g.phone.speaker.name.in_(small_speakers)).filter(g.phone.begin==g.phone.word.begin).filter(g.phone.label.in_(stops))
+            q = q.filter(g.phone.begin==g.phone.word.begin).filter(g.phone.label.in_(stops))
             q.create_subset('stops')
 
             #Ensure utterances are encoded and encoded them if not.
