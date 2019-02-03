@@ -1,8 +1,8 @@
-corpus_directory: "/projects/spade/repo/git/spade-SCOTS/"
+corpus_directory: "/data/iscan-server/polyglot_source//spade-SCOTS/"
 input_format: "MFA"
 dialect_code: "edi"
-unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
-speaker_enrichment_file: "/projects/spade/repo/git/spade-SCOTS/corpus-data/enrichment/speaker_info.csv"
+unisyn_spade_directory: "/data/unisyn_spade"
+speaker_enrichment_file: "/data/iscan-server/polyglot_source/spade-SCOTS/corpus-data/enrichment/speaker_info.csv"
 speakers: []
 vowel_inventory: ["@", "@`", "e", "e`", "O`", "3`", "E", "E@", "E`", "I", "O", "O@`", "OI", "O`", "e", "e@",
                   "e@`", "e`", "{`", "}", "}:", "}@", "}@`", "}`", "o:", "o@", "o@`", "o`", "V", "VU", "VU`", "Vi",
