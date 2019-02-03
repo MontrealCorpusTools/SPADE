@@ -1,5 +1,5 @@
 corpus_directory: "/data/iscan-spade-server/polyglot_source/spade-Switchboard/"
-input_format: "buckeye"
+input_format: "mfa"
 dialect_code: "gam"
 unisyn_spade_directory: "/data/unisyn_spade"
 speaker_enrichment_file: "/data/iscan-spade-server/polyglot_source/spade-Switchboard/corpus-data/enrichment/speaker_info.csv"
@@ -9,4 +9,4 @@ vowel_inventory: ["aa", "ae", "ay", "aw", "ao", "oy", "ow", "eh", "ey", "er", "a
 extra_syllabic_segments: ["en", "em", "eng", "el"]
 stressed_vowels: []
 sibilant_segments: ["s", "z", "sh", "zh"]
-pauses: '^[<{].*$'
+pauses: '^SIL$'
