@@ -142,4 +142,4 @@ if __name__ == '__main__':
             if args.export_file:
                 q.to_csv(args.export_file)
             else:
-                q.to_csv("export.csv")
+                q.to_csv(os.path.join(base_dir, corpus_name, '{}_vot.csv'.format(corpus_name)))
