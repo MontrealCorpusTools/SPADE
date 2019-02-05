@@ -10,6 +10,8 @@ from polyglotdb.utils import ensure_local_database_running
 from polyglotdb.config import CorpusConfig
 from polyglotdb import CorpusContext
 
+from Common import common
+
 def load_config(corpus_name):
     path = os.path.join(base_dir, corpus_name, '{}.yaml'.format(corpus_name))
     if not os.path.exists(path):
@@ -94,7 +96,7 @@ if __name__ == '__main__':
 
     print('Processing...')
     #Connect to local database at 8080
-    with ensure_local_database_running(corpus_name, port=8080) as params:
+    with ensure_local_database_running(corpus_name, port=8080, token = common.load_token()) as params:
         #Load corpus context and config info
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
