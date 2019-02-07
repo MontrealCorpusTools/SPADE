@@ -6,7 +6,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 script_dir = os.path.join(base_dir, 'Common')
 
 sys.path.insert(0, script_dir)
-sys.path.insert(0, '/phon/MontrealCorpusTools/PolyglotDB/')
+# sys.path.insert(0, '/phon/MontrealCorpusTools/PolyglotDB/')
 
 drop_formant = True
 
