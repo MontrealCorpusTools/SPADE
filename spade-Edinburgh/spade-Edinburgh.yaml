@@ -1,0 +1,13 @@
+corpus_directory: "/projects/spade/repo/git/spade-Edinburgh/"
+input_format: "MFA"
+dialect_code: "edi"
+unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
+speaker_enrichment_file: "/projects/spade/repo/git/spade-Edinburgh/corpus-data/enrichment/speaker_info.csv"
+speakers: []
+vowel_inventory: ["A:", "i:", "I", "{", "V", "Q", "O:", "U", "u:", "@", "eI", "aI", "OI", "@U", "aU", "I@", "ju:"]
+extra_syllabic_segments: []
+stressed_vowels: []
+sibilant_segments: [s, z, S, Z]
+pauses: '^<p:>$'
+
+#Change MFA to correct input format (MAUS-aligned)

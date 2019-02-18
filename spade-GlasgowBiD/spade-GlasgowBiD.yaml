@@ -1,0 +1,11 @@
+corpus_directory: "/projects/spade/repo/git/spade-GlasgowBiD/"
+input_format: "labbcat"
+dialect_code: "edi"
+unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
+speaker_enrichment_file: "/projects/spade/repo/git/spade-GlasgowBiD/corpus-data/enrichment/speaker_info.csv"
+speakers: []
+vowel_inventory: ["I", "E", "{", "V", "Q", "U", "@", "i","#", "$", "u", "3", "1", "2","4", "5", "6", "7", "8", "9", "c","q", "O", "~"]
+extra_syllabic_segments: ["B","F","H","L", "P", "C"]
+stressed_vowels: []
+sibilant_segments: [s, z, S, Z]
+pauses: '^_$'
