@@ -1,6 +1,6 @@
 corpus_directory: "/projects/spade/repo/git/spade-1Speaker2Dialects/"
 input_format: "fave"
-dialect_code: "edi"
+dialect_code: "abd1"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
 speaker_enrichment_file: "/projects/spade/repo/git/spade-1Speaker2Dialects/corpus-data/enrichment/speaker_info.csv"
 speakers: []
