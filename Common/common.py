@@ -364,7 +364,7 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
         print("Beginning sibilant export")
         beg = time.time()
         q = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
-        # q = q.filter(c.phone.begin == c.phone.syllable.word.begin)
+        q = q.filter(c.phone.begin == c.phone.syllable.word.begin)
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
         # qr = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
@@ -372,12 +372,13 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
         qr = q.columns(c.phone.speaker.name.column_name('speaker'),
                        c.phone.discourse.name.column_name('discourse'),
                        c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
-                       c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
+                       c.phone.begin.column_name('phone_begin'), c.phone.end.column_name('phone_end'),
                        c.phone.duration.column_name('duration'),
                        # c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
                        c.phone.following.label.column_name('following_phone'),
                        c.phone.previous.label.column_name('previous_phone'),
                        c.phone.syllable.word.label.column_name('word'),
+                       c.phone.syllable.word.id.column_name('word_id'),
                        c.phone.syllable.stress.column_name('syllable_stress'),
                        c.phone.syllable.phone.filter_by_subset('onset').label.column_name('onset'),
                        c.phone.syllable.phone.filter_by_subset('nucleus').label.column_name('nucleus'),
