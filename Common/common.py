@@ -108,19 +108,21 @@ def loading(config, corpus_dir, textgrid_format):
     with CorpusContext(config) as c:
         print('loading')
 
-        if textgrid_format == "buckeye":
+        if textgrid_format in ["BUCKEYE", "B"]
             parser = pgio.inspect_buckeye(corpus_dir)
-        elif textgrid_format == "csv":
+        elif textgrid_format == "CSV":
             parser = pgio.inspect_buckeye(corpus_dir)
-        elif textgrid_format.lower() == "fave":
+        elif textgrid_format.lower() in ["FAVE", "F"]:
             parser = pgio.inspect_fave(corpus_dir)
-        elif textgrid_format == "ilg":
+        elif textgrid_format == "ILG":
             parser = pgio.inspect_ilg(corpus_dir)
-        elif textgrid_format == "labbcat":
+        elif textgrid_format in ["LABBCAT", "L"]:
             parser = pgio.inspect_labbcat(corpus_dir)
-        elif textgrid_format == "partitur":
+        elif textgrid_format in ["P", "PARTITUR"]:
             parser = pgio.inspect_partitur(corpus_dir)
-        elif textgrid_format == "timit":
+        elif textgrid_format in ["MAUS", "W"]:
+            parser = pgio.inspect_maus(corpus_dir)
+        elif textgrid_format in ["TIMIT", "T"]:
             parser = pgio.inspect_timit(corpus_dir)
         else:
             parser = pgio.inspect_mfa(corpus_dir)
