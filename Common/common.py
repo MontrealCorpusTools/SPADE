@@ -108,7 +108,7 @@ def loading(config, corpus_dir, textgrid_format):
     with CorpusContext(config) as c:
         print('loading')
 
-        if textgrid_format in ["BUCKEYE", "B"]
+        if textgrid_format in ["BUCKEYE", "B"]:
             parser = pgio.inspect_buckeye(corpus_dir)
         elif textgrid_format == "CSV":
             parser = pgio.inspect_buckeye(corpus_dir)
