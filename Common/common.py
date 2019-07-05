@@ -124,6 +124,8 @@ def loading(config, corpus_dir, textgrid_format):
             parser = pgio.inspect_maus(corpus_dir)
         elif textgrid_format in ["TIMIT", "T"]:
             parser = pgio.inspect_timit(corpus_dir)
+        elif textgrid_format in ["W", "maus"]:
+            parser = pgio.inspect_maus(corpus_dir)
         else:
             parser = pgio.inspect_mfa(corpus_dir)
         parser.call_back = call_back
