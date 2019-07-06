@@ -78,12 +78,14 @@ if __name__ == '__main__':
     parser.add_argument('corpus_name', help='Name of the corpus')
     parser.add_argument('classifier', help='Path to classifier')
     parser.add_argument('-r', '--reset', help="Reset the corpus", action='store_true')
-    parser.add_argument("-e", "--export_file", help='Path of CSV to export')
+    parser.add_argument('-e', '--export_file', help='Path of CSV to export')
+    parser.add_argument('-v', '--vot', help='Reset and re-encode VOT', action='store_true',default=False)
 
     args = parser.parse_args()
     corpus_name = args.corpus_name
     classifier = args.classifier
     reset = args.reset
+    vot = args.vot
     directories = [x for x in os.listdir(base_dir) if os.path.isdir(x) and x != 'Common']
 
     if args.corpus_name not in directories:
@@ -105,13 +107,15 @@ if __name__ == '__main__':
             with CorpusContext(config) as c:
                 print("Resetting the corpus.")
                 c.reset()
-        loading(config, corpus_conf['corpus_directory'], corpus_conf['input_format'])
-
+        common.loading(config, corpus_conf['corpus_directory'], corpus_conf['input_format'])
+        common.lexicon_enrichment(config, corpus_conf['unisyn_spade_directory'], corpus_conf['dialect_code'])
+        common.speaker_enrichment(config, corpus_conf['speaker_enrichment_file'])
+        common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
         with CorpusContext(config) as g:
-            g.reset_vot()
 
-            small_speakers = ['Adam', 'Norman', 'Raymond_Lafleur']
-            stops = ['P', 'T', 'K']
+            #Sets of stops and vowels
+            stops = ['p', 't', 'k']
+            vowels = corpus_conf['vowel_inventory']
 
             #If there is already a stop subset in the database, delete it
             if g.hierarchy.has_token_subset('phone', "stops"):
@@ -120,7 +124,7 @@ if __name__ == '__main__':
             #Encode a subset of word initial stops spoken by a speaker in small_speakers
             q = g.query_graph(g.phone)
             #q = q.filter(g.phone.speaker.name.in_(small_speakers)).filter(g.phone.begin==g.phone.word.begin).filter(g.phone.label.in_(stops))
-            q = q.filter(g.phone.begin==g.phone.word.begin).filter(g.phone.label.in_(stops))
+            q = q.filter(g.phone.begin==g.phone.word.begin).filter(g.phone.label.in_(stops)).filter(g.phone.following.label.in_(vowels))
             q.create_subset('stops')
 
             #Ensure utterances are encoded and encoded them if not.
@@ -128,7 +132,10 @@ if __name__ == '__main__':
                 g.encode_pauses(corpus_conf["pauses"])
                 g.encode_utterances(min_pause_length=0.15)
 
-            g.analyze_vot(stop_label='stops',
+            #Reset and predict VOT values
+            if vot:
+                g.reset_vot()
+                g.analyze_vot(stop_label='stops',
                         classifier=classifier,
                         vot_min=15,
                         vot_max=250,
@@ -138,7 +145,7 @@ if __name__ == '__main__':
             #Get a query of necessary info
             q = g.query_graph(g.phone).filter(g.phone.subset == "stops").columns(g.phone.label, \
                     g.phone.begin, g.phone.end, g.phone.vot.confidence, \
-                    g.phone.vot.begin, g.phone.vot.end, g.phone.word.label,\
+                    g.phone.vot.begin, g.phone.vot.end, g.phone.word.label, g.phone.syllable.stress,\
                     g.phone.discourse.name, g.phone.speaker.name).order_by(g.phone.begin)
 
             if args.export_file:
