@@ -57,8 +57,8 @@ if __name__ == '__main__':
             vowels_to_analyze = corpus_conf['stressed_vowels']
         else:
             vowels_to_analyze = corpus_conf['vowel_inventory']
-        common.formant_acoustic_analysis(config, vowels_to_analyze, vowel_prototypes_path, drop_formant=drop_formant, output_track=True)
+        common.formant_acoustic_analysis(config, vowels_to_analyze, vowel_prototypes_path, drop_formant=drop_formant, output_tracks=True)
 
         common.formant_export(config, corpus_name, corpus_conf['dialect_code'],
-                              corpus_conf['speakers'], vowels_to_analyze, output_track=True)
+                              corpus_conf['speakers'], vowels_to_analyze, output_tracks=True)
         print('Finishing up!')

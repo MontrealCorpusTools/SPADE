@@ -316,9 +316,9 @@ def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, drop_forman
         save_performance_benchmark(config, 'formant_acoustic_analysis', time_taken)
 
 
-def formant_export(config, corpus_name, dialect_code, speakers, vowels, output_track=True):  # Gets information into a csv
+def formant_export(config, corpus_name, dialect_code, speakers, vowels, output_tracks=True):  # Gets information into a csv
 
-    if output_track:
+    if output_tracks:
         csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
     else:
         csv_path = os.path.join(base_dir, corpus_name, '{}_formants.csv'.format(corpus_name))
@@ -335,17 +335,14 @@ def formant_export(config, corpus_name, dialect_code, speakers, vowels, output_t
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
         q = q.filter(c.phone.label.in_(vowels))
-        if output_track:
+        if output_tracks:
             q = q.columns(c.phone.speaker.name.column_name('speaker'), c.phone.discourse.name.column_name('discourse'),
                           c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
                           c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
-                          c.phone.syllable.stress.column_name('syllable_stress'),
-                          c.phone.syllable.word.stresspattern.column_name('word_stress_pattern'),
-                          c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
                           c.phone.duration.column_name('duration'),
                           c.phone.following.label.column_name('following_phone'),
-                          c.phone.previous.label.column_name('previous_phone'), c.phone.word.label.column_name('word')
-                          c.phone.formants)
+                          c.phone.previous.label.column_name('previous_phone'), c.phone.word.label.column_name('word'),
+                          c.phone.formants.track)
         else:
             q = q.columns(c.phone.speaker.name.column_name('speaker'), c.phone.discourse.name.column_name('discourse'),
                           c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
