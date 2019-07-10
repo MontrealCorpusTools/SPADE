@@ -1,0 +1,11 @@
+corpus_directory: "/projects/spade/repo/git/spade-TIMIT/"
+input_format: "TIMIT"
+dialect_code: "gam"
+unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
+speaker_enrichment_file: "/projects/spade/repo/git/spade-TIMIT/corpus-data/enrichment/speaker_info.csv"
+speakers: []
+vowel_inventory: ["iy", "ih", "eh", "ey", "ae", "aa", "aw", "ay", "ah", "ao", "oy", "ow", "uh", "uw", "ux", "er", "ax", "ix", "axr", "ax-h"]
+stressed_vowels: []
+extra_syllabic_segments: ["en", "em", "eng", "el"]
+sibilant_segments: ["s", "sh", "z", "zh"]
+pauses: '^pau$'
