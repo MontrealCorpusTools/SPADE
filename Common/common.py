@@ -292,23 +292,22 @@ def sibilant_acoustic_analysis(config, sibilant_segments):
         save_performance_benchmark(config, 'sibilant_acoustic_analysis', time_taken)
 
 
-def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, drop_formant=False, output_tracks=False):
+def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, drop_formant=False, output_tracks = False, subset="vowel"):
     with CorpusContext(config) as c:
-        # if c.hierarchy.has_token_property('phone', 'F1'):  # JM TEMPORARY
-        #     print('Formant acoustics already analyzed, skipping.')
-        #     return
+        if vowels is not None:
+            c.encode_class(vowels, 'vowel')
+
         print('Beginning formant analysis')
         beg = time.time()
-        c.encode_class(vowels, 'vowel')
         time_taken = time.time() - beg
         save_performance_benchmark(config, 'vowel_encoding', time_taken)
         print('vowels encoded')
         beg = time.time()
-        metadata = analyze_formant_points_refinement(c, 'vowel', duration_threshold=duration_threshold,
+        metadata = analyze_formant_points_refinement(c, subset, duration_threshold=duration_threshold,
                                                      num_iterations=nIterations,
                                                      vowel_prototypes_path=vowel_prototypes_path,
                                                      drop_formant=drop_formant,
-                                                     output_tracks=output_tracks
+                                                     output_tracks = output_tracks
                                                      )
         end = time.time()
         time_taken = time.time() - beg

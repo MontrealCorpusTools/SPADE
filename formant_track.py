@@ -1,6 +1,7 @@
 import sys
 import os
 import argparse
+import time
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 script_dir = os.path.join(base_dir, 'Common')
@@ -12,8 +13,69 @@ drop_formant = True
 
 import common
 
+from polyglotdb import CorpusContext
 from polyglotdb.utils import ensure_local_database_running
 from polyglotdb import CorpusConfig
+
+def formant_track_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_prototypes_path):
+    csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
+
+    vowels_to_analyze = ['oi']
+    with CorpusContext(config) as c:
+        print("Processing formant tracks for {}".format(corpus_name))
+        beg = time.time()
+
+        q = c.query_graph(c.phone)
+        if c.hierarchy.has_type_property('word', 'unisynprimstressedvowel1'):
+            q = q.filter(c.phone.word.unisynprimstressedvowel1.in_(vowels_to_analyze))
+            q.create_subset("unisyn_subset")
+
+            print('Beginning formant calculation')
+            common.formant_acoustic_analysis(config, None, vowel_prototypes_path, drop_formant = drop_formant, output_tracks = True, subset="unisyn_subset")
+
+            print('Beginning formant export')
+            q = q.filter(q.filter(c.phone.syllable.stress == "1"))
+
+            if speakers:
+                q = q.filter(c.phone.speaker.name.in_(speakers))
+
+            print(c.hierarchy.acoustics)
+            print('Applied filters')
+            q = q.columns(c.phone.speaker.name.column_name('speaker'),
+                          c.phone.discourse.name.column_name('discourse'),
+                          c.phone.id.column_name('phone_id'),
+                          c.phone.label.column_name('phone_label'),
+                          c.phone.begin.column_name('phone_begin'),
+                          c.phone.end.column_name('phone_end'),
+                          c.phone.duration.column_name('phone_duration'),
+                          c.phone.syllable.stress.column_name('syllable_stress'),
+                          c.phone.word.stresspattern.column_name('word_stresspattern'),
+                          c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
+                          c.phone.following.label.column_name('following_phone'),
+                          c.phone.previous.label.column_name('previous_phone'),
+                          c.phone.word.label.column_name('word_label'),
+                          c.phone.word.unisynprimstressedvowel1.column_name('unisyn_vowel'),
+                          c.phone.utterance.speech_rate.column_name('speech_rate'),
+                          c.phone.syllable.label.column_name('syllable_label'),
+                          c.phone.syllable.duration.column_name('syllable_duration'),
+                          c.phone.formants)
+            for sp, _ in c.hierarchy.speaker_properties:
+                if sp == 'name':
+                    continue
+                q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
+            print(c.hierarchy)
+            print("Writing CSV")
+            print(q)
+            q.to_csv(csv_path)
+            end = time.time()
+            time_taken = time.time() - beg
+            print('Query took: {}'.format(end - beg))
+            print("Results for query written to {}".format(csv_path))
+            common.save_performance_benchmark(config, 'formant_tracks_export', time_taken)
+
+        else:
+            print('{} has not been enriched with Unisyn information.'.format(corpus_name))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -50,15 +112,7 @@ if __name__ == '__main__':
         vowel_prototypes_path = corpus_conf.get('vowel_prototypes_path','')
         if not vowel_prototypes_path:
             vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_prototypes.csv'.format(corpus_name))
-            
 
-        # Formant specific analysis
-        if corpus_conf['stressed_vowels']:
-            vowels_to_analyze = corpus_conf['stressed_vowels']
-        else:
-            vowels_to_analyze = corpus_conf['vowel_inventory']
-        common.formant_acoustic_analysis(config, vowels_to_analyze, vowel_prototypes_path, drop_formant=drop_formant, output_tracks=True)
-
-        common.formant_export(config, corpus_name, corpus_conf['dialect_code'],
-                              corpus_conf['speakers'], vowels_to_analyze, output_tracks=True)
+        formant_track_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'],
+                              corpus_conf['speakers'], vowel_prototypes_path = vowel_prototypes_path)
         print('Finishing up!')
