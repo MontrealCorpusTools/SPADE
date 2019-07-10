@@ -37,7 +37,8 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
             common.formant_acoustic_analysis(config, None, vowel_prototypes_path, drop_formant = drop_formant, output_tracks = True, subset="unisyn_subset")
 
             print('Beginning formant export')
-            q = q.filter(q.filter(c.phone.syllable.stress == "1"))
+            q = c.query_graph(c.phone)
+            q = q.filter(c.phone.subset == 'unisyn_subset')
 
             if speakers:
                 q = q.filter(c.phone.speaker.name.in_(speakers))
@@ -61,7 +62,7 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
                           c.phone.utterance.speech_rate.column_name('speech_rate'),
                           c.phone.syllable.label.column_name('syllable_label'),
                           c.phone.syllable.duration.column_name('syllable_duration'),
-                          c.phone.formants)
+                          c.phone.formants.track)
             for sp, _ in c.hierarchy.speaker_properties:
                 if sp == 'name':
                     continue
