@@ -13,6 +13,7 @@ import polyglotdb.io as pgio
 from polyglotdb import CorpusContext
 from polyglotdb.io.enrichment import enrich_speakers_from_csv, enrich_lexicon_from_csv
 from polyglotdb.acoustics.formants.refined import analyze_formant_points_refinement
+from polyglotdb.client.client import PGDBClient, ClientError
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -441,6 +442,13 @@ def get_size_of_corpus(config):
         results = q.all()
     return results[0]['result']
 
+def check_database(corpus_name, token = load_token(), port = 8080):
+    host = 'http://localhost:{}'.format(port)
+    client = PGDBClient(host, token)
+    try:
+        client.start_database(corpus_name)
+    except Exception as e:
+        print("Database problem: {}".format(e))
 
 def basic_queries(config):
     from polyglotdb.query.base.func import Sum
