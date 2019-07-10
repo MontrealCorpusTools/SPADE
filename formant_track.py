@@ -25,10 +25,11 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
         print("Processing formant tracks for {}".format(corpus_name))
         beg = time.time()
 
-        q = c.query_graph(c.phone)
         if c.hierarchy.has_type_property('word', 'unisynprimstressedvowel1'):
-            q = q.filter(c.phone.word.unisynprimstressedvowel1.in_(vowels_to_analyze))
+            q = c.query_graph(c.phone)
+            q = q.filter(c.phone.syllable.word.unisynprimstressedvowel1.in_(vowels_to_analyze))
             q.create_subset("unisyn_subset")
+            print('susbet took {}'.format(time.time()-beg))
 
             print('Beginning formant calculation')
             common.formant_acoustic_analysis(config, None, vowel_prototypes_path, drop_formant = drop_formant, output_tracks = True, subset="unisyn_subset")
