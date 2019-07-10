@@ -21,10 +21,10 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
     csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
 
     vowels_to_analyze = ['oi']
-    with CorpusContext(config) as c:
-        print("Processing formant tracks for {}".format(corpus_name))
-        beg = time.time()
+    print("Processing formant tracks for {}".format(corpus_name))
+    beg = time.time()
 
+    with CorpusContext(config) as c:
         if c.hierarchy.has_type_property('word', 'unisynprimstressedvowel1'):
             q = c.query_graph(c.phone)
             q = q.filter(c.phone.syllable.stress == '1')
@@ -33,52 +33,54 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
             q.create_subset("unisyn_subset")
             print('susbet took {}'.format(time.time()-beg))
 
-            print('Beginning formant calculation')
-            common.formant_acoustic_analysis(config, None, vowel_prototypes_path, drop_formant = drop_formant, output_tracks = True, subset="unisyn_subset")
-
-            print('Beginning formant export')
-            q = c.query_graph(c.phone)
-            q = q.filter(c.phone.subset == 'unisyn_subset')
-
-            if speakers:
-                q = q.filter(c.phone.speaker.name.in_(speakers))
-
-            print(c.hierarchy.acoustics)
-            print('Applied filters')
-            q = q.columns(c.phone.speaker.name.column_name('speaker'),
-                          c.phone.discourse.name.column_name('discourse'),
-                          c.phone.id.column_name('phone_id'),
-                          c.phone.label.column_name('phone_label'),
-                          c.phone.begin.column_name('phone_begin'),
-                          c.phone.end.column_name('phone_end'),
-                          c.phone.duration.column_name('phone_duration'),
-                          c.phone.syllable.stress.column_name('syllable_stress'),
-                          c.phone.word.stresspattern.column_name('word_stresspattern'),
-                          c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
-                          c.phone.following.label.column_name('following_phone'),
-                          c.phone.previous.label.column_name('previous_phone'),
-                          c.phone.word.label.column_name('word_label'),
-                          c.phone.word.unisynprimstressedvowel1.column_name('unisyn_vowel'),
-                          c.phone.utterance.speech_rate.column_name('speech_rate'),
-                          c.phone.syllable.label.column_name('syllable_label'),
-                          c.phone.syllable.duration.column_name('syllable_duration'),
-                          c.phone.formants.track)
-            for sp, _ in c.hierarchy.speaker_properties:
-                if sp == 'name':
-                    continue
-                q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
-            print(c.hierarchy)
-            print("Writing CSV")
-            print(q)
-            q.to_csv(csv_path)
-            end = time.time()
-            time_taken = time.time() - beg
-            print('Query took: {}'.format(end - beg))
-            print("Results for query written to {}".format(csv_path))
-            common.save_performance_benchmark(config, 'formant_tracks_export', time_taken)
-
         else:
             print('{} has not been enriched with Unisyn information.'.format(corpus_name))
+            return
+
+    print('Beginning formant calculation')
+    common.formant_acoustic_analysis(config, None, vowel_prototypes_path, drop_formant = drop_formant, output_tracks = True, subset="unisyn_subset")
+
+    with CorpusContext(config) as c:
+        print('Beginning formant export')
+        q = c.query_graph(c.phone)
+        q = q.filter(c.phone.subset == 'unisyn_subset')
+
+        if speakers:
+            q = q.filter(c.phone.speaker.name.in_(speakers))
+
+        print(c.hierarchy.acoustics)
+        print('Applied filters')
+        q = q.columns(c.phone.speaker.name.column_name('speaker'),
+                      c.phone.discourse.name.column_name('discourse'),
+                      c.phone.id.column_name('phone_id'),
+                      c.phone.label.column_name('phone_label'),
+                      c.phone.begin.column_name('phone_begin'),
+                      c.phone.end.column_name('phone_end'),
+                      c.phone.duration.column_name('phone_duration'),
+                      c.phone.syllable.stress.column_name('syllable_stress'),
+                      c.phone.word.stresspattern.column_name('word_stresspattern'),
+                      c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
+                      c.phone.following.label.column_name('following_phone'),
+                      c.phone.previous.label.column_name('previous_phone'),
+                      c.phone.word.label.column_name('word_label'),
+                      c.phone.word.unisynprimstressedvowel1.column_name('unisyn_vowel'),
+                      c.phone.utterance.speech_rate.column_name('speech_rate'),
+                      c.phone.syllable.label.column_name('syllable_label'),
+                      c.phone.syllable.duration.column_name('syllable_duration'),
+                      c.phone.formants.track)
+        for sp, _ in c.hierarchy.speaker_properties:
+            if sp == 'name':
+                continue
+            q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
+        print(c.hierarchy)
+        print("Writing CSV")
+        print(q)
+        q.to_csv(csv_path)
+        end = time.time()
+        time_taken = time.time() - beg
+        print('Query took: {}'.format(end - beg))
+        print("Results for query written to {}".format(csv_path))
+        common.save_performance_benchmark(config, 'formant_tracks_export', time_taken)
 
 
 if __name__ == '__main__':
