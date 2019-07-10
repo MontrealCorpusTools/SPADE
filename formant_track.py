@@ -27,6 +27,8 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
 
         if c.hierarchy.has_type_property('word', 'unisynprimstressedvowel1'):
             q = c.query_graph(c.phone)
+            q = q.filter(c.phone.syllable.stress == '1')
+            q = q.filter(c.phone.subset == 'nucleus')
             q = q.filter(c.phone.syllable.word.unisynprimstressedvowel1.in_(vowels_to_analyze))
             q.create_subset("unisyn_subset")
             print('susbet took {}'.format(time.time()-beg))
