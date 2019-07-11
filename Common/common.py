@@ -499,3 +499,31 @@ def basic_queries(config):
             results[0]['result'], word_results[0]['result']))
         time_taken = time.time() - beg
         save_performance_benchmark(config, 'basic_query', time_taken)
+
+
+def basic_size_queries(config):
+    from statistics import mean
+    import datetime
+    from polyglotdb.query.base.func import Sum, Count
+    with CorpusContext(config) as c:
+        print('beginning size queries')
+        speaker_q = c.query_speakers().columns(c.speaker.name.column_name('name'), Count(c.speaker.discourses.name).column_name('num_discourses'))
+
+        average_num_discourses = mean(x['num_discourses'] for x in speaker_q.all())
+        discourse_q = c.query_discourses().columns(c.discourse.name.column_name('name'), c.discourse.duration.column_name('duration'), Count(c.discourse.speakers.name).column_name('num_speakers'))
+        average_duration = mean(x['duration'] for x in discourse_q.all())
+        average_num_speakers = mean(x['num_speakers'] for x in discourse_q.all())
+        speaker_word_counts = []
+        for s in c.speakers:
+            q = c.query_graph(c.word).filter(c.word.speaker.name == s)
+            speaker_word_counts.append(q.count())
+        discourse_word_counts = []
+        for d in c.discourses:
+            q = c.query_graph(c.word).filter(c.word.discourse.name == d)
+            discourse_word_counts.append(q.count())
+        print('')
+        print('')
+        print('There are {} speakers and {} discourses in the corpus.'.format(speaker_q.count(), discourse_q.count()))
+        print('The average duration of discourses is {}.'.format(datetime.timedelta(seconds=average_duration)))
+        print('The average number of words per speaker is {} and speakers speak in {} discourses on average.'.format(mean(speaker_word_counts), average_num_discourses))
+        print('The average number of words per discourse is {} and have {} speakers on average.'.format(mean(discourse_word_counts), average_num_speakers))
