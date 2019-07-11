@@ -511,7 +511,7 @@ def basic_size_queries(config):
 
         average_num_discourses = mean(x['num_discourses'] for x in speaker_q.all())
         discourse_q = c.query_discourses().columns(c.discourse.name.column_name('name'), c.discourse.duration.column_name('duration'), Count(c.discourse.speakers.name).column_name('num_speakers'))
-        average_duration = mean(x['duration'] for x in discourse_q.all())
+        average_duration = mean(x['duration'] for x in discourse_q.all() if x['duration'] is not None)
         average_num_speakers = mean(x['num_speakers'] for x in discourse_q.all())
         speaker_word_counts = []
         for s in c.speakers:
