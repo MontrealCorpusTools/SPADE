@@ -20,7 +20,8 @@ from polyglotdb import CorpusConfig
 def formant_track_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_prototypes_path):
     csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
 
-    vowels_to_analyze = ['oi']
+    # list of unisyn vowels included in formant analysis
+    vowels_to_analyze = ['ai', 'ei', 'ii', 'oi', 'ow']
     print("Processing formant tracks for {}".format(corpus_name))
     beg = time.time()
 
@@ -31,7 +32,7 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
             q = q.filter(c.phone.subset == 'nucleus')
             q = q.filter(c.phone.syllable.word.unisynprimstressedvowel1.in_(vowels_to_analyze))
             q.create_subset("unisyn_subset")
-            print('susbet took {}'.format(time.time()-beg))
+            print('subset took {}'.format(time.time() - beg))
 
         else:
             print('{} has not been enriched with Unisyn information.'.format(corpus_name))
@@ -48,7 +49,6 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
 
-        print(c.hierarchy.acoustics)
         print('Applied filters')
         q = q.columns(c.phone.speaker.name.column_name('speaker'),
                       c.phone.discourse.name.column_name('discourse'),
@@ -72,9 +72,8 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
             if sp == 'name':
                 continue
             q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
-        print(c.hierarchy)
+
         print("Writing CSV")
-        print(q)
         q.to_csv(csv_path)
         end = time.time()
         time_taken = time.time() - beg
