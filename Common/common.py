@@ -105,6 +105,7 @@ def loading(config, corpus_dir, textgrid_format):
     if not os.path.exists(corpus_dir):
         print('The path {} does not exist.'.format(corpus_dir))
         sys.exit(1)
+    textgrid_format = textgrid_format.upper()
     with CorpusContext(config) as c:
         print('loading')
 
