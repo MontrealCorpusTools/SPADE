@@ -106,6 +106,7 @@ def loading(config, corpus_dir, textgrid_format):
     if not os.path.exists(corpus_dir):
         print('The path {} does not exist.'.format(corpus_dir))
         sys.exit(1)
+    textgrid_format = textgrid_format.upper()
     with CorpusContext(config) as c:
         print('loading')
 
@@ -293,22 +294,22 @@ def sibilant_acoustic_analysis(config, sibilant_segments):
         save_performance_benchmark(config, 'sibilant_acoustic_analysis', time_taken)
 
 
-def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, drop_formant=False):
+def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, drop_formant=False, output_tracks = False, subset="vowel"):
     with CorpusContext(config) as c:
-        # if c.hierarchy.has_token_property('phone', 'F1'):  # JM TEMPORARY
-        #     print('Formant acoustics already analyzed, skipping.')
-        #     return
+        if vowels is not None:
+            c.encode_class(vowels, 'vowel')
+
         print('Beginning formant analysis')
         beg = time.time()
-        c.encode_class(vowels, 'vowel')
         time_taken = time.time() - beg
         save_performance_benchmark(config, 'vowel_encoding', time_taken)
         print('vowels encoded')
         beg = time.time()
-        metadata = analyze_formant_points_refinement(c, 'vowel', duration_threshold=duration_threshold,
+        metadata = analyze_formant_points_refinement(c, subset, duration_threshold=duration_threshold,
                                                      num_iterations=nIterations,
                                                      vowel_prototypes_path=vowel_prototypes_path,
-                                                     drop_formant=drop_formant
+                                                     drop_formant=drop_formant,
+                                                     output_tracks = output_tracks
                                                      )
         end = time.time()
         time_taken = time.time() - beg
@@ -316,9 +317,12 @@ def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, drop_forman
         save_performance_benchmark(config, 'formant_acoustic_analysis', time_taken)
 
 
-def formant_export(config, corpus_name, dialect_code, speakers, vowels):  # Gets information into a csv
+def formant_export(config, corpus_name, dialect_code, speakers, vowels, output_tracks=True):  # Gets information into a csv
 
-    csv_path = os.path.join(base_dir, corpus_name, '{}_formants.csv'.format(corpus_name))
+    if output_tracks:
+        csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
+    else:
+        csv_path = os.path.join(base_dir, corpus_name, '{}_formants.csv'.format(corpus_name))
     # Unisyn columns
     other_vowel_codes = ['unisynPrimStressedVowel2_{}'.format(dialect_code),
                          'UnisynPrimStressedVowel3_{}'.format(dialect_code),
@@ -332,19 +336,27 @@ def formant_export(config, corpus_name, dialect_code, speakers, vowels):  # Gets
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
         q = q.filter(c.phone.label.in_(vowels))
-
-        q = q.columns(c.phone.speaker.name.column_name('speaker'), c.phone.discourse.name.column_name('discourse'),
-                      c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
-                      c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
-                      c.phone.syllable.stress.column_name('syllable_stress'),
-                      c.phone.syllable.word.stresspattern.column_name('word_stress_pattern'),
-                      c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
-                      c.phone.duration.column_name('duration'),
-                      c.phone.following.label.column_name('following_phone'),
-                      c.phone.previous.label.column_name('previous_phone'), c.phone.word.label.column_name('word'),
-                      c.phone.F1.column_name('F1'), c.phone.F2.column_name('F2'), c.phone.F3.column_name('F3'),
-                      c.phone.B1.column_name('B1'), c.phone.B2.column_name('B2'), c.phone.B3.column_name('B3'),
-                      c.phone.A1.column_name('A1'), c.phone.A2.column_name('A2'), c.phone.A3.column_name('A3'), c.phone.Ax.column_name('Ax'), c.phone.num_formants.column_name('num_formants'), c.phone.drop_formant.column_name('drop_formant'))
+        if output_tracks:
+            q = q.columns(c.phone.speaker.name.column_name('speaker'), c.phone.discourse.name.column_name('discourse'),
+                          c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
+                          c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
+                          c.phone.duration.column_name('duration'),
+                          c.phone.following.label.column_name('following_phone'),
+                          c.phone.previous.label.column_name('previous_phone'), c.phone.word.label.column_name('word'),
+                          c.phone.formants.track)
+        else:
+            q = q.columns(c.phone.speaker.name.column_name('speaker'), c.phone.discourse.name.column_name('discourse'),
+                          c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
+                          c.phone.begin.column_name('begin'), c.phone.end.column_name('end'),
+                          c.phone.syllable.stress.column_name('syllable_stress'),
+                          c.phone.syllable.word.stresspattern.column_name('word_stress_pattern'),
+                          c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
+                          c.phone.duration.column_name('duration'),
+                          c.phone.following.label.column_name('following_phone'),
+                          c.phone.previous.label.column_name('previous_phone'), c.phone.word.label.column_name('word'),
+                          c.phone.F1.column_name('F1'), c.phone.F2.column_name('F2'), c.phone.F3.column_name('F3'),
+                          c.phone.B1.column_name('B1'), c.phone.B2.column_name('B2'), c.phone.B3.column_name('B3'),
+                          c.phone.A1.column_name('A1'), c.phone.A2.column_name('A2'), c.phone.A3.column_name('A3'), c.phone.Ax.column_name('Ax'), c.phone.num_formants.column_name('num_formants'), c.phone.drop_formant.column_name('drop_formant'))
         if c.hierarchy.has_type_property('word', 'UnisynPrimStressedVowel1'.lower()):
             q = q.columns(c.phone.word.unisynprimstressedvowel1.column_name('UnisynPrimStressedVowel1'))
         for v in other_vowel_codes:
