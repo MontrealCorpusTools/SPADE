@@ -50,6 +50,9 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
             q = q.filter(c.phone.speaker.name.in_(speakers))
 
         print('Applied filters')
+        formants_prop =c.phone.formants
+
+        formants_prop.relative_time = True
         q = q.columns(c.phone.speaker.name.column_name('speaker'),
                       c.phone.discourse.name.column_name('discourse'),
                       c.phone.id.column_name('phone_id'),
@@ -67,7 +70,7 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
                       c.phone.utterance.speech_rate.column_name('speech_rate'),
                       c.phone.syllable.label.column_name('syllable_label'),
                       c.phone.syllable.duration.column_name('syllable_duration'),
-                      c.phone.formants.track)
+                      formants_prop.track)
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
                 continue
