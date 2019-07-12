@@ -31,15 +31,19 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
             q = q.filter(c.phone.syllable.stress == '1')
             q = q.filter(c.phone.subset == 'nucleus')
             q = q.filter(c.phone.syllable.word.unisynprimstressedvowel1.in_(vowels_to_analyze))
+            q = q.filter(c.phone.duration > 0.05)
             q.create_subset("unisyn_subset")
             print('subset took {}'.format(time.time() - beg))
 
         else:
             print('{} has not been enriched with Unisyn information.'.format(corpus_name))
             return
-
-    print('Beginning formant calculation')
-    common.formant_acoustic_analysis(config, None, vowel_prototypes_path, drop_formant = drop_formant, output_tracks = True, subset="unisyn_subset")
+        skip_formants = 'formants' in c.hierarchy.acoustics
+    if not skip_formants:
+        print('Beginning formant calculation')
+        common.formant_acoustic_analysis(config, None, vowel_prototypes_path, drop_formant = drop_formant, output_tracks = True, subset="unisyn_subset")
+    else:
+        print('Formants already encoded.')
 
     with CorpusContext(config) as c:
         print('Beginning formant export')
@@ -50,9 +54,10 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
             q = q.filter(c.phone.speaker.name.in_(speakers))
 
         print('Applied filters')
-        formants_prop =c.phone.formants
-
+        formants_prop = c.phone.formants
         formants_prop.relative_time = True
+        formants_track = formants_prop.interpolated_track
+        formants_track.num_points = 21
         q = q.columns(c.phone.speaker.name.column_name('speaker'),
                       c.phone.discourse.name.column_name('discourse'),
                       c.phone.id.column_name('phone_id'),
@@ -70,7 +75,7 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
                       c.phone.utterance.speech_rate.column_name('speech_rate'),
                       c.phone.syllable.label.column_name('syllable_label'),
                       c.phone.syllable.duration.column_name('syllable_duration'),
-                      formants_prop.track)
+                      formants_track)
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
                 continue
