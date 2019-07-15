@@ -36,6 +36,7 @@ if __name__ == '__main__':
         print(params)
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
+        config.debug = True
         with CorpusContext(config) as c:
             print(c.hierarchy)
         # Common set up
