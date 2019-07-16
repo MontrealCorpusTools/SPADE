@@ -298,8 +298,11 @@ def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, drop_forman
     with CorpusContext(config) as c:
         if vowels is not None:
             c.encode_class(vowels, 'vowel')
-        if c.hierarchy.has_token_property('phone', 'F1'):
-            print('Formant analysis already done, skipping.')
+        if not output_tracks and c.hierarchy.has_token_property('phone', 'F1'):
+            print('Formant point analysis already done, skipping.')
+            return
+        elif output_tracks and 'formants' in c.hierarchy.acoustics:
+            print('Formant track analysis already done, skipping.')
             return
         print('Beginning formant analysis')
         beg = time.time()
