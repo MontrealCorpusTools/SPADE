@@ -287,7 +287,7 @@ def sibilant_acoustic_analysis(config, sibilant_segments):
 
         # analyze all sibilants using the script found at script_path
         beg = time.time()
-        c.analyze_script('sibilant', sibilant_script_path, duration_threshold=0.01)
+        c.analyze_script(annotation_type='phone', subset='sibilant', script_path=sibilant_script_path, duration_threshold=0.01)
         end = time.time()
         time_taken = time.time() - beg
         print('Sibilant analysis took: {}'.format(end - beg))
