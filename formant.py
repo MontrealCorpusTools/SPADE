@@ -60,5 +60,5 @@ if __name__ == '__main__':
         common.formant_acoustic_analysis(config, vowels_to_analyze, vowel_prototypes_path, drop_formant=drop_formant)
 
         common.formant_export(config, corpus_name, corpus_conf['dialect_code'],
-                              corpus_conf['speakers'], vowels_to_analyze, )
+                              corpus_conf['speakers'], vowels_to_analyze, output_tracks=False)
         print('Finishing up!')
