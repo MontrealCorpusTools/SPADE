@@ -53,10 +53,11 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
 
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
-
+        q = q.filter(c.phone.duration > 0.05)
         print('Applied filters')
         formants_prop = c.phone.formants
         formants_prop.relative_time = True
+        #formants_track = formants_prop.track
         formants_track = formants_prop.interpolated_track
         formants_track.num_points = 21
         q = q.columns(c.phone.speaker.name.column_name('speaker'),
