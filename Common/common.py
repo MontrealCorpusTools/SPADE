@@ -411,6 +411,13 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
             if sp == 'name':
                 continue
             q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
+
+        if c.hierarchy.has_token_property('word', 'surface_transcription'):
+            print('getting underlying and surface transcriptions')
+            q = q.columns(
+                    c.phone.word.transcription.column_name('word_underlying_transcription'),
+                    c.phone.word.surface_transcription.column_name('word_surface_transcription'))
+
         qr.to_csv(csv_path)
         end = time.time()
         time_taken = time.time() - beg
