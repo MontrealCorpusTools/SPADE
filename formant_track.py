@@ -17,7 +17,7 @@ from polyglotdb import CorpusContext
 from polyglotdb.utils import ensure_local_database_running
 from polyglotdb import CorpusConfig
 
-def formant_track_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_prototypes_path):
+def formant_track_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_prototypes_path, reset_formants):
     csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
 
     # list of unisyn vowels included in formant analysis
@@ -38,12 +38,13 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
         else:
             print('{} has not been enriched with Unisyn information.'.format(corpus_name))
             return
-        skip_formants = 'formants' in c.hierarchy.acoustics
-    if not skip_formants:
-        print('Beginning formant calculation')
-        common.formant_acoustic_analysis(config, None, vowel_prototypes_path, drop_formant = drop_formant, output_tracks = True, subset="unisyn_subset")
-    else:
-        print('Formants already encoded.')
+
+        if reset_formants:
+            print("Resetting formants")
+            c.reset_acoustics()
+            print('Beginning formant calculation')
+
+    common.formant_acoustic_analysis(config, None, vowel_prototypes_path, drop_formant = drop_formant, output_tracks = True, subset="unisyn_subset")
 
     with CorpusContext(config) as c:
         print('Beginning formant export')
@@ -94,10 +95,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('corpus_name', help='Name of the corpus')
     parser.add_argument('-r', '--reset', help="Reset the corpus", action='store_true')
+    parser.add_argument('-f', '--formant_reset', help="Reset formant measures", action = 'store_true', default=False)
 
     args = parser.parse_args()
     corpus_name = args.corpus_name
     reset = args.reset
+    reset_formants = args.formant_reset
     directories = [x for x in os.listdir(base_dir) if os.path.isdir(x) and x != 'Common']
 
     if args.corpus_name not in directories:
@@ -127,5 +130,5 @@ if __name__ == '__main__':
             vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_prototypes.csv'.format(corpus_name))
 
         formant_track_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'],
-                              corpus_conf['speakers'], vowel_prototypes_path = vowel_prototypes_path)
+                              corpus_conf['speakers'], vowel_prototypes_path = vowel_prototypes_path, reset_formants = reset_formants)
         print('Finishing up!')
