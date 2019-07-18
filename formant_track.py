@@ -83,6 +83,12 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
                 continue
             q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
 
+        if c.hierarchy.has_token_property('word', 'surface_transcription'):
+            print('getting underlying and surface transcriptions')
+            q = q.columns(
+                    c.phone.word.transcription.column_name('word_underlying_transcription'),
+                    c.phone.word.surface_transcription.column_name('word_surface_transcription'))
+
         print("Writing CSV")
         q.to_csv(csv_path)
         end = time.time()
