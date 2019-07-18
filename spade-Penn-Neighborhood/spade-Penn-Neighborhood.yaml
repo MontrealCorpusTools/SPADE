@@ -1,4 +1,4 @@
-corpus_directory: "/projects/spade/repo/git/spade-Penn-Neigborhood/"
+corpus_directory: "/projects/spade/repo/git/spade-Penn-Neighborhood/"
 input_format: "fave"
 dialect_code: "gam"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
