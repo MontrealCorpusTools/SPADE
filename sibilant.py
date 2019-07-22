@@ -28,6 +28,10 @@ if __name__ == '__main__':
                 args.corpus_name, ', '.join(directories)))
         sys.exit(1)
     corpus_conf = common.load_config(corpus_name)
+
+    ## Parse conf
+    included_speakers = corpus_conf.get('speakers', [])
+    ignored_speakers = corpus_conf.get('ignore_speakers', [])
     print('Processing...')
     with ensure_local_database_running(corpus_name, port=8080, token=common.load_token()) as params:
         config = CorpusConfig(corpus_name, **params)
@@ -43,6 +47,6 @@ if __name__ == '__main__':
         common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
         # Formant specific analysis
-        common.sibilant_acoustic_analysis(config, corpus_conf['sibilant_segments'])
-        common.sibilant_export(config, corpus_name, corpus_conf['dialect_code'], corpus_conf['speakers'])
+        common.sibilant_acoustic_analysis(config, corpus_conf['sibilant_segments'], ignored_speakers=ignored_speakers)
+        common.sibilant_export(config, corpus_name, corpus_conf['dialect_code'], included_speakers, ignored_speakers)
         print('Finishing up!')

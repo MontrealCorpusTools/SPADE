@@ -272,7 +272,7 @@ def speaker_enrichment(config, speaker_file):
             print('Speaker enrichment already done, skipping.')
 
 
-def sibilant_acoustic_analysis(config, sibilant_segments):
+def sibilant_acoustic_analysis(config, sibilant_segments, ignored_speakers=None):
     # Encode sibilant class and analyze sibilants using the praat script
     with CorpusContext(config) as c:
         if c.hierarchy.has_token_property('phone', 'cog'):
@@ -280,7 +280,13 @@ def sibilant_acoustic_analysis(config, sibilant_segments):
             return
         print('Beginning sibilant analysis')
         beg = time.time()
-        c.encode_class(sibilant_segments, 'sibilant')
+        if ignored_speakers:
+            q = c.query_graph(c.phone).filter(c.phone.label.in_(sibilant_segments))
+            q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
+            q = q.filter(c.phone.duration > 0.01)
+            q.create_subset("sibilant")
+        else:
+            c.encode_class(sibilant_segments, 'sibilant')
         time_taken = time.time() - beg
         save_performance_benchmark(config, 'sibilant_encoding', time_taken)
         print('sibilants encoded')
@@ -294,10 +300,16 @@ def sibilant_acoustic_analysis(config, sibilant_segments):
         save_performance_benchmark(config, 'sibilant_acoustic_analysis', time_taken)
 
 
-def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, drop_formant=False, output_tracks = False, subset="vowel"):
+def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, ignored_speakers=None, drop_formant=False, output_tracks = False, subset="vowel"):
     with CorpusContext(config) as c:
         if vowels is not None:
-            c.encode_class(vowels, 'vowel')
+            if ignored_speakers:
+                q = c.query_graph(c.phone).filter(c.phone.label.in_(vowels))
+                q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
+                q = q.filter(c.phone.duration > 0.01)
+                q.create_subset(subset)
+            else:
+                c.encode_class(vowels, subset)
         if not output_tracks and c.hierarchy.has_token_property('phone', 'F1'):
             print('Formant point analysis already done, skipping.')
             return
@@ -322,7 +334,7 @@ def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, drop_forman
         save_performance_benchmark(config, 'formant_acoustic_analysis', time_taken)
 
 
-def formant_export(config, corpus_name, dialect_code, speakers, vowels, output_tracks=True):  # Gets information into a csv
+def formant_export(config, corpus_name, dialect_code, speakers, vowels, ignored_speakers=None, output_tracks=True):  # Gets information into a csv
 
     if output_tracks:
         csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
@@ -340,6 +352,8 @@ def formant_export(config, corpus_name, dialect_code, speakers, vowels, output_t
         q = c.query_graph(c.phone)
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
+        if ignored_speakers:
+            q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
         q = q.filter(c.phone.label.in_(vowels))
         if output_tracks:
             q = q.columns(c.phone.speaker.name.column_name('speaker'), c.phone.discourse.name.column_name('discourse'),
@@ -379,7 +393,7 @@ def formant_export(config, corpus_name, dialect_code, speakers, vowels, output_t
         save_performance_benchmark(config, 'formant_export', time_taken)
 
 
-def sibilant_export(config, corpus_name, dialect_code, speakers):
+def sibilant_export(config, corpus_name, dialect_code, speakers, ignored_speakers=None):
     csv_path = os.path.join(base_dir, corpus_name, '{}_sibilants.csv'.format(corpus_name))
     with CorpusContext(config) as c:
         # export to CSV all the measures taken by the script, along with a variety of data about each phone
@@ -389,6 +403,8 @@ def sibilant_export(config, corpus_name, dialect_code, speakers):
         q = q.filter(c.phone.begin == c.phone.syllable.word.begin)
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
+        if ignored_speakers:
+            q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
         # qr = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
         # this exports data for all sibilants
         qr = q.columns(c.phone.speaker.name.column_name('speaker'),
