@@ -48,5 +48,5 @@ if __name__ == '__main__':
 
         # Formant specific analysis
         common.sibilant_acoustic_analysis(config, corpus_conf['sibilant_segments'], ignored_speakers=ignored_speakers)
-        common.sibilant_export(config, corpus_name, corpus_conf['dialect_code'], included_speakers, ignored_speakers)
+        common.sibilant_export(config, corpus_name, corpus_conf['dialect_code'], included_speakers, ignored_speakers=ignored_speakers)
         print('Finishing up!')

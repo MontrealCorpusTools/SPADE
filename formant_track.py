@@ -17,7 +17,7 @@ from polyglotdb import CorpusContext
 from polyglotdb.utils import ensure_local_database_running
 from polyglotdb import CorpusConfig
 
-def formant_track_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_prototypes_path, reset_formants):
+def formant_track_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_prototypes_path, reset_formants, ignored_speakers=None):
     csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
 
     # list of unisyn vowels included in formant analysis
@@ -31,6 +31,8 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
             q = q.filter(c.phone.syllable.stress == '1')
             q = q.filter(c.phone.subset == 'nucleus')
             q = q.filter(c.phone.syllable.word.unisynprimstressedvowel1.in_(vowels_to_analyze))
+            if ignored_speakers:
+                q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
             q = q.filter(c.phone.duration > 0.05)
             q.create_subset("unisyn_subset")
             print('subset took {}'.format(time.time() - beg))
@@ -117,6 +119,8 @@ if __name__ == '__main__':
         sys.exit(1)
     corpus_conf = common.load_config(corpus_name)
     print('Processing...')
+
+    ignored_speakers = corpus_conf.get('ignore_speakers', [])
     with ensure_local_database_running(corpus_name, port=8080, token=common.load_token()) as params:
         print(params)
         config = CorpusConfig(corpus_name, **params)
@@ -137,5 +141,5 @@ if __name__ == '__main__':
             vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_prototypes.csv'.format(corpus_name))
 
         formant_track_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'],
-                              corpus_conf['speakers'], vowel_prototypes_path = vowel_prototypes_path, reset_formants = reset_formants)
+                              corpus_conf['speakers'], vowel_prototypes_path = vowel_prototypes_path, reset_formants = reset_formants, ignored_speakers=ignored_speakers)
         print('Finishing up!')
