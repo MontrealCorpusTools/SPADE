@@ -17,7 +17,7 @@ from polyglotdb.utils import ensure_local_database_running
 from polyglotdb.config import CorpusConfig
 from polyglotdb.io.enrichment import enrich_lexicon_from_csv
 
-def duration_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowels, baseline = False):
+def duration_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowels, baseline = False, ignored_speakers=None):
     csv_path = os.path.join(base_dir, corpus_name, '{}_duration.csv'.format(corpus_name))
 
     with CorpusContext(config) as c:
@@ -37,7 +37,7 @@ def duration_export(config, corpus_name, corpus_directory, dialect_code, speaker
                       'z','Z', 'zh', 'ZH', 'J', 'C', 'tS', 'dZ', 'tq']
         q = c.query_graph(c.phone).filter(c.phone.label.in_(vowels))
         q = q.filter(c.phone.following.end == c.phone.syllable.end)
-        q = q.filter(c.phone.following.end == c.phone.word.utterance.end)
+        q = q.filter(c.phone.following.end == c.phone.syllable.word.utterance.end)
         q = q.filter(c.phone.following.label.in_(consonants))
         q = q.filter(c.phone.word.stresspattern == "1")
         q = q.filter(c.phone.syllable.stress == "1")
@@ -49,6 +49,9 @@ def duration_export(config, corpus_name, corpus_directory, dialect_code, speaker
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
 
+        if ignored_speakers:
+            q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
+        print(q.cypher())
         print("Applied filters")
         q = q.columns(c.phone.label.column_name('phone_label'),
                       c.phone.begin.column_name('phone_begin'),
@@ -126,6 +129,8 @@ if __name__ == '__main__':
     # sanity check database access
     common.check_database(corpus_name)
 
+    ignored_speakers = corpus_conf.get('ignore_speakers', [])
+
     with ensure_local_database_running(corpus_name, port=8080, token=common.load_token()) as params:
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
@@ -139,5 +144,5 @@ if __name__ == '__main__':
 
         common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
-        duration_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'], corpus_conf['speakers'], corpus_conf['vowel_inventory'], baseline = baseline)
+        duration_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'], corpus_conf['speakers'], corpus_conf['vowel_inventory'], baseline = baseline, ignored_speakers=ignored_speakers)
         print('Finishing up!')
