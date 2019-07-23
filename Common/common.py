@@ -306,7 +306,7 @@ def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, ignored_spe
             if ignored_speakers:
                 q = c.query_graph(c.phone).filter(c.phone.label.in_(vowels))
                 q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
-                q = q.filter(c.phone.duration > 0.01)
+                q = q.filter(c.phone.duration >= 0.05)
                 q.create_subset(subset)
             else:
                 c.encode_class(vowels, subset)
@@ -350,6 +350,7 @@ def formant_export(config, corpus_name, dialect_code, speakers, vowels, ignored_
         print('Beginning formant export')
         beg = time.time()
         q = c.query_graph(c.phone)
+        q = q.filter(c.phone.duration >= 0.05)
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
         if ignored_speakers:

@@ -55,7 +55,7 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
 
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
-        q = q.filter(c.phone.duration > 0.05)
+        q = q.filter(c.phone.duration >= 0.05)
         print('Applied filters')
         formants_prop = c.phone.formants
         formants_prop.relative_time = True
