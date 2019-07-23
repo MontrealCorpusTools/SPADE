@@ -33,7 +33,7 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
             q = q.filter(c.phone.syllable.word.unisynprimstressedvowel1.in_(vowels_to_analyze))
             if ignored_speakers:
                 q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
-            q = q.filter(c.phone.duration > 0.05)
+            q = q.filter(c.phone.duration >= 0.05)
             q.create_subset("unisyn_subset")
             print('subset took {}'.format(time.time() - beg))
 

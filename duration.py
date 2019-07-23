@@ -58,7 +58,7 @@ def duration_export(config, corpus_name, corpus_directory, dialect_code, speaker
 
         if ignored_speakers:
             q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
-        print(q.cypher())
+
         print("Applied filters")
         q = q.columns(c.phone.label.column_name('phone_label'),
                       c.phone.begin.column_name('phone_begin'),
