@@ -17,7 +17,7 @@ from polyglotdb.utils import ensure_local_database_running
 from polyglotdb.config import CorpusConfig
 from polyglotdb.io.enrichment import enrich_lexicon_from_csv
 
-def duration_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowels, baseline = False, ignored_speakers=None):
+def duration_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowels, stressed_vowels=None, baseline = False, ignored_speakers=None):
     csv_path = os.path.join(base_dir, corpus_name, '{}_duration.csv'.format(corpus_name))
 
     with CorpusContext(config) as c:
@@ -35,12 +35,19 @@ def duration_export(config, corpus_name, corpus_directory, dialect_code, speaker
                       'F', 'f', 'V', 'v', 'N', 'n', 'm', 'M', 'NG', 'TH', 'DH',
                       'l', 'L', 'ZH', 'x', 'X', 'r', 'R', 's', 'S', 'sh', 'SH',
                       'z','Z', 'zh', 'ZH', 'J', 'C', 'tS', 'dZ', 'tq']
-        q = c.query_graph(c.phone).filter(c.phone.label.in_(vowels))
-        q = q.filter(c.phone.following.end == c.phone.syllable.end)
-        q = q.filter(c.phone.following.end == c.phone.syllable.word.utterance.end)
-        q = q.filter(c.phone.following.label.in_(consonants))
-        #q = q.filter(c.phone.word.stresspattern == "1")
-        q = q.filter(c.phone.syllable.stress == "1")
+        if stressed_vowels:
+            q = c.query_graph(c.phone).filter(c.phone.label.in_(stressed_vowels))
+            q = q.filter(c.phone.following.end == c.phone.syllable.end)
+            q = q.filter(c.phone.following.end == c.phone.syllable.word.utterance.end)
+            q = q.filter(c.phone.following.label.in_(consonants))
+            q = q.filter(c.phone.syllable.word.num_syllables == 1)
+        else:
+            q = c.query_graph(c.phone).filter(c.phone.label.in_(vowels))
+            q = q.filter(c.phone.following.end == c.phone.syllable.end)
+            q = q.filter(c.phone.following.end == c.phone.syllable.word.utterance.end)
+            q = q.filter(c.phone.following.label.in_(consonants))
+            q = q.filter(c.phone.word.stresspattern == "1")
+            q = q.filter(c.phone.syllable.stress == "1")
 
         print(c.hierarchy)
         if c.hierarchy.has_type_property('word', 'containsvowelobstruent'):
@@ -130,6 +137,7 @@ if __name__ == '__main__':
     common.check_database(corpus_name)
 
     ignored_speakers = corpus_conf.get('ignore_speakers', [])
+    stressed_vowels = corpus_conf.get('stressed_vowels', [])
 
     with ensure_local_database_running(corpus_name, port=8080, token=common.load_token()) as params:
         config = CorpusConfig(corpus_name, **params)
@@ -144,5 +152,5 @@ if __name__ == '__main__':
 
         common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
-        duration_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'], corpus_conf['speakers'], corpus_conf['vowel_inventory'], baseline = baseline, ignored_speakers=ignored_speakers)
+        duration_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'], corpus_conf['speakers'], corpus_conf['vowel_inventory'], stressed_vowels=stressed_vowels, baseline = baseline, ignored_speakers=ignored_speakers)
         print('Finishing up!')
