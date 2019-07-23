@@ -300,7 +300,7 @@ def sibilant_acoustic_analysis(config, sibilant_segments, ignored_speakers=None)
         save_performance_benchmark(config, 'sibilant_acoustic_analysis', time_taken)
 
 
-def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, ignored_speakers=None, drop_formant=False, output_tracks = False, subset="vowel"):
+def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, ignored_speakers=None, drop_formant=False, output_tracks = False, subset="vowel", reset_formants=False):
     with CorpusContext(config) as c:
         if vowels is not None:
             if ignored_speakers:
@@ -310,10 +310,10 @@ def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, ignored_spe
                 q.create_subset(subset)
             else:
                 c.encode_class(vowels, subset)
-        if not output_tracks and c.hierarchy.has_token_property('phone', 'F1'):
+        if not reset_formants and not output_tracks and c.hierarchy.has_token_property('phone', 'F1'):
             print('Formant point analysis already done, skipping.')
             return
-        elif output_tracks and 'formants' in c.hierarchy.acoustics:
+        elif not reset_formants and output_tracks and 'formants' in c.hierarchy.acoustics:
             print('Formant track analysis already done, skipping.')
             return
         print('Beginning formant analysis')

@@ -19,10 +19,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('corpus_name', help='Name of the corpus')
     parser.add_argument('-r', '--reset', help="Reset the corpus", action='store_true')
+    parser.add_argument('-f', '--formant_reset', help="Reset formant measures", action = 'store_true', default=False)
 
     args = parser.parse_args()
     corpus_name = args.corpus_name
     reset = args.reset
+    reset_formants = args.formant_reset
     directories = [x for x in os.listdir(base_dir) if os.path.isdir(x) and x != 'Common']
 
     if args.corpus_name not in directories:
@@ -57,7 +59,7 @@ if __name__ == '__main__':
             vowels_to_analyze = corpus_conf['stressed_vowels']
         else:
             vowels_to_analyze = corpus_conf['vowel_inventory']
-        common.formant_acoustic_analysis(config, vowels_to_analyze, vowel_prototypes_path, drop_formant=drop_formant)
+        common.formant_acoustic_analysis(config, vowels_to_analyze, vowel_prototypes_path, drop_formant=drop_formant, reset_formants=reset_formants)
 
         common.formant_export(config, corpus_name, corpus_conf['dialect_code'],
                               corpus_conf['speakers'], vowels_to_analyze, output_tracks=False)
