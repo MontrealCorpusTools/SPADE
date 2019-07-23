@@ -40,7 +40,7 @@ def duration_export(config, corpus_name, corpus_directory, dialect_code, speaker
         q = q.filter(c.phone.following.end == c.phone.syllable.word.utterance.end)
         q = q.filter(c.phone.following.label.in_(consonants))
         #q = q.filter(c.phone.word.stresspattern == "1")
-        #q = q.filter(c.phone.syllable.stress == "1")
+        q = q.filter(c.phone.syllable.stress == "1")
 
         print(c.hierarchy)
         if c.hierarchy.has_type_property('word', 'containsvowelobstruent'):
