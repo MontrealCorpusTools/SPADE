@@ -11,6 +11,8 @@ import platform
 import polyglotdb.io as pgio
 
 from polyglotdb import CorpusContext
+from polyglotdb.utils import ensure_local_database_running
+from polyglotdb.config import CorpusConfig
 from polyglotdb.io.enrichment import enrich_speakers_from_csv, enrich_lexicon_from_csv
 from polyglotdb.acoustics.formants.refined import analyze_formant_points_refinement
 from polyglotdb.client.client import PGDBClient, ClientError
@@ -18,7 +20,8 @@ from polyglotdb.client.client import PGDBClient, ClientError
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # =============== CONFIGURATION ===============
-
+server_ip = "app"
+server_port = 8080
 duration_threshold = 0.05
 ##### JM #####
 # nIterations = 1
@@ -91,11 +94,12 @@ def call_back(*args):
         print(' '.join(args))
 
 
-def reset(config):
-    with CorpusContext(config) as c:
-        print('Resetting the corpus.')
-        c.reset()
-
+def reset(corpus_name):
+    with ensure_local_database_running(corpus_name, port=8080, ip=server_ip, token=load_token()) as params:
+        config = CorpusConfig(corpus_name, **params)
+        with CorpusContext(config) as c:
+            print('Resetting the corpus.')
+            c.reset()
 
 def loading(config, corpus_dir, textgrid_format):
     with CorpusContext(config) as c:

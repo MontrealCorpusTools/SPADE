@@ -121,13 +121,13 @@ if __name__ == '__main__':
     print('Processing...')
 
     ignored_speakers = corpus_conf.get('ignore_speakers', [])
-    with ensure_local_database_running(corpus_name, port=8080, token=common.load_token()) as params:
+    if reset:
+        common.reset(corpus_name)
+    with ensure_local_database_running(corpus_name, ip=common.server_ip, port=common.server_port, token=common.load_token()) as params:
         print(params)
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
         # Common set up
-        if reset:
-            common.reset(config)
         
         common.loading(config, corpus_conf['corpus_directory'], corpus_conf['input_format'])
 

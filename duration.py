@@ -139,12 +139,12 @@ if __name__ == '__main__':
     ignored_speakers = corpus_conf.get('ignore_speakers', [])
     stressed_vowels = corpus_conf.get('stressed_vowels', [])
 
-    with ensure_local_database_running(corpus_name, port=8080, token=common.load_token()) as params:
+    if reset:
+        common.reset(corpus_name)
+    with ensure_local_database_running(corpus_name, port=common.server_port, ip=common.server_ip, token=common.load_token()) as params:
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
         # Common set up
-        if reset:
-            common.reset(config)
         common.loading(config, corpus_conf['corpus_directory'], corpus_conf['input_format'])
 
         common.lexicon_enrichment(config, corpus_conf['unisyn_spade_directory'], corpus_conf['dialect_code'])
