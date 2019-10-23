@@ -17,11 +17,12 @@ from polyglotdb import CorpusContext
 from polyglotdb.utils import ensure_local_database_running
 from polyglotdb import CorpusConfig
 
-def rhotic_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_prototypes_path, reset_formants, ignored_speakers=None):
+def rhotics_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_prototypes_path, reset_formants, ignored_speakers=None):
     csv_path = os.path.join(base_dir, corpus_name, '{}_rhotics.csv'.format(corpus_name))
 
     # list of unisyn vowels included in formant analysis
     rhotics = ['ar', 'or', 'our', '@r', 'aer', 'oir', 'owr', 'ir', 'er', 'eir', 'ur']
+    r = ["r", "R", "r\\"]
     print("Processing formant tracks for {}".format(corpus_name))
     beg = time.time()
 
@@ -29,6 +30,7 @@ def rhotic_export(config, corpus_name, corpus_directory, dialect_code, speakers,
         if c.hierarchy.has_type_property('word', 'unisynprimstressedvowel1'):
             q = c.query_graph(c.phone)
             q = q.filter(c.phone.syllable.word.unisynprimstressedvowel1.in_(rhotics))
+            q = q.filter(c.phone.label.in_(r))
             if ignored_speakers:
                 q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
             q = q.filter(c.phone.duration >= 0.05)
@@ -50,6 +52,7 @@ def rhotic_export(config, corpus_name, corpus_directory, dialect_code, speakers,
         print('Beginning formant export')
         q = c.query_graph(c.phone)
         q = q.filter(c.phone.subset == 'unisyn_subset')
+        q = q.filter(c.phone.label.in_(r))
 
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
@@ -77,7 +80,9 @@ def rhotic_export(config, corpus_name, corpus_directory, dialect_code, speakers,
                       c.phone.utterance.speech_rate.column_name('speech_rate'),
                       c.phone.syllable.label.column_name('syllable_label'),
                       c.phone.syllable.duration.column_name('syllable_duration'),
-                      formants)
+                      c.phone.F1.column_name('F1'),
+                      c.phone.F2.column_name('F2'),
+                      c.phone.F3.column_name('F3'))
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
                 continue
