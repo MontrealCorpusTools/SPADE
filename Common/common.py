@@ -20,7 +20,7 @@ from polyglotdb.client.client import PGDBClient, ClientError
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # =============== CONFIGURATION ===============
-server_ip = "app"
+server_ip = "localhost"
 server_port = 8080
 duration_threshold = 0.05
 ##### JM #####
