@@ -139,10 +139,10 @@ if __name__ == '__main__':
 
         common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
-        vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_rhotic_prototypes.csv'.format(corpus_name))
-        #vowel_prototypes_path = corpus_conf.get('vowel_prototypes_path','')
-        #if not vowel_prototypes_path:
-        #    vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_prototypes.csv'.format(corpus_name))
+        #vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_rhotic_prototypes.csv'.format(corpus_name))
+        vowel_prototypes_path = corpus_conf.get('vowel_prototypes_path','')
+        if not vowel_prototypes_path:
+            vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_prototypes.csv'.format(corpus_name))
 
         rhotics_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'],
                               corpus_conf['speakers'], vowel_prototypes_path = vowel_prototypes_path, reset_formants = reset_formants, ignored_speakers=ignored_speakers)
