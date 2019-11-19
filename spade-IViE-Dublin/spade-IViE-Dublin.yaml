@@ -1,0 +1,11 @@
+corpus_directory: "/projects/spade/repo/git/spade-IViE-Dublin/"
+input_format: "W"
+dialect_code: "ccl1"
+unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
+speaker_enrichment_file: "/projects/spade/repo/git/spade-IViE-Belfast/corpus-data/enrichment/speaker_info.csv"
+speakers: [d-f1, d-f2, d-f3, d-f4, d-f5, d-f6, d-m1, d-m2, d-m3, d-m4, d-m5, d-m6]
+vowel_inventory: ["A:", "i:", "I", "{", "V", "Q", "O:", "U", "u:", "@", "eI", "aI", "OI", "@U", "aU", "I@", "ju:"]
+extra_syllabic_segments: []
+stressed_vowels: []
+sibilant_segments: [s, z, S, Z]
+pauses: '^<p:>$'

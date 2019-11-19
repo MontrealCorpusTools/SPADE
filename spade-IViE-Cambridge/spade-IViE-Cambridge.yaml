@@ -1,0 +1,11 @@
+corpus_directory: "/projects/spade/repo/git/spade-IViE-Cambridge/"
+input_format: "W"
+dialect_code: "rpx"
+unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
+speaker_enrichment_file: "/projects/spade/repo/git/spade-IViE-Cambridge/corpus-data/enrichment/speaker_info.csv"
+speakers: [c-f1, c-f2, c-f3, c-f4, c-f5, c-f6, c-m1, c-m2, c-m3, c-m4, c-m5, c-m6]
+vowel_inventory: ["A:", "i:", "I", "{", "V", "Q", "O:", "U", "u:", "@", "eI", "aI", "OI", "@U", "aU", "I@", "ju:"]
+extra_syllabic_segments: []
+stressed_vowels: []
+sibilant_segments: [s, z, S, Z]
+pauses: '^<p:>$'

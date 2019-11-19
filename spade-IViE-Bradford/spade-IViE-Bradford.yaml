@@ -1,0 +1,11 @@
+corpus_directory: "/projects/spade/repo/git/spade-IViE-Bradford/"
+input_format: "W"
+dialect_code: "lds"
+unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
+speaker_enrichment_file: "/projects/spade/repo/git/spade-IViE-Bradford/corpus-data/enrichment/speaker_info.csv"
+speakers: [p-f1, p-f2, p-f3, p-f4, p-f5, p-f6, p-f7, p-m1, p-m2, p-m3, p-m4, p-m5, p-m6]
+vowel_inventory: ["A:", "i:", "I", "{", "V", "Q", "O:", "U", "u:", "@", "eI", "aI", "OI", "@U", "aU", "I@", "ju:"]
+extra_syllabic_segments: []
+stressed_vowels: []
+sibilant_segments: [s, z, S, Z]
+pauses: '^<p:>$'
