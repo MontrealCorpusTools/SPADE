@@ -1,6 +1,6 @@
 corpus_directory: "/projects/spade/repo/git/spade-AudioBNC-Northern/"
 input_format: "MFA"
-dialect_code: "ldx"
+dialect_code: "lds"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
 speaker_enrichment_file: "/projects/spade/repo/git/spade-AudioBNC-Northern/corpus-data/enrichment/speaker_info.csv"
 speakers: []
