@@ -1,0 +1,11 @@
+corpus_directory: "/projects/spade/repo/git/spade-WYRED/"
+input_format: "MFA"
+dialect_code: "lds"
+unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
+speaker_enrichment_file: "/projects/spade/repo/git/spade-WYRED/corpus-data/enrichment/speaker_info.csv"
+speakers: []
+vowel_inventory: ["ER0", "IH2", "EH1", "AE0", "UH1", "AY2", "AW2", "UW1", "OY2", "OY1", "AO0", "AH2", "ER1", "AW1", "OW0", "IY1", "IY2", "UW0", "AA1", "EY0", "AE1", "AA0", "OW1", "AW0", "AO1", "AO2", "IH0", "ER2", "UW2", "IY0", "AE2", "AH0", "AH1", "UH2", "EH2", "UH0", "EY1", "AY0", "AY1", "EH0", "EY2", "AA2", "OW2", "IH1"]
+stressed_vowels: ["EH1", "UH1", "UW1", "OY1", "ER1", "AW1", "IY1", "AA1", "AE1", "OW1",  "AO1", "AH1", "EY1", "AY1", "IH1"]
+extra_syllabic_segments: []
+sibilant_segments: ["S", "Z", "SH", "ZH"]
+pauses: '^sil$'
