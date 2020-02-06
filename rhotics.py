@@ -30,6 +30,7 @@ def rhotics_export(config, corpus_name, corpus_directory, dialect_code, speakers
         if c.hierarchy.has_type_property('word', 'unisynprimstressedvowel1'):
             q = c.query_graph(c.phone)
             q = q.filter(c.phone.syllable.word.unisynprimstressedvowel1.in_(rhotics))
+            q = q.filter(c.phone.end == c.phone.word.end)
             q = q.filter(c.phone.label.in_(r))
             if ignored_speakers:
                 q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
@@ -46,13 +47,14 @@ def rhotics_export(config, corpus_name, corpus_directory, dialect_code, speakers
             c.reset_acoustics()
             print('Beginning formant calculation')
 
-    common.formant_acoustic_analysis(config, None, vowel_prototypes_path, drop_formant = drop_formant, output_tracks = False, subset="unisyn_subset")
+    common.formant_acoustic_analysis(config, None, vowel_prototypes_path, drop_formant = drop_formant, output_tracks = True, subset="unisyn_subset")
 
     with CorpusContext(config) as c:
         print('Beginning formant export')
         q = c.query_graph(c.phone)
         q = q.filter(c.phone.subset == 'unisyn_subset')
         q = q.filter(c.phone.label.in_(r))
+        q = q.filter(c.phone.end == c.phone.word.end)
 
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
@@ -80,9 +82,7 @@ def rhotics_export(config, corpus_name, corpus_directory, dialect_code, speakers
                       c.phone.utterance.speech_rate.column_name('speech_rate'),
                       c.phone.syllable.label.column_name('syllable_label'),
                       c.phone.syllable.duration.column_name('syllable_duration'),
-                      c.phone.F1.column_name('F1'),
-                      c.phone.F2.column_name('F2'),
-                      c.phone.F3.column_name('F3'))
+                      formants_track)
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
                 continue
@@ -139,6 +139,7 @@ if __name__ == '__main__':
 
         common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
+        #vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_rhotic_prototypes.csv'.format(corpus_name))
         vowel_prototypes_path = corpus_conf.get('vowel_prototypes_path','')
         if not vowel_prototypes_path:
             vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_prototypes.csv'.format(corpus_name))
