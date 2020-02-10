@@ -3,6 +3,7 @@ input_format: "W"
 dialect_code: "rpx"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
 speaker_enrichment_file: "/projects/spade/repo/git/spade-IViE-London/corpus-data/enrichment/speaker_info.csv"
+vowel_prototypes_path: "/projects/spade/repo/git/spade-IViE-London/corpus-data/enrichment/vowel_prototypes.csv"
 speakers: [j-f1, j-f2, j-f3, j-f4, j-f5, j-f6, j-f7, j-m1, j-m2, j-m3, j-m4, j-m5]
 vowel_inventory: ["A:", "i:", "I", "{", "V", "Q", "O:", "U", "u:", "@", "eI", "aI", "OI", "@U", "aU", "I@", "ju:"]
 extra_syllabic_segments: []

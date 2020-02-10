@@ -3,6 +3,7 @@ input_format: "W"
 dialect_code: "cdf"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
 speaker_enrichment_file: "/projects/spade/repo/git/spade-IViE-Cardiff/corpus-data/enrichment/speaker_info.csv"
+vowel_prototypes_path: "/projects/spade/repo/git/spade-IViE-Cardiff/corpus-data/enrichment/vowel_prototypes.csv"
 speakers: [wer, whd, whr, whw, wkt, wkv, wld, wlh, wmk, wnc, wsc, wxt]
 vowel_inventory: ["A:", "i:", "I", "{", "V", "Q", "O:", "U", "u:", "@", "eI", "aI", "OI", "@U", "aU", "I@", "ju:"]
 extra_syllabic_segments: []

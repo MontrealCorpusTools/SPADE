@@ -3,6 +3,7 @@ input_format: "labbcat"
 dialect_code: "edi"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
 speaker_enrichment_file: "/projects/spade/repo/git/spade-SOTC/corpus-data/enrichment/speaker_info.csv"
+vowel_prototypes_path: "/projects/spade/repo/git/spade-SOTC/corpus-data/enrichment/vowel_prototypes.csv"
 speakers: []
 vowel_inventory: ["I", "E", "{", "V", "Q", "U", "@", "i","#", "$", "u", "3", "1", "2","4", "5", "6", "7", "8", "9", "c","q", "O", "~"]
 extra_syllabic_segments: ["B","F","H","L", "P", "C"]

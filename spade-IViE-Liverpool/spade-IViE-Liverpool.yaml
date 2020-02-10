@@ -3,6 +3,7 @@ input_format: "W"
 dialect_code: "lds"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
 speaker_enrichment_file: "/projects/spade/repo/git/spade-IViE-Liverpool/corpus-data/enrichment/speaker_info.csv"
+vowel_prototypes_path: "/projects/spade/repo/git/spade-IViE-Liverpool/corpus-data/enrichment/vowel_prototypes.csv"
 speakers: [sch, sds, sgw, slm, slp, sns, snt, sph, spx, srb, ssb, str]
 vowel_inventory: ["A:", "i:", "I", "{", "V", "Q", "O:", "U", "u:", "@", "eI", "aI", "OI", "@U", "aU", "I@", "ju:"]
 extra_syllabic_segments: []

@@ -3,6 +3,7 @@ input_format: "fave"
 dialect_code: "rpx"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
 speaker_enrichment_file: "/projects/spade/repo/git/spade-AudioBNC/corpus-data/enrichment/speaker_info.csv"
+vowel_prototypes_path: "/projects/spade/repo/git/spade-AudioBNC/corpus-data/enrichment/vowel_prototypes.csv"
 speakers: []
 vowel_inventory: ["ER0", "IH2", "EH1", "AE0", "UH1", "AY2", "AW2", "UW1", "OY2", "OY1", "AO0", "AH2", "ER1", "AW1", "OW0", "IY1", "IY2", "UW0", "AA1", "EY0", "AE1", "AA0", "OW1", "AW0", "AO1", "AO2", "IH0", "ER2", "UW2", "IY0", "AE2", "AH0", "AH1", "UH2", "EH2", "UH0", "EY1", "AY0", "AY1", "EH0", "EY2", "AA2", "OW2", "IH1", "aa0", "aa1", "aa2", "ae0", "ae1", "ae2", "ah0", "ah1", "ah2", "ao0", "ao1", "ao2", "aw0", "aw1", "aw2", "ay0", "ay1", "ay2", "eh0", "eh1", "eh2", "er0", "er1", "er2", "ey0", "ey1", "ey2", "ih0", "ih1", "ih2", "iy0", "iy1", "iy2", "oh1", "ow0", "ow1", "ow2", "oy0", "oy1", "oy2", "uh0", "uh1", "uh2", "uw0", "uw1", "uw2"]
 stressed_vowels: ["EH1", "UH1", "UW1", "OY1", "ER1", "AW1", "IY1", "AA1", "AE1", "OW1",  "AO1", "AH1", "EY1", "AY1", "IH1", "aa1", "aa1", "ae1", "ah1", "ao1", "aw1", "ay1", "eh1", "er1", "ey1", "ih1", "iy1", "oh1", "ow1", "oy1", "uh1", "uw1"]

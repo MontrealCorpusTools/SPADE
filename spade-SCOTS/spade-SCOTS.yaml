@@ -3,6 +3,7 @@ input_format: "MFA"
 dialect_code: "edi"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
 speaker_enrichment_file: "/projects/spade/repo/git/spade-SCOTS/corpus-data/enrichment/speaker_info.csv"
+vowel_prototypes_path: "/projects/spade/repo/git/spade-SCOTS/corpus-data/enrichment/vowel_prototypes.csv"
 speakers: []
 vowel_inventory: ["@", "@`", "e", "e`", "O`", "3`", "E", "E@", "E`", "I", "O", "O@`", "OI", "O`", "e", "e@", "e@`", "e`", "{`", "}", "}:", "}@", "}@`", "}`", "o:", "o@", "o@`", "o`", "V", "VU", "VU`", "Vi", "i", "i:", "i@", "i@`", "i`", "a", "a`", "ae"]
 stressed_vowels: []
