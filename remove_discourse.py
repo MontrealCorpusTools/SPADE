@@ -19,10 +19,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('corpus_name', help='Name of the corpus')
     parser.add_argument('discourse_name', help='Name of the discourse to remove')
+    parser.add_argument('-d', '--docker', help="This script is being called from Docker", action='store_true')
 
     args = parser.parse_args()
     corpus_name = args.corpus_name
     discourse_name = args.discourse_name
+    docker = args.docker
 
     directories = [x for x in os.listdir(base_dir) if os.path.isdir(x) and x != 'Common']
 
@@ -33,7 +35,10 @@ if __name__ == '__main__':
         sys.exit(1)
     corpus_conf = common.load_config(corpus_name)
     print('Processing...')
-    with ensure_local_database_running(corpus_name, port=common.server_port, ip=common.server_ip, token=common.load_token()) as params:
+    ip = common.server_ip
+    if docker:
+        ip = common.docker_ip
+    with ensure_local_database_running(corpus_name, port=common.server_port, ip=ip, token=common.load_token()) as params:
         print(params)
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'

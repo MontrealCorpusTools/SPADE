@@ -21,6 +21,7 @@ base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # =============== CONFIGURATION ===============
 server_ip = "localhost"
+docker_ip = "app"
 server_port = 8080
 duration_threshold = 0.05
 ##### JM #####
