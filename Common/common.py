@@ -405,20 +405,22 @@ def sibilant_export(config, corpus_name, dialect_code, speakers, ignored_speaker
         # export to CSV all the measures taken by the script, along with a variety of data about each phone
         print("Beginning sibilant export")
         beg = time.time()
+        # filter data only to word-initial sibilants
         q = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
         q = q.filter(c.phone.begin == c.phone.syllable.word.begin)
+        # ensure that all phones are associated with a speaker
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
         if ignored_speakers:
             q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
-        # qr = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
         # this exports data for all sibilants
+        # information about the phone, syllable, and word (label, start/endpoints etc)
+        # also spectral properties of interest (COG, spectral peak/slope/spread)
         qr = q.columns(c.phone.speaker.name.column_name('speaker'),
                        c.phone.discourse.name.column_name('discourse'),
                        c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
                        c.phone.begin.column_name('phone_begin'), c.phone.end.column_name('phone_end'),
                        c.phone.duration.column_name('duration'),
-                       # c.phone.syllable.position_in_word.column_name('syllable_position_in_word'),
                        c.phone.following.label.column_name('following_phone'),
                        c.phone.previous.label.column_name('previous_phone'),
                        c.phone.syllable.word.label.column_name('word'),
@@ -429,17 +431,22 @@ def sibilant_export(config, corpus_name, dialect_code, speakers, ignored_speaker
                        c.phone.syllable.phone.filter_by_subset('coda').label.column_name('coda'),
                        c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
                        c.phone.slope.column_name('slope'), c.phone.spread.column_name('spread'))
+        # get columns of speaker metadata
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
                 continue
             q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
 
+        # as Buckeye has had labels changed to reflect phonetic realisation,
+        # need to also get the original transcription for comparison with
+        # other corpora
         if c.hierarchy.has_token_property('word', 'surface_transcription'):
             print('getting underlying and surface transcriptions')
             q = q.columns(
                     c.phone.word.transcription.column_name('word_underlying_transcription'),
                     c.phone.word.surface_transcription.column_name('word_surface_transcription'))
 
+        # write the query to a CSV
         qr.to_csv(csv_path)
         end = time.time()
         time_taken = time.time() - beg
