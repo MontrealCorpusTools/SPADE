@@ -1,3 +1,12 @@
+#################################################
+## Common functions for SPADE analysis scripts ##
+#################################################
+
+## this file defines functions and values shared between SPADE analysis scripts
+## such as performing basic speaker, lexical, and linguistic enrichments of corpora,
+## as well as functions for interacting with the ISCAN server
+
+## base functions
 import time
 from datetime import datetime
 import os
@@ -10,6 +19,7 @@ import csv
 import platform
 import polyglotdb.io as pgio
 
+## PolyglotDB functions
 from polyglotdb import CorpusContext
 from polyglotdb.utils import ensure_local_database_running
 from polyglotdb.config import CorpusConfig
@@ -20,14 +30,16 @@ from polyglotdb.client.client import PGDBClient, ClientError
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # =============== CONFIGURATION ===============
+## default values for connecting to the server
 server_ip = "localhost"
 docker_ip = "app"
 server_port = 8080
+
+## default values for formant enrichment (see formant analysis functions below)
 duration_threshold = 0.05
-##### JM #####
-# nIterations = 1
 nIterations = 20
-##############
+
+## default paths
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sibilant_script_path = os.path.join(base_dir, 'Common', 'sibilant_jane_optimized.praat')
 
@@ -46,6 +58,8 @@ def load_token():
 
 
 def save_performance_benchmark(config, task, time_taken):
+    """Calculate the runtime of a process and save it"""
+
     benchmark_folder = os.path.join(base_dir, 'benchmarks')
     os.makedirs(benchmark_folder, exist_ok=True)
     benchmark_file = os.path.join(benchmark_folder, 'benchmarks.csv')
@@ -59,6 +73,8 @@ def save_performance_benchmark(config, task, time_taken):
 
 
 def load_config(corpus_name):
+    """Open the YAML configuration file and check it is correctly structured"""
+
     path = os.path.join(base_dir, corpus_name, '{}.yaml'.format(corpus_name))
     if not os.path.exists(path):
         print('The config file for the specified corpus does not exist ({}).'.format(path))
@@ -74,14 +90,13 @@ def load_config(corpus_name):
         if k not in conf:
             missing_keys.append(k)
 
-    ##### JM #####
+    ## check if the vowel prototypes file exists
     if not 'vowel_prototypes_path' in conf:
         conf['vowel_prototypes_path'] = ''
         print('no vowel prototypes path given, so using no prototypes')
     elif not os.path.exists(conf['vowel_prototypes_path']):
         conf['vowel_prototypes_path'] = ''
         print('vowel prototypes path not valid, so using no prototypes')
-    ##############
 
     if missing_keys:
         print('The following keys were missing from {}: {}'.format(path, ', '.join(missing_keys)))
@@ -96,6 +111,8 @@ def call_back(*args):
 
 
 def reset(corpus_name):
+    """Remove the database files produced from import."""
+
     with ensure_local_database_running(corpus_name, port=8080, ip=server_ip, token=load_token()) as params:
         config = CorpusConfig(corpus_name, **params)
         with CorpusContext(config) as c:
@@ -103,6 +120,10 @@ def reset(corpus_name):
             c.reset()
 
 def loading(config, corpus_dir, textgrid_format):
+    """Load the corpus"""
+
+    ## first check if a database for the corpus
+    ## has already been created
     with CorpusContext(config) as c:
         exists = c.exists()
     if exists:
@@ -111,10 +132,15 @@ def loading(config, corpus_dir, textgrid_format):
     if not os.path.exists(corpus_dir):
         print('The path {} does not exist.'.format(corpus_dir))
         sys.exit(1)
+
+    ## if there is no database file,
+    ## begin with importing the corpus
     textgrid_format = textgrid_format.upper()
     with CorpusContext(config) as c:
         print('loading')
 
+        ## Use the appropriate importer based
+        ## on the format of the corpus
         if textgrid_format in ["BUCKEYE", "B"]:
             parser = pgio.inspect_buckeye(corpus_dir)
         elif textgrid_format == "CSV":
@@ -145,19 +171,22 @@ def loading(config, corpus_dir, textgrid_format):
 
 
 def basic_enrichment(config, syllabics, pauses):
+    """Enrich the corpus database with syllable and utterance information."""
+
     with CorpusContext(config) as g:
         if not 'utterance' in g.annotation_types:
+            ## encode utterances based on presence of an intervening pause
+            ## default 150ms
             print('encoding utterances')
             begin = time.time()
             g.encode_pauses(pauses)
-            # g.encode_pauses('^[<{].*$', call_back = call_back)
-            g.encode_utterances(min_pause_length=0.15)  # , call_back = call_back)
-            # g.encode_utterances(min_pause_length = 0.5, call_back = call_back)
+            g.encode_utterances(min_pause_length=0.15)
             time_taken = time.time() - begin
             print('Utterance enrichment took: {}'.format(time_taken))
             save_performance_benchmark(config, 'utterance_encoding', time_taken)
 
         if syllabics and 'syllable' not in g.annotation_types:
+            ## encode syllabic information using maxmimum-onset principle
             print('encoding syllables')
             begin = time.time()
             g.encode_syllabic_segments(syllabics)
@@ -203,12 +232,6 @@ def basic_enrichment(config, syllabics, pauses):
             print('Phone count encoding took: {}'.format(time.time() - begin))
             save_performance_benchmark(config, 'num_phones_encoding', time_taken)
 
-        # print('enriching words')
-        # if not g.hierarchy.has_token_property('word', 'position_in_utterance'):
-        #    begin = time.time()
-        #    g.encode_position('utterance', 'word', 'position_in_utterance')
-        #    print('Utterance position encoding took: {}'.format(time.time() - begin))
-
         if syllabics and not g.hierarchy.has_token_property('word', 'num_syllables'):
             begin = time.time()
             g.encode_count('word', 'syllable', 'num_syllables')
@@ -217,6 +240,8 @@ def basic_enrichment(config, syllabics, pauses):
             save_performance_benchmark(config, 'num_syllables_encoding', time_taken)
 
         print('enriching syllables')
+        ## generate the word-level stress pattern, either from an external pronunciation dictionary
+        ## or by the presence of numeric values on the vowel phones
         if syllabics and g.hierarchy.has_type_property('word', 'stresspattern') and not g.hierarchy.has_token_property(
                 'syllable',
                 'stress'):
@@ -235,6 +260,8 @@ def basic_enrichment(config, syllabics, pauses):
 
 
 def lexicon_enrichment(config, unisyn_spade_directory, dialect_code):
+    """Enrich the database with lexical information, such as stress position and UNISYN phone labels."""
+
     enrichment_dir = os.path.join(unisyn_spade_directory, 'enrichment_files')
     if not os.path.exists(enrichment_dir):
         print('Could not find enrichment_files directory from {}, skipping lexical enrichment.'.format(
@@ -263,6 +290,8 @@ def lexicon_enrichment(config, unisyn_spade_directory, dialect_code):
 
 
 def speaker_enrichment(config, speaker_file):
+    """Enrich the database with speaker information (e.g. age, dialect) from a speaker metadata file."""
+
     if not os.path.exists(speaker_file):
         print('Could not find {}, skipping speaker enrichment.'.format(speaker_file))
         return
@@ -278,7 +307,8 @@ def speaker_enrichment(config, speaker_file):
 
 
 def sibilant_acoustic_analysis(config, sibilant_segments, ignored_speakers=None):
-    # Encode sibilant class and analyze sibilants using the praat script
+    """Encode sibilant class and analyze sibilants using the praat script."""
+
     with CorpusContext(config) as c:
         if c.hierarchy.has_token_property('phone', 'cog'):
             print('Sibilant acoustics already analyzed, skipping.')
@@ -286,8 +316,12 @@ def sibilant_acoustic_analysis(config, sibilant_segments, ignored_speakers=None)
         print('Beginning sibilant analysis')
         beg = time.time()
         if ignored_speakers:
+            ## make a subset of the phones in database for sibilants: sibilants included
+            ## in this subset are defined in the corpus's YAML configuration file
             q = c.query_graph(c.phone).filter(c.phone.label.in_(sibilant_segments))
             q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
+            ## check the phone is greater than 10ms:
+            ## this is the usual time resolution for forced alignment
             q = q.filter(c.phone.duration > 0.01)
             q.create_subset("sibilant")
         else:
@@ -296,7 +330,7 @@ def sibilant_acoustic_analysis(config, sibilant_segments, ignored_speakers=None)
         save_performance_benchmark(config, 'sibilant_encoding', time_taken)
         print('sibilants encoded')
 
-        # analyze all sibilants using the script found at script_path
+        # analyze all sibilants using the Praat script (found at the path defined at the top of this script)
         beg = time.time()
         c.analyze_script(annotation_type='phone', subset='sibilant', script_path=sibilant_script_path, duration_threshold=0.01)
         end = time.time()
@@ -418,19 +452,31 @@ def sibilant_export(config, corpus_name, dialect_code, speakers, ignored_speaker
         # also spectral properties of interest (COG, spectral peak/slope/spread)
         qr = q.columns(c.phone.speaker.name.column_name('speaker'),
                        c.phone.discourse.name.column_name('discourse'),
+
+                       # phone-level information (label, start/endpoint, etc)
                        c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
                        c.phone.begin.column_name('phone_begin'), c.phone.end.column_name('phone_end'),
                        c.phone.duration.column_name('duration'),
+
+                       # surrounding phone information
                        c.phone.following.label.column_name('following_phone'),
                        c.phone.previous.label.column_name('previous_phone'),
+
+                       # word and syllable information (e.g., stress,
+                       # onset/nuclus/coda of the syllable)
+                       # determined from maximum onset algorithm in
+                       # basic_enrichment function
                        c.phone.syllable.word.label.column_name('word'),
                        c.phone.syllable.word.id.column_name('word_id'),
                        c.phone.syllable.stress.column_name('syllable_stress'),
                        c.phone.syllable.phone.filter_by_subset('onset').label.column_name('onset'),
                        c.phone.syllable.phone.filter_by_subset('nucleus').label.column_name('nucleus'),
                        c.phone.syllable.phone.filter_by_subset('coda').label.column_name('coda'),
+
+                       # acoustic information of interest (spectral measurements)
                        c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
                        c.phone.slope.column_name('slope'), c.phone.spread.column_name('spread'))
+
         # get columns of speaker metadata
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
