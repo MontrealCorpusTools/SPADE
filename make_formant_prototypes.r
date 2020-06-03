@@ -4,10 +4,15 @@ source('formant_functions.r')
 
 # LOAD THE VOWEL MEASUREMENTS
 all_formant_data <- list()
-#all_formant_data[['Penn-Neighborhood']] <- read.csv('PNCformants.csv')
-all_formant_data[['AudioBNC-Southern']] <- read.csv('bncSouthFormants.csv')
-#all_formant_data[['Doubletalk']] <- read.csv('Doubletalkformants.csv')
-#all_formant_data[['Switchboard']] <- read.csv('SBformants.csv')
+
+all_formant_data[['PEBL']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-PEBL_formants.csv')
+#all_formant_data[['dapp-Scotland']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-dapp-Scotland_formants.csv')
+#all_formant_data[['dapp-Ireland']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-dapp-Ireland_formants.csv')
+#all_formant_data[['dapp-EnglandLDS']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-dapp-EnglandLDS_formants.csv')
+#all_formant_data[['dapp-EnglandRP']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-dapp-EnglandRP_formants.csv')
+#all_formant_data[['Irish']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-Irish_formants.csv')
+#all_formant_data[['HacHav']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-HacHav_formants.csv')
+
 
 measurement_point <- 0.33
 
@@ -16,8 +21,8 @@ for (corpus_name in names(all_formant_data)){
 	formant_data <- all_formant_data[[corpus_name]]
 
 	# NAME THE OUTPUT FILES
-	prototypes_filename <- paste0('spade-',corpus_name,'_prototypes.csv')
-	plot_filename <- paste0('corpus_means_for_prototypes_',corpus_name,'.pdf')
+	prototypes_filename <- paste0('spade-',corpus_name,'/spade-',corpus_name,'_prototypes.csv')
+	plot_filename <- paste0('spade-',corpus_name,'/corpus_means_for_prototypes_',corpus_name,'.pdf')
 
 	# ADD AND RENAME DATA COLUMNS AS NEEDED
 	formant_data$measurement <- measurement_point
