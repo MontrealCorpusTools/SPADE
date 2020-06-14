@@ -5,14 +5,12 @@ source('formant_functions.r')
 # LOAD THE VOWEL MEASUREMENTS
 all_formant_data <- list()
 
-all_formant_data[['PEBL']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-PEBL_formants.csv')
-#all_formant_data[['dapp-Scotland']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-dapp-Scotland_formants.csv')
-#all_formant_data[['dapp-Ireland']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-dapp-Ireland_formants.csv')
-#all_formant_data[['dapp-EnglandLDS']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-dapp-EnglandLDS_formants.csv')
-#all_formant_data[['dapp-EnglandRP']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-dapp-EnglandRP_formants.csv')
-#all_formant_data[['Irish']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-Irish_formants.csv')
-#all_formant_data[['HacHav']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-HacHav_formants.csv')
-
+all_formant_data[['PAC-Ayr']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-PAC-Ayr_formants.csv')
+all_formant_data[['ICE-Sco']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-ICE-Sco_formants.csv')
+all_formant_data[['LUCID']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-LUCID_formants.csv')
+all_formant_data[['UBC']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-UBC_formants.csv')
+all_formant_data[['Devon']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-Devon_formants.csv')
+all_formant_data[['Scottish-Polish']] <- read.csv('/projects/spade/datasets/datasets_static_formants/spade-Scottish-Polish_formants.csv')
 
 measurement_point <- 0.33
 

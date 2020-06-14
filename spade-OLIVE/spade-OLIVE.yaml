@@ -9,4 +9,4 @@ vowel_inventory: ["I", "E", "{", "V", "Q", "U", "@", "i","#", "$", "u", "3", "1"
 extra_syllabic_segments: ["B","F","H","L", "P", "C"]
 stressed_vowels: []
 sibilant_segments: [s, z, S, Z]
-pauses: '^_$'
+pauses: '^<SIL>$'

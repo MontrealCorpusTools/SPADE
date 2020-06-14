@@ -1,5 +1,5 @@
 corpus_directory: "/projects/spade/repo/git/spade-AudioBNC-Northern/"
-input_format: "MFA"
+input_format: "fave"
 dialect_code: "lds"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
 speaker_enrichment_file: "/projects/spade/repo/git/spade-AudioBNC-Northern/corpus-data/enrichment/speaker_info.csv"
@@ -9,4 +9,4 @@ vowel_inventory: ["ER0", "IH2", "EH1", "AE0", "UH1", "AY2", "AW2", "UW1", "OY2",
 stressed_vowels: ["EH1", "UH1", "UW1", "OY1", "ER1", "AW1", "IY1", "AA1", "AE1", "OW1",  "AO1", "AH1", "EY1", "AY1", "IH1"]
 extra_syllabic_segments: []
 sibilant_segments: ["S", "Z", "SH", "ZH"]
-pauses: '^sil$'
+pauses: '^SIL$'
