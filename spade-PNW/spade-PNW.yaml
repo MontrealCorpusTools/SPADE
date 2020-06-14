@@ -1,0 +1,16 @@
+corpus_directory: "/projects/spade/repo/git/spade-PNW"
+input_format: "MFA"
+dialect_code: "gam"
+unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
+speaker_enrichment_file: "/projects/spade/repo/git/spade-PNW/corpus-data/enrichment/speaker_info.csv"
+vowel_prototypes_path: "/projects/spade/repo/git/spade-PNW/corpus-data/enrichment/vowel_prototypes.csv"
+speakers: [PNW-007, PNW-013, PNW-014, PNW-015, PNW-018, PNW-027, PNW-028, PNW-035, PNW-036, PNW-037, PNW-039, PNW-040, PNW-041, PNW-042, PNW-043, PNW-044, PNW-045, PNW-046, PNW-047, PNW-048, PNW-049, PNW-050, PNW-051, PNW-052, PNW-053, PNW-054, PNW-055, PNW-056, PNW-057, PNW-058, PNW-059, PNW-060, PNW-061, PNW-063, PNW-064, PNW-065, PNW-066, PNW-067, PNW-068, PNW-070, PNW-071, PNW-072, PNW-073, PNW-074, PNW-075, PNW-076, PNW-077, PNW-078, PNW-079, PNW-080, PNW-081, PNW-082, PNW-083, PNW-084, PNW-085, PNW-086, PNW-088, PNW-089, PNW-090, PNW-092, PNW-094, PNW-096, PNW-097, PNW-098, PNW-099, PNW-102, PNW-106, PNW-107, PNW-108, PNW-109, PNW-110]
+vowel_inventory: ["ER0", "IH2", "EH1", "AE0", "UH1", "AY2", "AW2", "UW1", "OY2", "OY1", "AO0", "AH2", "ER1", "AW1",
+                   "OW0", "IY1", "IY2", "UW0", "AA1", "EY0", "AE1", "AA0", "OW1", "AW0", "AO1", "AO2", "IH0", "ER2",
+                   "UW2", "IY0", "AE2", "AH0", "AH1", "UH2", "EH2", "UH0", "EY1", "AY0", "AY1", "EH0", "EY2", "AA2",
+                   "OW2", "IH1"]
+stressed_vowels: ["EH1", "UH1", "UW1", "OY1", "ER1", "AW1", "IY1", "AA1", "AE1", "OW1",  "AO1", "AH1", "EY1", "AY1", "IH1"]
+extra_syllabic_segments: []
+sibilant_segments: ["S", "Z", "SH", "ZH"]
+pauses: '^sil|sp$'
+
