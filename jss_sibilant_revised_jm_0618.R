@@ -64,31 +64,65 @@ rebuildMultitaper <- function(token_id, corpus_data, all_multitapers){
         # tapers   = .dpss)
 }
 
-parallelized <- FALSE
+rebuildMultitaperByRow <- function(row, all_multitapers){
+    new(Class = 'Multitaper',
+        values   = as.numeric(all_multitapers$values[row,]),
+        binWidth = all_multitapers$binWidth,
+        nyquist  = all_multitapers$nyquist,
+        k        = all_multitapers$k,
+        nw       = all_multitapers$nw)
+        # tapers   = .dpss)
+}
+
+parallelized <- TRUE 
 n_cores <- 20
 
-measuring <- TRUE 
+measuring <- TRUE
 plotting <- TRUE
 
-sound_file_directories <- list(#Devon='/projects/spade/repo/git/spade-Devon/audio_and_transcripts',
-                               WYRED='/projects/spade/repo/git/spade-WYRED/audio_and_transcripts') 
-                               #LUCID='/projects/spade/repo/git/spade-LUCID/audio_and_transcripts', 
-                               #PAC_Ayr='/projects/spade/repo/git/spade-PAC-Ayr/audio_and_transcripts') 
-corpus_data_file_paths <- list(#Devon='/projects/spade/datasets/datasets_sibilants/spade-Devon_sibilants.csv', 
-                              WYRED='/projects/spade/datasets/datasets_sibilants/spade-WYRED_sibilants.csv') 
-                              #LUCID='/projects/spade/datasets/datasets_sibilants/spade-LUCID_sibilants.csv', 
-                              #PAC_Ayr='/projects/spade/datasets/datasets_sibilants/spade-PAC-Ayr_sibilants.csv') 
 
-corpora_with_subdirs <- c('Buckeye', 'IViE_Liverpool')
+sound_file_directories <- list(Buckeye='/projects/spade/repo/git/spade-Buckeye/audio_and_transcripts', 
+#                                SantaBarbara='/projects/spade/repo/git/spade-SantaBarbara/audio_and_transcripts',
+#                                SCOTS='/projects/spade/repo/git/spade-SCOTS/audio_and_transcripts', 
+#                                SOTC='/projects/spade/repo/git/spade-SOTC/audio_and_transcripts', 
+#                                CanadianPrairies='/projects/spade/repo/git/spade-Canadian-Prairies/audio_and_transcripts', 
+#                                CORAAL='/projects/spade/repo/git/spade-CORAAL/audio_and_transcripts', 
+#                                Edinburgh='/projects/spade/repo/git/spade-Edinburgh/audio_and_transcripts', 
+#                                Hastings='/projects/spade/repo/git/spade-Hastings/audio_and_transcripts', 
+#                                ModernRP='/projects/spade/repo/git/spade-ModernRP/audio_and_transcripts', 
+#                                Raleigh='/projects/spade/repo/git/spade-Raleigh/audio_and_transcripts') 
 
+# sound_file_directories[['dapp-EnglandRP']] <- '/projects/spade/repo/git/spade-dapp-EnglandRP/audio_and_transcripts'
+# sound_file_directories[['WYRED']] <- '/projects/spade/repo/git/spade-WYRED/audio_and_transcripts'
+# sound_file_directories[['IViE-Liverpool']] <- '/projects/spade/repo/git/spade-IViE-Liverpool/audio_and_transcripts'
+
+
+corpus_data_file_paths <- list(Buckeye='/projects/spade/data/derived-measures/spade-Buckeye_sibilants.csv', 
+#                                SantaBarbara='/projects/spade/data/derived-measures/spade-SantaBarbara_sibilants.csv',
+#                                SCOTS='/projects/spade/data/derived-measures/spade-SCOTS_sibilants.csv', 
+#                                SOTC='/projects/spade/datasets/datasets_sibilants/spade-SOTC_sibilants.csv', 
+#                                CanadianPrairies='/projects/spade/datasets/datasets_sibilants/spade-Canadian-Prairies_sibilants.csv', 
+#                                CORAAL='/projects/spade/datasets/datasets_sibilants/spade-CORAAL_sibilants.csv', 
+#                                Edinburgh='/projects/spade/data/derived-measures/spade-Edinburgh_sibilants.csv', 
+#                                Hastings='/projects/spade/data/derived-measures/spade-Hastings_sibilants.csv', 
+#                                ModernRP='/projects/spade/datasets/datasets_sibilants/spade-ModernRP_sibilants.csv', 
+#                                Raleigh='/projects/spade/datasets/datasets_sibilants/spade-Raleigh_sibilants.csv') 
+
+# corpus_data_file_paths[['dapp-EnglandRP']] <- '/projects/spade/datasets/datasets_sibilants/spade-dapp-EnglandRP_sibilants.csv'
+# corpus_data_file_paths[['WYRED']] <- '/projects/spade/datasets/datasets_sibilants/spade-WYRED_sibilants.csv'
+# corpus_data_file_paths[['IViE-Liverpool']] <- '/projects/spade/datasets/datasets_sibilants/spade-IViE-Liverpool_sibilants.csv'
+
+corpora_with_subdirs <- c('Buckeye', 'IViE-Liverpool')
 
 if (measuring){
     for (corpus_name in names(corpus_data_file_paths)){
     # for (corpus_name in c('DNEED')){
         sound_file_directory <- sound_file_directories[[corpus_name]]
         corpus_data <- read.csv(corpus_data_file_paths[[corpus_name]])
-	#For WYRED leading zero issue v
-	corpus_data$discourse <- sprintf("%03d",corpus_data$discourse)
+
+        corpus_data$discourse <- sprintf("%03d",corpus_data$discourse)
+
+        corpus_data <- subset(corpus_data, !discourse%in%c('041'))
         if(parallelized) {
             registerDoParallel(n_cores)
         }else{
@@ -96,8 +130,7 @@ if (measuring){
         }
         #JM: open the first token to gather information
         if ('sound_file_name'%in%names(corpus_data)){
-            #sound_file <- paste0(corpus_data[1, "sound_file_name"], '.wav')
-            sound_file <- paste0(corpus_data[1, "sound_file_name"])
+            sound_file <- paste0(corpus_data[1, "sound_file_name"], '.wav')
         }else{
             sound_file <- paste0(corpus_data[1, "discourse"], '.wav')
         }
@@ -109,7 +142,7 @@ if (measuring){
         begin <- corpus_data[1, "phone_begin"]
         end <- corpus_data[1, "phone_end"]
         file_midpoint <- begin + (end-begin) / 2
-
+        
         sock.x <- readWave(filename = file_path, from = file_midpoint - 0.0125, to = file_midpoint + 0.0125, units='seconds')
         sock.x <- downsample(sock.x, 22050)
         sock <- Waveform(sock.x)
@@ -152,6 +185,11 @@ if (measuring){
                 
                 begin <- corpus_data[row, "phone_begin"]
                 end <- corpus_data[row, "phone_end"]
+
+                # print(file_path)
+                # print(begin)
+                # print(end)
+
                 file_midpoint <- begin + (end-begin) / 2
                 # Read the contents of the wav file.
             if (corpus_name%in%corpora_with_subdirs){
@@ -163,11 +201,13 @@ if (measuring){
         		next
         	}
 
-         
+            # print('a')
+            # print(file_path)
             #JM: this seems like a more straightforward way to open and downsample, but I may be misunderstanding why it was originally done differently
             sock.x <- readWave(filename = file_path, from = file_midpoint - 0.0125, to = file_midpoint + 0.0125, units='seconds')
             sock.x <- downsample(sock.x, 22050)
             sock <- Waveform(sock.x)
+            # print('b')
             
         	#want to run first of all without downsampling. IcE-Can apparently is 44100Hz sampling rate
 
@@ -186,6 +226,7 @@ if (measuring){
                   #ZeroPad(lengthOut = sampleRate(sock)) %>% # again, optional
                   Multitaper(k = 8, nw = 4)
                   
+            # print('c')
         ## measures for pilot1: cog, peak_full, peak_mid
 
         ## measures intended:
@@ -214,6 +255,7 @@ if (measuring){
                     #    for /s/ the spectral maximum will coincide with the PEAK for some, but not all (female) speakers.
                     #    I would be loath to increase the range to >7000Hz, since then this really stops being anything near 'mid-frequency' range.
 
+            # print('d')
                     corpus_data[row, "spectral_peak_mid"] <- peakHz(sock_spectrum, minHz = 2000, maxHz = 7000)
                     corpus_data[row, "spectral_peak_2k8k"] <- peakHz(sock_spectrum, minHz = 2000, maxHz = 8000)
                     corpus_data[row, "spectral_peak_2k9k"] <- peakHz(sock_spectrum, minHz = 2000, maxHz = 9000)
@@ -228,6 +270,7 @@ if (measuring){
 
                     # 5. ampdiff: for s and sh, measured for all sibilants, to be separated out afterwards. s_range assumes anti-resonance <3000; sh_range assumes it's lower. These are pilot measures, to look at, against troughs/peak/PEAKS. Very likely to reformulate this, given that antiresonance can shift quite a lot, by speaker, especially for /s/. Certainly, some speakers have their main antiresonance above 3000Hz in Raleigh.
 
+            # print('e')
                     minamp_low_s <- minAmp(sock_spectrum, scale = "dB", minHz = 1000, maxHz = 3000)
                     maxamp_mid_s <- maxAmp(sock_spectrum, scale = "dB", minHz= 3000, maxHz=7000)
                     corpus_data[row, "spectral_ampdiff_s"] <- maxamp_mid_s - minamp_low_s
@@ -238,6 +281,7 @@ if (measuring){
 
                     ## 6. front slope, low-range (1000-4000Hz). This is again, just for Jane to have a look at. Proper slopes, ending on an appropriate higher upper-bound, relating to speaker peaks, will be calculated from Multitaper spectra, later.
 
+            # print('f')
                     spectralSlope <- function(mts, minHz = -Inf, maxHz = Inf) {
                         .indices <- (function(.f) {which(minHz < .f & .f < maxHz)})(frequencies(mts))
                         .freqs <- frequencies(mts)[.indices] %>% (function(.x) {(.x - mean(.x)) / sd(.x)})
@@ -249,7 +293,9 @@ if (measuring){
                     }
 
                     corpus_data[row, "spectral_lower_slope"] <- spectralSlope(sock_spectrum, minHz = 1000, maxHz = 4000)
+                    corpus_data[row, "spectral_cog_8k"] <- centroid(sock_spectrum, scale = "decibel", minHz = 1000, maxHz=8000)
 
+            # print('g')
                 #JM: store the multitaper
                 if (length(sock_spectrum@values) < length(mts_colnames)){
                     sock_spectrum@values <- c(sock_spectrum@values, rep(0,length(mts_colnames)-length(sock_spectrum@values)))
@@ -259,7 +305,8 @@ if (measuring){
                 #JM: how to get frequencies and values out
                 # frequencies <- seq(from = 0, to = sock_spectrum@nyquist, by = sock_spectrum@binWidth)
                 # values <- sock_spectrum@values
-                
+              
+            # print('h')  
             }
             corpus_data
         }
@@ -276,12 +323,12 @@ if (measuring){
 }
 
 
-
-corpus_phone_sets <- list(Ss=c("PAC_Ayr", "OLIVE", "dapp_EnglandLDS", "dapp_EnglandRP", "dapp_Ireland", "dapp_Wales", "dapp_Scotland", "dapp_ScotlandNE", "IViE_Liverpool", "Edinburgh", "GlasgowBiD", "Irish", "SCOTS", "SOTC"),
+corpus_phone_sets <- list(Ss=c("Edinburgh", "GlasgowBiD", "Irish", "SCOTS", "SOTC", 'dapp-EnglandRP', 'IViE-Liverpool',
+                               'dapp_EnglandLDS', 'dapp_Ireland', 'dapp_Scotland', 'dapp_ScotlandNE', 'dapp_Wales',     #these are newly added
+                               'IViE_Belfast', 'IViE_Bradford', 'IViE_Cambridge', 'IViE_Cardiff', 'IViE_Dublin', 'IViE_Leeds', 'IViE_London', 'IViE_Newcastle'),   #these are newly added
                           ssh=c("Buckeye"),
-                          SSH=c("UBC", "Devon", "LUCID", "CORAAL", "ModernRP", "SantaBarbara", "ICE-Can", "CanadianPrairies", "DyViS", 
-                                "NorthWales", "NEngs_Derby", "Raleigh", "Sunset", "WYRED"))
-
+                          SSH=c("CORAAL", "ModernRP", "SantaBarbara", "ICE-Can", "CanadianPrairies", "DyViS", "NorthWales", "Raleigh", "Sunset", "WYRED",
+                                'Doubletalk', 'NEngs_Derby'))  #these are newly added
 
 if(file.exists('sibilant_speakers_to_exclude.csv')){
     speakers_to_exclude <- read.csv('sibilant_speakers_to_exclude.csv')
@@ -306,7 +353,7 @@ if (plotting){
 
     for (corpus_name in names(corpus_data_file_paths)){
 
-        #mts_path <- '/projects/spade/datasets/datasets_multitaper_sibilants'
+        # mts_path <- '/projects/spade/datasets/datasets_multitaper_sibilants'
         # mts_path <- '/home/jeff/SPADE/sibilants/datasets_multitaper_sibilants'
         mts_path <- '.'
 
@@ -315,6 +362,12 @@ if (plotting){
 
         load(file.path(mts_path,paste0(corpus_name,"_all_multitapers",".RData")))
         corpus_data <- read.csv(file.path(mts_path,paste0(corpus_name,"_spectral_sibilants",".csv")))
+
+        if (grepl('dapp',corpus_name)){
+            # corpus_data <- corpus_data[,colnames(corpus_data)!='speaker']
+            # corpus_data <- merge(corpus_data, dapp_speaker_discourse)
+            corpus_data$speaker <- corpus_data$uid
+        }
 
         # excluding excluded speakers
         corpus_speakers_to_exclude <- subset(speakers_to_exclude, corpus==corpus_name)
@@ -358,7 +411,12 @@ if (plotting){
         
         corpus_data$phone_label_ipa <- relevel(corpus_data$phone_label_ipa, 's')
 
-        cairo_pdf(paste0(corpus_name,'_all_mts_test_plot2.pdf'), h=9, w=7, onefile=T) 
+        # for (row in which(!is.na(corpus_data$spectral_peak_full))){
+        #     sock_spectrum <- rebuildMultitaperByRow(row, all_multitapers)
+        #     corpus_data[row, "spectral_cog_8k"] <- centroid(sock_spectrum, scale = "decibel", minHz = 1000, maxHz=8000)
+        # }
+
+        cairo_pdf(paste0(corpus_name,'_all_mts_test_plot2','.pdf'), h=9, w=7, onefile=T) 
         
         layout.matrix <- matrix(c(1, 2, 3, 1, 2, 4, 1, 2, 5), nrow = 3, ncol = 3)
         layout(mat = layout.matrix, heights = c(1.5, 1.5, 1), widths = c(1, 2, 1)) 
@@ -368,14 +426,6 @@ if (plotting){
         for (sp in unique(corpus_data$speaker)){
             subdata <- corpus_data[corpus_data$speaker==sp & corpus_data$phone_label_ipa%in%c('s','ʃ'),]
             subvals <- all_multitapers$values[corpus_data$speaker==sp & corpus_data$phone_label_ipa%in%c('s','ʃ'),]
-            
-            # for (row in which(!is.na(corpus_data$spectral_peak_full))){
-            #     # print(paste(corpus_data[row,'phone_id']))
-            #     sock_spectrum <- rebuildMultitaper(paste(corpus_data[row,'phone_id']), corpus_data, all_multitapers)
-            #     # print(summary(sock_spectrum))
-            #     corpus_data[row, "spectral_peak_2000_8000"] <- peakHz(sock_spectrum, minHz = 2000, maxHz = 8000) 
-            #     corpus_data[row, "spectral_peak_2000_9000"] <- peakHz(sock_spectrum, minHz = 2000, maxHz = 9000) 
-            # }
             
             freqs <- all_multitapers$frequencies
             print(c(corpus_name,sp))
@@ -442,7 +492,7 @@ if (plotting){
                     }
                     includedspeakernames <- c(includedspeakernames, sp)
                 }
-
+                # print('xxx')
                 if (length(intersect(c('s','ʃ'),subdata$phone_label_ipa))>1 & sum(!is.na(subdata$cog))){
                     # x <- acf(as.numeric(colMeans(subamps)), lag.max=50, plot=F)
                     # xlm <- lm(x$acf ~ x$lag)
@@ -450,16 +500,19 @@ if (plotting){
                     # points(coef(xlm)[1] + x$lag*coef(xlm)[2], type='l', col='green')
                     # points(residuals(xlm), type='l', col='blue')
                     # legend('topright', c('autocorrelation', 'lm fit', 'residuals'), lty=1, col=c('red','green','blue'))
+                    # print('x0')
                     vioplot(subdata[subdata$phone_label_ipa%in%c('s'),'spectral_peak_full'], 
                             subdata[subdata$phone_label_ipa%in%c('ʃ'),'spectral_peak_full'],
-                            subdata[subdata$phone_label_ipa%in%c('s'),'spectral_peak_mid'], 
-                            subdata[subdata$phone_label_ipa%in%c('ʃ'),'spectral_peak_mid'],
+                            # subdata[subdata$phone_label_ipa%in%c('s'),'spectral_peak_mid'], 
+                            # subdata[subdata$phone_label_ipa%in%c('ʃ'),'spectral_peak_mid'],
                             subdata[subdata$phone_label_ipa%in%c('s'),'spectral_peak_2k8k'], 
                             subdata[subdata$phone_label_ipa%in%c('ʃ'),'spectral_peak_2k8k'],
                             subdata[subdata$phone_label_ipa%in%c('s'),'spectral_peak_2k9k'], 
                             subdata[subdata$phone_label_ipa%in%c('ʃ'),'spectral_peak_2k9k'],
                             subdata[subdata$phone_label_ipa%in%c('s'),'spectral_cog'], 
                             subdata[subdata$phone_label_ipa%in%c('ʃ'),'spectral_cog'],
+                            subdata[subdata$phone_label_ipa%in%c('s'),'spectral_cog_8k'], 
+                            subdata[subdata$phone_label_ipa%in%c('ʃ'),'spectral_cog_8k'],
                             # subdata[subdata$phone_label_ipa%in%c('s'),'spectral_peak_lower_mid'], 
                             # subdata[subdata$phone_label_ipa%in%c('ʃ'),'spectral_peak_lower_mid'],
                             horizontal=T, las=1, ylab='Frequency (Hz)', main = 'peak measurements',
@@ -467,8 +520,8 @@ if (plotting){
                             col=rep(c(rgb(c(1,0),0,c(0,1),0.5)),5),
                             border=rep(c(rgb(c(0.4,0),0,c(0,0.6),1)),5),
                             names=rep(c('s','ʃ'),5))
-                    text(rep(1500,5), 2*(1:5)-0.5,labels=c('spectral_peak_full','spectral_peak_mid','spectral_peak_2k8k','spectral_peak_2k9k','spectral_cog'))
-
+                    text(rep(1500,5), 2*(1:5)-0.5,labels=c('spectral_peak_full','spectral_peak_2k8k','spectral_peak_2k9k','spectral_cog','spectral_cog_8k'))
+# print('x1')
                     vioplot(subdata[subdata$phone_label_ipa%in%c('s'),'spectral_spread'], 
                             subdata[subdata$phone_label_ipa%in%c('ʃ'),'spectral_spread'],
                             main = 'spectral spread',
@@ -498,8 +551,9 @@ if (plotting){
                 }
             }
         }
+                # print('yyy')
         dev.off()
-        cairo_pdf(paste0(corpus_name,'_compare_peak_measures.pdf'), h=6, w=6, onefile=T)  
+        cairo_pdf(paste0(corpus_name,'_compare_peak_measures','.pdf'), h=6, w=6, onefile=T)  
         plot(corpus_summary$spectral_peak_mid, corpus_summary$peak_of_means, xlab='mean of peaks', ylab='peak of means', 
              col=c(rgb(c(0.7,0),0,c(0,0.7),1))[as.numeric(corpus_summary[,'phone_label_ipa'])], pch=19)
         legend('bottomright',c('s','ʃ'), col=c(rgb(c(0.7,0),0,c(0,0.7),1)), pch=19)
@@ -511,7 +565,7 @@ if (plotting){
         allcolmeans[allcolmeans==-Inf] <- NA
 
 
-        cairo_pdf(paste0(corpus_name,'_speaker_rating.pdf'), onefile=T)
+        cairo_pdf(paste0(corpus_name,'_speaker_rating','.pdf'), onefile=T)
         for (sp in rownames(allcolmeans)){  
             sp_colmeans <- allcolmeans[sp,]  
             x <- acf(as.numeric(sp_colmeans), lag.max=50, plot=F, na.action=na.pass)
@@ -555,6 +609,8 @@ if (plotting){
                     legend('topright', c('autocorrelation', 'lm fit', 'residuals'), lty=1, col=c('red','green','blue'))
         }
         corpus_speaker_ratings <- subset(speaker_ratings, corpus==corpus_name)
+        write.csv(corpus_speaker_ratings, paste0(corpus_name,"_speaker_ratings",".csv"), row.names=F)
+        # write.csv(corpus_data, paste0(corpus_name,"_spectral_sibilants_cog_8k",".csv"), row.names=F)
         plot(corpus_speaker_ratings$comb_filter_badness, corpus_speaker_ratings$cutoff_freq_20, type='n')
         text(corpus_speaker_ratings$comb_filter_badness, corpus_speaker_ratings$cutoff_freq_20, label=corpus_speaker_ratings$speaker)
 
