@@ -2,8 +2,8 @@
 ## SPADE sibilant analysis script ##
 ####################################
 
-## Performs processes and extracts linguistic and acoustic properties of sibilants (/s/, /sh/)
-## from corpora collected as part of the SPeech Across Dialects of English (SPADE) project.
+## Processes and extracts linguistic and acoustic properties of sibilants from
+## corpora collected as part of the SPeech Across Dialects of English (SPADE) project.
 
 ## Input:
 ## - corpus name (e.g., Buckeye SOTC)
@@ -61,13 +61,17 @@ if __name__ == '__main__':
         config = CorpusConfig(corpus_name, **params)
         config.formant_source = 'praat'
 
-        # Process corpus data (lexicon, speakers, linguistic structure)
+        # Process corpus and enrich with information
+        # about the lexical properties of words in the
+        # corpus, speakers, and linguistic structure
         common.loading(config, corpus_conf['corpus_directory'], corpus_conf['input_format'])
         common.lexicon_enrichment(config, corpus_conf['unisyn_spade_directory'], corpus_conf['dialect_code'])
         common.speaker_enrichment(config, corpus_conf['speaker_enrichment_file'])
         common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
         # Analyse sibilant data, generate query and export data
+        # the sibilants used in the analysis are defined in the
+        # corpus's YAML configuration file
         common.sibilant_acoustic_analysis(config, corpus_conf['sibilant_segments'], ignored_speakers=ignored_speakers)
         common.sibilant_export(config, corpus_name, corpus_conf['dialect_code'], included_speakers, ignored_speakers=ignored_speakers)
         print('Finishing up!')
