@@ -340,8 +340,19 @@ def sibilant_acoustic_analysis(config, sibilant_segments, ignored_speakers=None)
 
 
 def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, ignored_speakers=None, drop_formant=False, output_tracks = False, subset="vowel", reset_formants=False):
+    ## Function for performing the formant estimation and analysis.
+    ## Input:
+    ## - list of vowels to analyse
+    ## - path to the vowel prototype file
+    ## Output:
+    ## - static (single point) formant and bandwith (F1-3, B1-3)
+    ##   for vowel phones included in the corpus
     with CorpusContext(config) as c:
         if vowels is not None:
+
+            ## Define the object of formant analysis:
+            ## phones in the list of vowels that are
+            ## greater than 50ms in duration
             if ignored_speakers:
                 q = c.query_graph(c.phone).filter(c.phone.label.in_(vowels))
                 q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
@@ -349,37 +360,47 @@ def formant_acoustic_analysis(config, vowels, vowel_prototypes_path, ignored_spe
                 q.create_subset(subset)
             else:
                 c.encode_class(vowels, subset)
+
+        ## Check if formant estimation has already been completed
+        ## for this corpus, and skip if so.
         if not reset_formants and not output_tracks and c.hierarchy.has_token_property('phone', 'F1'):
             print('Formant point analysis already done, skipping.')
             return
         elif not reset_formants and output_tracks and 'formants' in c.hierarchy.acoustics:
             print('Formant track analysis already done, skipping.')
             return
+
         print('Beginning formant analysis')
         beg = time.time()
         time_taken = time.time() - beg
         save_performance_benchmark(config, 'vowel_encoding', time_taken)
         print('vowels encoded')
         beg = time.time()
+
+        ## Call the formant estimation function from the PolyglotDB package. Please see the PolyglotDB documentation
+        ## (https://polyglotdb.readthedocs.io/en/latest/acoustics_encoding.html#encoding-formants) for details
+        ## about how formants are estimated
         metadata = analyze_formant_points_refinement(c, subset, duration_threshold=duration_threshold,
                                                      num_iterations=nIterations,
                                                      vowel_prototypes_path=vowel_prototypes_path,
                                                      drop_formant=drop_formant,
-                                                     output_tracks = output_tracks
-                                                     )
+                                                     output_tracks = output_tracks)
         end = time.time()
         time_taken = time.time() - beg
         print('Analyzing formants took: {}'.format(end - beg))
         save_performance_benchmark(config, 'formant_acoustic_analysis', time_taken)
 
 
-def formant_export(config, corpus_name, dialect_code, speakers, vowels, ignored_speakers=None, output_tracks=True):  # Gets information into a csv
+def formant_export(config, corpus_name, dialect_code, speakers, vowels, ignored_speakers=None, output_tracks=True):
+    ## Create and export a query using formants derived using the formant_acoustic_analysis function.
 
+    ## Choose file output name depending on whether the query
+    ## concerns a single-point or multi-point track measurements
     if output_tracks:
         csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
     else:
         csv_path = os.path.join(base_dir, corpus_name, '{}_formants.csv'.format(corpus_name))
-    # Unisyn columns
+    ## Get list of relevant vowel columns from the UNISYN software
     other_vowel_codes = ['unisynPrimStressedVowel2_{}'.format(dialect_code),
                          'UnisynPrimStressedVowel3_{}'.format(dialect_code),
                          'UnisynPrimStressedVowel3_XSAMPA',
@@ -389,12 +410,19 @@ def formant_export(config, corpus_name, dialect_code, speakers, vowels, ignored_
         print('Beginning formant export')
         beg = time.time()
         q = c.query_graph(c.phone)
+        ## exclude tokens below 50ms
         q = q.filter(c.phone.duration >= 0.05)
         if speakers:
             q = q.filter(c.phone.speaker.name.in_(speakers))
         if ignored_speakers:
             q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
         q = q.filter(c.phone.label.in_(vowels))
+
+        ## Define the columns to be included in the query (i.e., exported in the CSV).
+        ## Columns include speaker and lexical metadata, information about the phone (start, end, duration, etc),
+        ## the phone's surrounding phonological environment, as well as columns referring to the formant values
+        ## Note: the single-point CSV write one row per token, whilst the track CSV contains 21 rows per token
+        ## (one per formant point measurement)
         if output_tracks:
             q = q.columns(c.phone.speaker.name.column_name('speaker'), c.phone.discourse.name.column_name('discourse'),
                           c.phone.id.column_name('phone_id'), c.phone.label.column_name('phone_label'),
@@ -416,6 +444,8 @@ def formant_export(config, corpus_name, dialect_code, speakers, vowels, ignored_
                           c.phone.F1.column_name('F1'), c.phone.F2.column_name('F2'), c.phone.F3.column_name('F3'),
                           c.phone.B1.column_name('B1'), c.phone.B2.column_name('B2'), c.phone.B3.column_name('B3'),
                           c.phone.A1.column_name('A1'), c.phone.A2.column_name('A2'), c.phone.A3.column_name('A3'), c.phone.Ax.column_name('Ax'), c.phone.num_formants.column_name('num_formants'), c.phone.drop_formant.column_name('drop_formant'))
+
+        ## Add UNISYN columns
         if c.hierarchy.has_type_property('word', 'UnisynPrimStressedVowel1'.lower()):
             q = q.columns(c.phone.word.unisynprimstressedvowel1.column_name('UnisynPrimStressedVowel1'))
         for v in other_vowel_codes:
@@ -425,6 +455,8 @@ def formant_export(config, corpus_name, dialect_code, speakers, vowels, ignored_
             if sp == 'name':
                 continue
             q = q.columns(getattr(c.phone.speaker, sp).column_name(sp))
+
+        ## Write query to a CSV file
         q.to_csv(csv_path)
         end = time.time()
         time_taken = time.time() - beg
