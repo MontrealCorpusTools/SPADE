@@ -52,7 +52,7 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
         ## The default list of vowels to be analysed:
         ## TIDE (ae), PRICE (ai), WASTE (ee), WAIST (ei), FLEECE (ii),
         ## CHOICE (oi), GOAT (ou), KNOW (ouw), MOUTH (ow), GOOSE (uu)
-        vowels_to_analyze = ['ae', 'ai', 'ee', 'ei', 'ii', 'oi', 'ou', 'ouw', 'ow', 'uu',]
+        vowels_to_analyze = ['ae', 'ai', 'ee', 'ei', 'ii', 'oi', 'ou', 'ouw', 'ow', 'uu']
     else:
         vowels_to_analyze = vowel_inventory
     print("Processing formant tracks for {}".format(corpus_name))
@@ -221,7 +221,7 @@ if __name__ == '__main__':
             vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_prototypes.csv'.format(corpus_name))
 
         ## Call formant track function defined above
-        formant_track_export(config,corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'],
+        formant_track_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'],
                             corpus_conf['speakers'], corpus_conf['vowel_inventory'], vowel_prototypes_path = vowel_prototypes_path,
                             reset_formants = reset_formants, ignored_speakers=ignored_speakers, vowel_subset = vowel_subset)
         print('Finishing up!')
