@@ -39,13 +39,22 @@ from polyglotdb import CorpusContext
 from polyglotdb.utils import ensure_local_database_running
 from polyglotdb import CorpusConfig
 
-def formant_track_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_prototypes_path, reset_formants, ignored_speakers=None):
+def formant_track_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_inventory, vowel_prototypes_path, reset_formants, ignored_speakers=None):
     ## Main function for processing and generating formant tracks
     csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
 
-    ## The default list of vowels to be analysed:
-    ## PRICE (ai), FACE (ei), FLEECE (ii), CHOICE (oi), MOUTH (ow)
-    vowels_to_analyze = ['ai', 'ei', 'ii', 'oi', 'ow']
+    ## Determine which vowels to apply over:
+    ## if -s flag is used, the predefined vowel
+    ## set will be analysed; otherwise, the list
+    ## of vowels specfied in the YAML file will
+    ## be analysed
+    if vowel_subset:
+        ## The default list of vowels to be analysed:
+        ## TIDE (ae), PRICE (ai), WASTE (ee), WAIST (ei), FLEECE (ii),
+        ## CHOICE (oi), GOAT (ou), KNOW (ouw), MOUTH (ow), GOOSE (uu)
+        vowels_to_analyze = ['ae', 'ai', 'ee', 'ei', 'ii', 'oi', 'ou', 'ouw', 'ow', 'uu',]
+    else:
+        vowels_to_analyze = vowel_inventory
     print("Processing formant tracks for {}".format(corpus_name))
     beg = time.time()
 
@@ -164,12 +173,14 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--reset', help="Reset the corpus", action='store_true')
     parser.add_argument('-f', '--formant_reset', help="Reset formant measures", action = 'store_true', default=False)
     parser.add_argument('-d', '--docker', help="This script is being called from Docker", action='store_true')
+    parser.add_argument('-s', '--subset', help="Use pre-defined vowel subset versus vowels defined in config", action='store_true', default=False)
 
     args = parser.parse_args()
     corpus_name = args.corpus_name
     reset = args.reset
     docker = args.docker
     reset_formants = args.formant_reset
+    vowel_subset = args.subset
     directories = [x for x in os.listdir(base_dir) if os.path.isdir(x) and x != 'Common']
 
     ## Check the corpus has a directory including
@@ -210,6 +221,7 @@ if __name__ == '__main__':
             vowel_prototypes_path = os.path.join(base_dir, corpus_name, '{}_prototypes.csv'.format(corpus_name))
 
         ## Call formant track function defined above
-        formant_track_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'],
-                              corpus_conf['speakers'], vowel_prototypes_path = vowel_prototypes_path, reset_formants = reset_formants, ignored_speakers=ignored_speakers)
+        formant_track_export(config,corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'],
+                            corpus_conf['speakers'], corpus_conf['vowel_inventory'], vowel_prototypes_path = vowel_prototypes_path,
+                            reset_formants = reset_formants, ignored_speakers=ignored_speakers, vowel_subset = vowel_subset)
         print('Finishing up!')
