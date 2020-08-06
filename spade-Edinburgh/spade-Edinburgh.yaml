@@ -10,6 +10,3 @@ extra_syllabic_segments: []
 stressed_vowels: []
 sibilant_segments: [s, z, S, Z]
 pauses: '^<SIL>$'
-
-#Change MFA to correct input format (MAUS-aligned)
-
