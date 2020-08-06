@@ -1,4 +1,4 @@
-corpus_directory: "/home/michael/work/corpora/spade-ICE-Can"
+corpus_directory: "/projects/spade/repo/git/spade-ICE-Can"
 input_format: "MFA"
 dialect_code: "can"
 unisyn_spade_directory: "/data/mmcauliffe/dev/unisyn_spade"
