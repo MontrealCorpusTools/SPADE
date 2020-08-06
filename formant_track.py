@@ -140,8 +140,9 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
 
         ## Pull word-level columns for UNISYN postlex rules
         ## that start with 'do' (e.g., 'do_scots_long')
-        for rule in c.hierarchy.word_properties if 'do' in rule:
-            q = q.columns(getattr(c.phone.word, rule).column_name(rule)
+        for rule in c.hierarchy.word_properties:
+            if 'do' in rule:
+                q = q.columns(getattr(c.phone.word, rule).column_name(rule)
 
         ## Get speaker metadata columns
         for sp, _ in c.hierarchy.speaker_properties:
