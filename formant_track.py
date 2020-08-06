@@ -39,7 +39,7 @@ from polyglotdb import CorpusContext
 from polyglotdb.utils import ensure_local_database_running
 from polyglotdb import CorpusConfig
 
-def formant_track_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_inventory, vowel_prototypes_path, reset_formants, ignored_speakers=None):
+def formant_track_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_inventory, vowel_prototypes_path, reset_formants, vowel_subset, ignored_speakers = None):
     ## Main function for processing and generating formant tracks
     csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
 
@@ -139,10 +139,18 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
                       formants_track)
 
         ## Pull word-level columns for UNISYN postlex rules
-        ## that start with 'do' (e.g., 'do_scots_long')
-        for rule in c.hierarchy.word_properties:
-            if 'do' in rule:
-                q = q.columns(getattr(c.phone.word, rule).column_name(rule)
+        ## for Canadian raising and Scottish vowel length rule
+        if c.hierarchy.has_type_property('word', 'do_scots_long_applied'):
+            q = q.columns(c.phone.word.do_scots_long_applied.column_name('word_do_scots_long'))
+
+        if c.hierarchy.has_type_property('word', 'do_aai_oow_applied'):
+            q = q.columns(c.phone.word.do_aai_oow_applied.column_name('word_do_aai_oow'))
+
+        if c.hierarchy.has_type_property('word', 'do_can_raising_applied'):
+            q = q.columns(c.phone.word.do_can_raising_applied.column_name('word_do_can_raising_applied'))
+
+        if c.hierarchy.has_type_property('word', 'do_can_raising_can'):
+            q = q.columns(c.phone.word.do_can_raising_can.column_name('word_do_can_raising_can'))
 
         ## Get speaker metadata columns
         for sp, _ in c.hierarchy.speaker_properties:
@@ -224,5 +232,5 @@ if __name__ == '__main__':
         ## Call formant track function defined above
         formant_track_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'],
                             corpus_conf['speakers'], corpus_conf['vowel_inventory'], vowel_prototypes_path = vowel_prototypes_path,
-                            reset_formants = reset_formants, ignored_speakers=ignored_speakers, vowel_subset = vowel_subset)
+                            reset_formants = reset_formants, vowel_subset = vowel_subset, ignored_speakers = ignored_speakers)
         print('Finishing up!')
