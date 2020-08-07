@@ -42,7 +42,6 @@ from polyglotdb import CorpusConfig
 
 def formant_track_export(config, corpus_name, corpus_directory, dialect_code, speakers, vowel_inventory, vowel_prototypes_path, reset_formants, vowel_subset, ignored_speakers = None):
     ## Main function for processing and generating formant tracks
-    csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
 
     ## Determine which vowels to apply over:
     ## if -s flag is used, the predefined vowel
@@ -54,8 +53,10 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
         ## TIDE (ae), PRICE (ai), WASTE (ee), WAIST (ei), FLEECE (ii),
         ## CHOICE (oi), GOAT (ou), KNOW (ouw), MOUTH (ow), GOOSE (uu)
         vowels_to_analyze = ['ae', 'ai', 'ee', 'ei', 'ii', 'oi', 'ou', 'ouw', 'ow', 'uu']
+        csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks.csv'.format(corpus_name))
     else:
         vowels_to_analyze = vowel_inventory
+        csv_path = os.path.join(base_dir, corpus_name, '{}_formant_tracks_all_vowels.csv'.format(corpus_name))
     print("Processing formant tracks for {}".format(corpus_name))
     beg = time.time()
 
