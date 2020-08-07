@@ -146,12 +146,9 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
                 ## UNISYN postlex rules are pre-pended with
                 ## 'do_', so look for attributes with this
                 for attr in prop[1]:
-                    r = re.findall('do_.*', attr[0])
-                    ## Add those rules as columns
                     try:
-                        rule = r[0]
-                        if c.hierarchy.has_type_property('word', rule):
-                            q = q.columns(getattr(c.phone.word, rule).column_name(rule))
+                        rule = re.findall('do_.*', attr[0])[0]
+                        q = q.columns(getattr(c.phone.word, rule).column_name(rule))
                     except IndexError:
                         continue
 
