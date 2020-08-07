@@ -21,6 +21,7 @@
 ##   acoustic, and speaker information associated
 ##   with that token
 
+import re
 import sys
 import os
 import argparse
@@ -138,19 +139,21 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
                       c.phone.syllable.duration.column_name('syllable_duration'),
                       formants_track)
 
-        ## Pull word-level columns for UNISYN postlex rules
-        ## for Canadian raising and Scottish vowel length rule
-        if c.hierarchy.has_type_property('word', 'do_scots_long_applied'):
-            q = q.columns(c.phone.word.do_scots_long_applied.column_name('word_do_scots_long'))
-
-        if c.hierarchy.has_type_property('word', 'do_aai_oow_applied'):
-            q = q.columns(c.phone.word.do_aai_oow_applied.column_name('word_do_aai_oow'))
-
-        if c.hierarchy.has_type_property('word', 'do_can_raising_applied'):
-            q = q.columns(c.phone.word.do_can_raising_applied.column_name('word_do_can_raising_applied'))
-
-        if c.hierarchy.has_type_property('word', 'do_can_raising_can'):
-            q = q.columns(c.phone.word.do_can_raising_can.column_name('word_do_can_raising_can'))
+        ## Get UNISYN postlexical rules for all vowels
+        ## iterate through word-level attributes
+        for prop in c.hierarchy.type_properties.items():
+            if prop[0] == 'word':
+                ## UNISYN postlex rules are pre-pended with
+                ## 'do_', so look for attributes with this
+                for attr in prop[1]:
+                    r = re.findall('do_.*', attr[0])
+                    ## Add those rules as columns
+                    try:
+                        rule = r[0]
+                        if c.hierarchy.has_type_property('word', rule):
+                            q = q.columns(getattr(c.phone.word, rule).column_name(rule))
+                    except IndexError:
+                        continue
 
         ## Get speaker metadata columns
         for sp, _ in c.hierarchy.speaker_properties:
