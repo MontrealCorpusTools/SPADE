@@ -71,7 +71,10 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
             q = c.query_graph(c.phone)
             q = q.filter(c.phone.syllable.stress == '1')
             q = q.filter(c.phone.subset == 'nucleus')
-            q = q.filter(c.phone.syllable.word.unisynprimstressedvowel1.in_(vowels_to_analyze))
+            if vowel_subset:
+                q = q.filter(c.phone.syllable.word.unisynprimstressedvowel1.in_(vowels_to_analyze))
+            else:
+                q = q.filter(c.phone.label.in_(vowels_to_analyze))
             if ignored_speakers:
                 q = q.filter(c.phone.speaker.name.not_in_(ignored_speakers))
             q = q.filter(c.phone.duration >= 0.05)
@@ -146,9 +149,10 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
             if prop[0] == 'word':
                 ## UNISYN postlex rules are pre-pended with
                 ## 'do_', so look for attributes with this
+                ## also search rule name for X-SAMPA output
                 for attr in prop[1]:
                     try:
-                        rule = re.findall('do_.*', attr[0])[0]
+                        rule = re.findall('do_.*|unisynprimstressedvowel3_xsampa_.*', attr[0])[0]
                         q = q.columns(getattr(c.phone.word, rule).column_name(rule))
                     except IndexError:
                         continue
