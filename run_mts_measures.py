@@ -65,7 +65,5 @@ def processFile(file):
         else:
             runMTS(corpus, file)
 
-## test
+## run over directory
 list(map(processFile, os.listdir(args.InputDir)))
-
-
