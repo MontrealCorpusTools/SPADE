@@ -32,11 +32,11 @@ def getCorpusName(file):
 
     return corpus
 
-def runMTS(corpus, d = False, n = False, s = False):
+def runMTS(corpus, file, d = False, n = False, s = False):
     """Call R process to run mts script"""
 
-    inPath = os.path.join(args.InputDir, corpus)
-    SoundPath = os.path.join(args.SoundDir, corpus)
+    inPath = os.path.join(args.InputDir, file)
+    SoundPath = os.path.join(args.SoundDir, corpus, "audio_and_transcripts")
 
     if d:
         subprocess.call(['Rscript', 'generate_mts_measures.r', '-d', inPath, SoundPath, args.OutputDir])
@@ -57,13 +57,13 @@ def processFile(file):
         corpus = getCorpusName(file)
 
         if corpus in subdirs:
-            runMTS(corpus, d = True)
+            runMTS(corpus, file, d = True)
         elif corpus in numbers:
-            runMTS(corpus, n = True)
+            runMTS(corpus, file, n = True)
         elif corpus in speakers:
-            runMTS(corpus, s = True)
+            runMTS(corpus, file, s = True)
         else:
-            runMTS(corpus)
+            runMTS(corpus, file)
 
 ## test
 list(map(processFile, os.listdir(args.InputDir)))
