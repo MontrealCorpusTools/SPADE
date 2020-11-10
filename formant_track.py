@@ -137,7 +137,6 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
                       c.phone.following.label.column_name('following_phone'),
                       c.phone.previous.label.column_name('previous_phone'),
                       c.phone.word.label.column_name('word_label'),
-                      c.phone.word.unisynprimstressedvowel1.column_name('unisyn_vowel'),
                       c.phone.utterance.speech_rate.column_name('speech_rate'),
                       c.phone.syllable.label.column_name('syllable_label'),
                       c.phone.syllable.duration.column_name('syllable_duration'),
@@ -152,7 +151,7 @@ def formant_track_export(config, corpus_name, corpus_directory, dialect_code, sp
                 ## also search rule name for X-SAMPA output
                 for attr in prop[1]:
                     try:
-                        rule = re.findall('do_.*|unisynprimstressedvowel3_xsampa_.*', attr[0])[0]
+                        rule = re.findall('do_.*|unisynprimstressedvowel.*', attr[0])[0]
                         q = q.columns(getattr(c.phone.word, rule).column_name(rule))
                     except IndexError:
                         continue
