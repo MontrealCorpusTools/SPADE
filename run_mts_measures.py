@@ -1,4 +1,4 @@
-## Script for batch-running multitaper script on all SPADE corpora
+## Script for running multitaper script on all SPADE corpora
 ## James Tanner Nov 2020
 
 import subprocess
@@ -10,7 +10,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument("InputDir", help = "Path to the list of sibilant files")
 parser.add_argument("SoundDir", help = "Path to the top level of sound files")
 parser.add_argument("OutputDir", help = "Path to write out CSVs")
+parser.add_argument("-b", "--batch", help = "Run script on defined batch", action = "store_true")
 args = parser.parse_args()
+
+## batch to run: fill if necessary
+b = []
 
 ## skipped corpora
 skipped = []
@@ -76,4 +80,7 @@ def processFile(file, f = []):
         runMTS(corpus, file, flag = f)
 
 ## run over directory
-list(map(processFile, os.listdir(args.InputDir)))
+if args.batch:
+    list(map(processFile, b))
+else:
+    list(map(processFile, os.listdir(args.InputDir)))
