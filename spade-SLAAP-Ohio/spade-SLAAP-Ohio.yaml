@@ -1,0 +1,12 @@
+corpus_directory: "/projects/spade/repo/git/spade-SLAAP-Ohio/"
+input_format: "MFA"
+dialect_code: "gam"
+unisyn_spade_directory: "/home/linguistics/jtanner/unisyn_spade"
+speaker_enrichment_file: "/projects/spade/repo/git/spade-SLAAP-Ohio/corpus-data/enrichment/speaker_info.csv"
+vowel_prototypes_path: "/projects/spade/repo/git/spade-SLAAP-Ohio/corpus-data/enrichment/vowel_prototypes.csv"
+speakers: [johb16, johg05, ohdash_f1, ohdash_m3, ohdast_f, ohdath_f, ohdath_m, ohdbar_f, ohdbel_f2, ohdbel_m, ohdcam_f, ohdcam_m, ohdcha_f, ohdchf_m, ohdcle_f, ohdclh_f, ohdclh_m, ohdeli_f, ohdeli_m, ohdgal_f, ohdgal_m, ohdgen_m, ohdgra_m, ohdgrf_m, ohdgrn_f, ohdgrn_m, ohdhud_f, ohdhud_m, ohdmar_f, ohdmar_m, ohdmas_m, ohdmcc_f, ohdmei_m1, ohdmei_m2, ohdmil_f, ohdmil_m1, ohdmon, ohdmtv_m, ohdnor_f, ohdnor_m, ohdnph_m, ohdpic_f, ohdpic_m, ohdsom_m1, ohdsom_m2, ohdste_m2, ohdsum_f, ohdtwi_f1, ohdwel_f, ohdwel_m, ohdwfc_f, ohdwls_f, ohdwls_m, ohdwoo_f1, ohdwoo_f2, wrv001, wrv002_f, wrv002_m, wrv004_f, wrv004_m, wrv005, wrv006_f, wrv006_m, wrv007, wrv008, yoh001, yoh002, yoh003, yoh004]
+vowel_inventory: ["ER0", "IH2", "EH1", "AE0", "UH1", "AY2", "AW2", "UW1", "OY2", "OY1", "AO0", "AH2", "ER1", "AW1", "OW0", "IY1", "IY2", "UW0", "AA1", "EY0", "AE1", "AA0", "OW1", "AW0", "AO1", "AO2", "IH0", "ER2", "UW2", "IY0", "AE2", "AH0", "AH1", "UH2", "EH2", "UH0", "EY1", "AY0", "AY1", "EH0", "EY2", "AA2", "OW2", "IH1"]
+stressed_vowels: ["EH1", "UH1", "UW1", "OY1", "ER1", "AW1", "IY1", "AA1", "AE1", "OW1",  "AO1", "AH1", "EY1", "AY1", "IH1"]
+extra_syllabic_segments: []
+sibilant_segments: ["S", "Z", "SH", "ZH"]
+pauses: '^<SIL>$'
