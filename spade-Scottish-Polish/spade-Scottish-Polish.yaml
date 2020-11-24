@@ -10,5 +10,5 @@ vowel_inventory: ["@", "@`", "e", "e`", "O`", "3`", "E", "E@", "E`", "I", "O", "
                   "i", "i:", "i@", "i@`", "i`", "a", "a`", "ae"]
 stressed_vowels: []
 extra_syllabic_segments: ["l=", "m=", "n="]
-sibilant_segments: ["s", "z", "S", "Z"]
+sibilant_segments: ["s", "z", "S", "Z", "SH", "ZH"]
 pauses: '^<SIL>$'
