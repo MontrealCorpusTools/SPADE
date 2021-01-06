@@ -15,8 +15,11 @@ failed = []
 ## first check that the script exists
 assert(os.path.isfile(args.script), "{} should be a script that exists".format(args.script))
 
-## loop through files in the directory
-for corpus in os.listdir(args.corpusdir):
+## get the corpora from the directory
+corpora = [f for f in sorted(os.listdir(args.corpusdir)) if f.startswith("spade-")]
+
+## loop through corpus files
+for corpus in corpora:
     ## check if the file is actually a directory since that is the expected format for the
     ## analysis scripts
     if os.path.isdir(corpus):
@@ -34,4 +37,4 @@ for corpus in os.listdir(args.corpusdir):
             failed.append(corpus)
             continue
 print("Complete!")
-print("Following corpora were not run: {}" failed)
+print("Following corpora were not run: {}", failed)
