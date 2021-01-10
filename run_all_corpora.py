@@ -9,7 +9,7 @@ args = parser.parse_args()
 
 ## lists of corpora to skip
 ## and failed to run
-skipped = []
+skipped = ['spade-Penn-Neighborhood']
 failed = []
 
 ## first check that the script exists
@@ -24,6 +24,7 @@ for corpus in corpora:
     ## analysis scripts
     if os.path.isdir(corpus):
         if corpus in skipped:
+            print("Skipping {}".format(corpus))
             continue
         try:
             print("Processing {}".format(corpus))
@@ -32,6 +33,12 @@ for corpus in corpora:
 
             ## run the script on the corpus
             subprocess.call(['python', args.script, corpus, "-s"])
+
+            ## reset corpus afterwards to save memory
+            try:
+                subprocess.call(['python', 'reset_database.py', corpus])
+            except:
+                continue
 
         except:
             failed.append(corpus)
