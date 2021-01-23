@@ -51,8 +51,8 @@ def utterance_export(config, corpus_name, corpus_directory, dialect_code, speake
                       c.utterance.begin.column_name('utterance_begin'),
                       c.utterance.end.column_name('utterance_end'),
                       c.utterance.discourse.name.column_name('discourse'),
-                      c.utterance.discourse.begin.column_name('discourse_begin'),
-                      c.utterance.discourse.end.column_name('discourse_end'))
+                      c.utterance.discourse.speech_begin.column_name('discourse_begin'),
+                      c.utterance.discourse.speech_end.column_name('discourse_end'))
 
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
