@@ -39,7 +39,7 @@ def utterance_export(config, corpus_name, corpus_directory, dialect_code, speake
 
     with CorpusContext(config) as c:
 
-        print("Beginning duration export")
+        print("Beginning utterance export")
         beg = time.time()
         ## Process stress information for the vowel. All vowels in this analysis
         ## should contain primary stress, and so filter for stressed based on
@@ -50,7 +50,9 @@ def utterance_export(config, corpus_name, corpus_directory, dialect_code, speake
                       c.utterance.id.column_name('utterance_label'),
                       c.utterance.begin.column_name('utterance_begin'),
                       c.utterance.end.column_name('utterance_end'),
-                      c.utterance.discourse.name.column_name('discourse'))
+                      c.utterance.discourse.name.column_name('discourse'),
+                      c.utterance.discourse.begin.column_name('discourse_begin'),
+                      c.utterance.discourse.end.column_name('discourse_end'))
 
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
