@@ -20,6 +20,7 @@ import time
 from datetime import datetime
 import sys
 import os
+import re
 import argparse
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -71,15 +72,13 @@ def svlr_export(config, corpus_name, corpus_directory, dialect_code, speakers, v
         ## which have had a primary stress label applied during lexical enrichment.
         if stressed_vowels:
             q = c.query_graph(c.phone)
-            q = q.filter(c.phone.unisynlmao.label.in_(vowels))
+            q = q.filter(c.phone.word.unisynprimstressedvowel3_xsampa_edi.label.in_(vowels))
             q = q.filter(c.phone.following.end == c.phone.syllable.end)
             q = q.filter(c.phone.following.end == c.phone.syllable.word.utterance.end)
             q = q.filter(c.phone.following.label.in_(consonants))
         else:
             q = c.query_graph(c.phone).filter(c.phone.label.in_(vowels))
             q = q.filter(c.phone.following.end == c.phone.syllable.end)
-            q = q.filter(c.phone.following.end == c.phone.syllable.word.utterance.end)
-            q = q.filter(c.phone.following.label.in_(consonants))
 
         ## Check that the vowel is in a vowel-obstruent cluster
         ## (i.e., no complex clusters)
@@ -99,7 +98,7 @@ def svlr_export(config, corpus_name, corpus_directory, dialect_code, speakers, v
         ## its duration, its surrounding phonological context, lexcial information
         ## (e.g., stress, dialect-specific realisation), syllable properties,
         ## and higher-level information (e.g., speech rate, speaker metadata).
-        q = q.columns(c.sound.lable.column_name('sound_file'),
+        q = q.columns(c.phone.utterance.discourse.name.column_name('file_path'),
 
                       ## phone information
                       c.phone.label.column_name('phone_label'),
@@ -112,16 +111,12 @@ def svlr_export(config, corpus_name, corpus_directory, dialect_code, speakers, v
                       c.phone.following.duration.column_name('following_duration'),
 
                       ## word information
-                      c.phone.word.unisynprimstressedvowel1.column_name('word_unisyn_1'),
-                      c.phone.word.unisynprimstressedvowel2.column_name('word_unisyn_2'),
-                      c.phone.word.unisynprimstressedvowel3.column_name('word_unisyn_3'),
-                      c.phone.word.unisynprimstressedvowel3_xsampa.column('word_unisyn_3_xsampa'),
                       c.phone.word.label.column_name('word_label'),
                       c.phone.word.begin.column_name('word_begin'),
                       c.phone.word.end.column_name('word_end'),
                       c.phone.word.duration.column_name('word_duration'),
                       c.phone.word.stresspattern.column_name('word_stresspattern'),
-                      c.phone.word.num_sylls.column_name('word_number_of_syllables'),
+                      c.phone.word.num_syllables.column_name('word_number_of_syllables'),
                       
                       ## syllable information
                       c.phone.syllable.label.column_name('syllable_label'),
@@ -137,6 +132,17 @@ def svlr_export(config, corpus_name, corpus_directory, dialect_code, speakers, v
                       c.phone.speaker.name.column_name('speaker_name'),
                       c.phone.syllable.end.column_name('syllable_end'),
                       c.phone.utterance.end.column_name('utterance_end'))
+
+        ## Get UNISYN vowel labels
+        for prop in c.hierarchy.type_properties.items():
+            if prop[0] == 'word':
+                for attr in prop[1]:
+                    try:
+                        rule = re.findall('unisynprimstressedvowel.*', attr[0])[0]
+                        q = q.columns(getattr(c.phone.word, rule).column_name(rule))
+                    except IndexError:
+                        continue
+
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
                 continue
