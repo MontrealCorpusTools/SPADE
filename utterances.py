@@ -50,6 +50,8 @@ def utterance_export(config, corpus_name, corpus_directory, dialect_code, speake
                       c.utterance.id.column_name('utterance_label'),
                       c.utterance.begin.column_name('utterance_begin'),
                       c.utterance.end.column_name('utterance_end'),
+                      c.utterance.following.begin.column_name('following_utterance_begin'),
+                      c.utterance.following.end.column_name('following_utterance_end'),
                       c.utterance.discourse.name.column_name('discourse'),
                       c.utterance.discourse.speech_begin.column_name('discourse_begin'),
                       c.utterance.discourse.speech_end.column_name('discourse_end'))
