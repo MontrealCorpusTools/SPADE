@@ -1,9 +1,9 @@
-####################################
-## SPADE duration analysis script ##
-####################################
+#########################################
+## SPADE sibilant full analysis script ##
+#########################################
 
-## Processes and extracts linguistic and acoustic information pertaining to vowel length
-## for monosyllabic stressed vowels followed by voiced and voiceless consonants.
+## Processes and extracts linguistic and acoustic information pertaining to sibilants
+## for *all* sibilant segments in the corpus
 ## Used for extracting data collected as part of the SPeech Across Dialects of English
 ## (SPADE) project.
 
@@ -12,7 +12,7 @@
 ## - corpus metadata (stored in a YAML file), which
 ##   specifies the path to the audio, transcripts and metadata
 ## Output:
-## - CSV of durational measures and linguistic information
+## - CSV of sibilant measures and linguistic information
 ##   associated with the token
 
 import yaml
@@ -34,12 +34,12 @@ from polyglotdb.utils import ensure_local_database_running
 from polyglotdb.config import CorpusConfig
 from polyglotdb.io.enrichment import enrich_lexicon_from_csv
 
-def sibilant_export(config, corpus_name, dialect_code, speakers, ignored_speakers=None):
+def sibilant_full_export(config, corpus_name, dialect_code, speakers, ignored_speakers):
     ## Extract sibilant information without filters
     csv_path = os.path.join(base_dir, corpus_name, '{}_sibilants_full.csv'.format(corpus_name))
 
     with CorpusContext(config) as c:
-        print("Beginning sibilant export")
+        print("Beginning sibilant full export")
         beg = time.time()
         # only run on segments with a sibilant label
         q = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
@@ -98,7 +98,7 @@ def sibilant_export(config, corpus_name, dialect_code, speakers, ignored_speaker
         time_taken = time.time() - beg
         print('Query took: {}'.format(end - beg))
         print("Results for query written to " + csv_path)
-        save_performance_benchmark(config, 'sibilant_full_export', time_taken)
+        common.save_performance_benchmark(config, 'sibilant_full_export', time_taken)
 
 ## Process command-line arguments (corpus metadata, corpus reset, etc).
 if __name__ == '__main__':
@@ -150,6 +150,6 @@ if __name__ == '__main__':
         common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
         ## Call the duration export function, as defined above
-        common.sibilant_acoustic_analysis(config, corpus_conf['sibilant_segments'], igored_speakers=ignored_speakers
-        sibilant_full_export(config, corpus_name, corpus_conf['corpus_directory'], corpus_conf['dialect_code'], corpus_conf['speakers'], ignored_speakers=ignored_speakers)
+        common.sibilant_acoustic_analysis(config, corpus_conf['sibilant_segments'], ignored_speakers=ignored_speakers)
+        sibilant_full_export(config, corpus_name, corpus_conf['dialect_code'], corpus_conf['speakers'], ignored_speakers=ignored_speakers)
         print('Finishing up!')
