@@ -61,18 +61,66 @@ def sibilant_full_export(config, corpus_name, dialect_code, speakers, ignored_sp
 
                        # surrounding phone information
                        c.phone.following.label.column_name('following_phone'),
+                       c.phone.following.begin.column_name('following_phone_begin'),
+                       c.phone.following.end.column_name('following_phone_end'),
+                       c.phone.following.duration.column_name('following_phone_duration'),
+
                        c.phone.previous.label.column_name('previous_phone'),
+                       c.phone.previous.begin.column_name('previous_phone_begin'),
+                       c.phone.previous.end.column_name('previous_phone_end'),
+                       c.phone.previous.duration.column_name('previous_phone_duration'),
 
                        # word and syllable information (e.g., stress,
                        # onset/nuclus/coda of the syllable)
                        # determined from maximum onset algorithm in
                        # basic_enrichment function
-                       c.phone.syllable.word.label.column_name('word'),
-                       c.phone.syllable.word.id.column_name('word_id'),
+                       c.phone.word.label.column_name('word'),
+                       c.phone.word.id.column_name('word_id'),
+                       c.phone.word.stresspattern.column_name('word_stresspattern'),
+                       c.phone.syllable.label.column_name('syllable_label'),
                        c.phone.syllable.stress.column_name('syllable_stress'),
+                       c.phone.syllable.position_in_word.column_name('syllable_position'),
+                       c.phone.syllable.num_phones.column_name('syllable_num_phones'),
                        c.phone.syllable.phone.filter_by_subset('onset').label.column_name('onset'),
                        c.phone.syllable.phone.filter_by_subset('nucleus').label.column_name('nucleus'),
                        c.phone.syllable.phone.filter_by_subset('coda').label.column_name('coda'),
+
+                       c.phone.syllable.following.label.column_name('following_syllable_label'),
+                       c.phone.syllable.following.begin.column_name('following_syllable_begin'),
+                       c.phone.syllable.following.end.column_name('following_syllable_end'),
+                       c.phone.syllable.following.duration.column_name('following_syllable_duration'),
+                       c.phone.syllable.following.phone.filter_by_subset('onset').label.column_name('following_onset'),
+                       c.phone.syllable.following.phone.filter_by_subset('nucleus').label.column_name('following_nucleus'),
+                       c.phone.syllable.following.phone.filter_by_subset('coda').label.column_name('following_coda'),
+
+                       c.phone.syllable.previous.label.column_name('previous_syllable_label'),
+                       c.phone.syllable.previous.begin.column_name('previous_syllable_begin'),
+                       c.phone.syllable.previous.end.column_name('previous_syllable_end'),
+                       c.phone.syllable.previous.duration.column_name('previous_syllable_duration'),
+                       c.phone.syllable.previous.phone.filter_by_subset('onset').label.column_name('previous_onset'),
+                       c.phone.syllable.previous.phone.filter_by_subset('nucleus').label.column_name('previous_nucleus'),
+                       c.phone.syllable.previous.phone.filter_by_subset('coda').label.column_name('previous_coda'),
+
+                       c.phone.word.following.label.column_name('following_word_label'),
+                       c.phone.word.following.begin.column_name('following_word_begin'),
+                       c.phone.word.following.end.column_name('following_word_end'),
+                       c.phone.word.following.duration.column_name('following_word_duration'),
+                       c.phone.word.following.stresspattern.column_name('following_word_stresspattern'),
+
+                       c.phone.word.previous.label.column_name('previous_word_label'),
+                       c.phone.word.previous.begin.column_name('previous_word_begin'),
+                       c.phone.word.previous.end.column_name('previous_word_end'),
+                       c.phone.word.previous.duration.column_name('previous_word_duration'),
+                       c.phone.word.previous.stresspattern.column_name('previous_word_stresspattern'),
+
+                       c.phone.utterance.label.column_name('utterance_label'),
+                       c.phone.utterance.id.column_name('utterance_id'),
+                       c.phone.utterance.begin.column_name('utterance_begin'),
+                       c.phone.utterance.end.column_name('utterance_end'),
+                       c.phone.utterance.duration.column_name('utterance_duration'),
+                       c.phone.utterance.num_words.column_name('utterance_num_words'),
+                       c.phone.utterance.num_syllables.column_name('utterance_num_syllables'),
+                       c.phone.utterance.speech_rate.column_name('utterance_speech_rate'),
 
                        # acoustic information of interest (spectral measurements)
                        c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
@@ -99,6 +147,7 @@ def sibilant_full_export(config, corpus_name, dialect_code, speakers, ignored_sp
         print('Query took: {}'.format(end - beg))
         print("Results for query written to " + csv_path)
         common.save_performance_benchmark(config, 'sibilant_full_export', time_taken)
+        print(c.hierarchy)
 
 ## Process command-line arguments (corpus metadata, corpus reset, etc).
 if __name__ == '__main__':
