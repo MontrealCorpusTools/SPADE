@@ -14,6 +14,10 @@
 # Purpose: process input data as command-line arguments
 # Date: 2020-09-29
 
+# modified by: James Tanner
+# Purpose: convert to functions
+# Data: 2021-03-28
+
 started_at <- date()
 
 library(ggplot2)
@@ -88,6 +92,28 @@ get_file_path <- function(corpus_data, row, sound_file_directory, subdirs){
     }
 }
 
+read_dataset <- function(filepath, sound_dir) {
+	## extract corpus name from dataset filename
+	cat("File: ", filepath, "\n")
+    corpus_name <- str_match(filepath, "([A-Za-z0-9_-]*)\\_sibilants\\.csv")[,2]
+    cat("Corpus name:", "\t", corpus_name, "\n")
+
+	# get the directory of the sound file and
+	# read in the CSV
+    sound_file_directory <- sound_dir
+    corpus_data <- read.csv(filepath)
+
+    if (args$numbers){
+        corpus_data$discourse <- sprintf("%03d",corpus_data$discourse)
+    }
+	return(list(corpus_data, corpus_name, sound_file_directory))
+}
+
+get_phone_time <- function(data, time, row) {
+	t <- data[row, time]
+	return(t)
+}
+
 # https://stackoverflow.com/questions/7824912/max-and-min-functions-that-are-similar-to-colmeans
 colMax <- function (colData) {
     apply(colData, MARGIN=c(2), max)
@@ -105,15 +131,10 @@ measuring <- TRUE
 if (measuring){
 
     ## Get the corpus name from the input file
-    corpus_name <- str_match(args$input_file, "[\\w+\\/]*?([A-Za-z0-9_-]*)\\_sibilants\\.csv")[,2]
-    cat("Corpus name:", "\t", corpus_name, "\n")
-
-    sound_file_directory <- args$sound_dir
-    corpus_data <- read.csv(args$input_file)
-
-    if (args$numbers){
-        corpus_data$discourse <- sprintf("%03d",corpus_data$discourse)
-    }
+	dataset = read_dataset(args$input_file, args$sound_dir)
+	corpus_data = dataset[[1]]
+	corpus_name = dataset[[2]]
+	sound_file_directory = dataset[[3]]
 
     if(parallelized) {
         registerDoParallel(n_cores)
@@ -123,8 +144,8 @@ if (measuring){
     #JM: open the first token to gather information
     file_path <- get_file_path(corpus_data, row=1, sound_file_directory, args$directories)
 
-    begin <- corpus_data[1, "phone_begin"]
-    end <- corpus_data[1, "phone_end"]
+    begin <- get_phone_time(corpus_data, "phone_begin", 1)
+    end <- get_phone_time(corpus_data, "phone_end", 1)
     file_midpoint <- begin + (end-begin) / 2
     
     sock.x <- readWave(filename = file_path, from = file_midpoint - 0.0125, to = file_midpoint + 0.0125, units='seconds')
