@@ -42,6 +42,9 @@ def sibilant_full_export(config, corpus_name, dialect_code, speakers, ignored_sp
         print("Beginning sibilant full export")
         beg = time.time()
         # only run on segments with a sibilant label
+        # this 'sibilant' subset is defined in the sibilant_acoustic_analysis function in
+        # common.py. Be default this uses the set of segments defined as 'sibilant_segments'
+        # in the corpus-specific YAML file.
         q = c.query_graph(c.phone).filter(c.phone.subset == 'sibilant')
         # ensure that all phones are associated with a speaker
         if speakers:
@@ -123,6 +126,8 @@ def sibilant_full_export(config, corpus_name, dialect_code, speakers, ignored_sp
                        c.phone.utterance.speech_rate.column_name('utterance_speech_rate'),
 
                        # acoustic information of interest (spectral measurements)
+                       # measured as part of the sibilant_acoustic_analysis function in
+                       # common.py
                        c.phone.cog.column_name('cog'), c.phone.peak.column_name('peak'),
                        c.phone.slope.column_name('slope'), c.phone.spread.column_name('spread'))
 
@@ -194,11 +199,19 @@ if __name__ == '__main__':
         common.loading(config, corpus_conf['corpus_directory'], corpus_conf['input_format'])
 
         ## Add information to the corpus regarding lexical, speaker, and linguistic information
+        ## These functions are defined in common.py
         common.lexicon_enrichment(config, corpus_conf['unisyn_spade_directory'], corpus_conf['dialect_code'])
         common.speaker_enrichment(config, corpus_conf['speaker_enrichment_file'])
         common.basic_enrichment(config, corpus_conf['vowel_inventory'] + corpus_conf['extra_syllabic_segments'], corpus_conf['pauses'])
 
-        ## Call the duration export function, as defined above
+        ## Call the siblant analysis function
+        ## the specifics of the sibilant acoustic analysis is found in common.py; the segments
+        ## over which it applies is defined in the corpus-specific YAML file (under
+        ## 'sibilant_segments'). Change the list of segments in order to change over what phones
+        ## the sibilant enrichment/extraction applies
         common.sibilant_acoustic_analysis(config, corpus_conf['sibilant_segments'], ignored_speakers=ignored_speakers)
+        ## Once the set of sibilant tokens have been enriched for acoustic measures,
+        ## extract the data in tabular (CSV) format. Columns included in this output file
+        ## are defined in the function at the beginning of this script
         sibilant_full_export(config, corpus_name, corpus_conf['dialect_code'], corpus_conf['speakers'], ignored_speakers=ignored_speakers)
         print('Finishing up!')
