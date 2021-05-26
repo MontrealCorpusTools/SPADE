@@ -145,6 +145,11 @@ def sibilant_full_export(config, corpus_name, dialect_code, speakers, ignored_sp
             q = q.columns(
                     c.phone.word.transcription.column_name('word_underlying_transcription'),
                     c.phone.word.surface_transcription.column_name('word_surface_transcription'))
+
+        if c.hierarchy.has_type_property('word', 'dialectindependenttranscription'):
+            print("Getting UNISYN dialect-independent transcription")
+            q = q.columns(c.phone.word.dialectindependenttranscription.column_name('word_dialect_independent_transcription'))
+
         # write the query to a CSV
         qr.to_csv(csv_path)
         end = time.time()
