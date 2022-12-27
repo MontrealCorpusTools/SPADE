@@ -52,10 +52,10 @@ def utterance_export(config, corpus_name, corpus_directory, dialect_code, speake
                       c.utterance.end.column_name('utterance_end'),
                       c.utterance.following.begin.column_name('following_utterance_begin'),
                       c.utterance.following.end.column_name('following_utterance_end'),
+                      c.utterance.speech_rate.column_name('speech_rate'),
                       c.utterance.discourse.name.column_name('discourse'),
                       c.utterance.discourse.speech_begin.column_name('discourse_begin'),
-                      c.utterance.discourse.speech_end.column_name('discourse_end'),
-                      c.utterance.discourse.speech_rate.column_name('speech_rate'))
+                      c.utterance.discourse.speech_end.column_name('discourse_end'))
 
         for sp, _ in c.hierarchy.speaker_properties:
             if sp == 'name':
